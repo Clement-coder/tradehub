@@ -47,53 +47,105 @@ export default function DashboardPage() {
         {/* Portfolio Cards Grid - Fully Responsive */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Total Balance */}
-          <div className="bg-card/95 backdrop-blur-sm border border-border/40 rounded-xl p-5 sm:p-6 hover:shadow-lg hover:border-primary/30 transition-all duration-300 group">
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">Balance</h3>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary/15 transition-all duration-300">
-                <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-primary group-hover:scale-110 transition-transform duration-300" />
-              </div>
+          <div className="group relative">
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '2s'}}>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-primary"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-1 bg-accent"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-chart-2"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-1 bg-chart-4"></div>
+              {/* Corner dots */}
+              <div className="absolute top-0 left-0 w-2 h-2 bg-primary rounded-full"></div>
+              <div className="absolute top-0 right-0 w-2 h-2 bg-accent rounded-full"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 bg-chart-2 rounded-full"></div>
+              <div className="absolute bottom-0 left-0 w-2 h-2 bg-chart-4 rounded-full"></div>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{formatCurrency(user.balance)}</p>
-            <p className="text-xs text-muted-foreground">Available to trade</p>
+            <div className="relative bg-card/95 backdrop-blur-sm rounded-xl p-5 sm:p-6 hover:shadow-lg transition-all duration-300 z-10 m-1 group-hover:bg-card/90">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">Balance</h3>
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary/15 transition-all duration-300">
+                  <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-primary group-hover:scale-110 transition-transform duration-300" />
+                </div>
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{formatCurrency(user.balance)}</p>
+              <p className="text-xs text-muted-foreground">Available to trade</p>
+            </div>
           </div>
 
           {/* Portfolio Value */}
-          <div className="bg-card/95 backdrop-blur-sm border border-border/40 rounded-xl p-5 sm:p-6 hover:shadow-lg hover:border-accent/30 transition-all duration-300 group">
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">Portfolio</h3>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center group-hover:from-accent/30 group-hover:to-accent/15 transition-all duration-300">
-                <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-accent group-hover:scale-110 transition-transform duration-300" />
-              </div>
+          <div className="group relative">
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '2.2s', animationDelay: '0.3s'}}>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-accent"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-1 bg-chart-2"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-chart-4"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-1 bg-primary"></div>
+              {/* Corner dots */}
+              <div className="absolute top-0 left-0 w-2 h-2 bg-accent rounded-full"></div>
+              <div className="absolute top-0 right-0 w-2 h-2 bg-chart-2 rounded-full"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 bg-chart-4 rounded-full"></div>
+              <div className="absolute bottom-0 left-0 w-2 h-2 bg-primary rounded-full"></div>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{formatCurrency(portfolioValue)}</p>
-            <p className="text-xs text-muted-foreground">Total value</p>
+            <div className="relative bg-card/95 backdrop-blur-sm rounded-xl p-5 sm:p-6 hover:shadow-lg transition-all duration-300 z-10 m-1 group-hover:bg-card/90">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">Portfolio</h3>
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-accent/20 to-accent/10 flex items-center justify-center group-hover:from-accent/30 group-hover:to-accent/15 transition-all duration-300">
+                  <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-accent group-hover:scale-110 transition-transform duration-300" />
+                </div>
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{formatCurrency(portfolioValue)}</p>
+              <p className="text-xs text-muted-foreground">Total value</p>
+            </div>
           </div>
 
           {/* Total P&L */}
-          <div className="bg-card/95 backdrop-blur-sm border border-border/40 rounded-xl p-5 sm:p-6 hover:shadow-lg hover:border-chart-2/30 transition-all duration-300 group">
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">Total P&L</h3>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-chart-2/20 to-chart-2/10 flex items-center justify-center group-hover:from-chart-2/30 group-hover:to-chart-2/15 transition-all duration-300">
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-chart-2 group-hover:scale-110 transition-transform duration-300" />
-              </div>
+          <div className="group relative">
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '2.4s', animationDelay: '0.6s'}}>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-chart-2"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-1 bg-chart-4"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-1 bg-accent"></div>
+              {/* Corner dots */}
+              <div className="absolute top-0 left-0 w-2 h-2 bg-chart-2 rounded-full"></div>
+              <div className="absolute top-0 right-0 w-2 h-2 bg-chart-4 rounded-full"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 bg-primary rounded-full"></div>
+              <div className="absolute bottom-0 left-0 w-2 h-2 bg-accent rounded-full"></div>
             </div>
-            <p className={`text-2xl sm:text-3xl font-bold mb-1 ${totalPnL >= 0 ? 'text-accent' : 'text-destructive'}`}>
-              {totalPnL >= 0 ? '+' : ''}{formatCurrency(totalPnL)}
-            </p>
-            <p className="text-xs text-muted-foreground">All closed trades</p>
+            <div className="relative bg-card/95 backdrop-blur-sm rounded-xl p-5 sm:p-6 hover:shadow-lg transition-all duration-300 z-10 m-1 group-hover:bg-card/90">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">Total P&L</h3>
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-chart-2/20 to-chart-2/10 flex items-center justify-center group-hover:from-chart-2/30 group-hover:to-chart-2/15 transition-all duration-300">
+                  <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-chart-2 group-hover:scale-110 transition-transform duration-300" />
+                </div>
+              </div>
+              <p className={`text-2xl sm:text-3xl font-bold mb-1 ${totalPnL >= 0 ? 'text-accent' : 'text-destructive'}`}>
+                {totalPnL >= 0 ? '+' : ''}{formatCurrency(totalPnL)}
+              </p>
+              <p className="text-xs text-muted-foreground">All closed trades</p>
+            </div>
           </div>
 
           {/* BTC Price */}
-          <div className="bg-card/95 backdrop-blur-sm border border-border/40 rounded-xl p-5 sm:p-6 hover:shadow-lg hover:border-chart-4/30 transition-all duration-300 group">
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">BTC Price</h3>
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-chart-4/20 to-chart-4/10 flex items-center justify-center group-hover:from-chart-4/30 group-hover:to-chart-4/15 transition-all duration-300">
-                <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-chart-4 group-hover:scale-110 transition-transform duration-300" />
-              </div>
+          <div className="group relative">
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '2.6s', animationDelay: '0.9s'}}>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-chart-4"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-1 bg-primary"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-1 bg-chart-2"></div>
+              {/* Corner dots */}
+              <div className="absolute top-0 left-0 w-2 h-2 bg-chart-4 rounded-full"></div>
+              <div className="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 bg-accent rounded-full"></div>
+              <div className="absolute bottom-0 left-0 w-2 h-2 bg-chart-2 rounded-full"></div>
             </div>
-            <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">${formatPrice(currentPrice)}</p>
-            <p className="text-xs text-muted-foreground">Current price</p>
+            <div className="relative bg-card/95 backdrop-blur-sm rounded-xl p-5 sm:p-6 hover:shadow-lg transition-all duration-300 z-10 m-1 group-hover:bg-card/90">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">BTC Price</h3>
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-chart-4/20 to-chart-4/10 flex items-center justify-center group-hover:from-chart-4/30 group-hover:to-chart-4/15 transition-all duration-300">
+                  <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-chart-4 group-hover:scale-110 transition-transform duration-300" />
+                </div>
+              </div>
+              <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">${formatPrice(currentPrice)}</p>
+              <p className="text-xs text-muted-foreground">Current price</p>
+            </div>
           </div>
         </div>
 

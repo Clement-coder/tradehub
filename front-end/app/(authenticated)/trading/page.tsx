@@ -32,23 +32,23 @@ export default function TradingPage() {
     <div className="min-h-screen bg-background">
       {/* Page Header */}
       <div className="border-b border-border bg-card">
-        <div className="px-6 py-6">
+        <div className="px-4 sm:px-6 py-4 sm:py-6">
           <div className="flex items-center gap-3 mb-2">
-            <TrendingUp className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-bold">Spot Trading</h1>
+            <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+            <h1 className="text-xl sm:text-2xl font-bold">Spot Trading</h1>
           </div>
-          <p className="text-muted-foreground text-sm">Trade cryptocurrencies on our testnet platform</p>
+          <p className="text-muted-foreground text-xs sm:text-sm">Trade cryptocurrencies on our testnet platform</p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="p-6 space-y-6">
+      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
         {/* Trading Section */}
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
           {/* Chart and Interface */}
-          <div className="lg:col-span-2">
-            <div className="bg-card rounded-lg border border-border p-6 space-y-4">
-              <div className="flex items-center justify-between">
+          <div className="xl:col-span-2 order-2 xl:order-1">
+            <div className="bg-card rounded-lg border border-border p-4 sm:p-6 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <h2 className="text-lg font-semibold">BTC/USD</h2>
                 <div className="flex items-center gap-2 text-xs">
                   <span className="bg-primary/10 text-primary px-2 py-1 rounded">1H</span>
@@ -62,11 +62,13 @@ export default function TradingPage() {
           </div>
 
           {/* Trading Panel */}
-          <TradingInterface />
+          <div className="order-1 xl:order-2">
+            <TradingInterface />
+          </div>
         </div>
 
         {/* Positions and History */}
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <PositionsTable />
           <TradeHistory limit={5} />
         </div>
