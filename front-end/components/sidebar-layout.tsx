@@ -36,11 +36,51 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useTradingContext();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: "Market Alert",
+      message: "BTC reached $67,420 - up 2.4% today",
+      time: "2 minutes ago",
+      unread: true,
+      color: "accent"
+    },
+    {
+      id: 2,
+      title: "Trade Executed",
+      message: "Your BTC buy order for $1,000 was filled",
+      time: "5 minutes ago",
+      unread: true,
+      color: "primary"
+    },
+    {
+      id: 3,
+      title: "Portfolio Update",
+      message: "Your portfolio is up 3.2% today",
+      time: "1 hour ago",
+      unread: true,
+      color: "chart-2"
+    },
+    {
+      id: 4,
+      title: "Account Security",
+      message: "Login from new device detected",
+      time: "3 hours ago",
+      unread: false,
+      color: "chart-4"
+    }
+  ]);
 
   const handleLogout = () => {
     logout();
     router.push('/');
   };
+
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(notif => ({ ...notif, unread: false })));
+  };
+
+  const hasUnreadNotifications = notifications.some(notif => notif.unread);
 
   const isActive = (href: string) => pathname === href;
 
@@ -141,7 +181,9 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
               className="relative p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
             >
               <Bell className="w-5 h-5" />
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></div>
+              {hasUnreadNotifications && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></div>
+              )}
             </button>
           </div>
         </header>
@@ -180,57 +222,27 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
               </div>
               
               <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-gradient-to-r from-accent/10 to-accent/5 border border-accent/20">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-accent rounded-full mt-2 animate-pulse"></div>
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-1">Market Alert</h3>
-                      <p className="text-sm text-muted-foreground">BTC reached $67,420 - up 2.4% today</p>
-                      <span className="text-xs text-muted-foreground">2 minutes ago</span>
+                {notifications.map((notification) => (
+                  <div key={notification.id} className={`p-4 rounded-xl bg-gradient-to-r from-${notification.color}/10 to-${notification.color}/5 border border-${notification.color}/20`}>
+                    <div className="flex items-start gap-3">
+                      <div className={`w-2 h-2 bg-${notification.color} rounded-full mt-2 ${notification.unread ? 'animate-pulse' : ''}`}></div>
+                      <div>
+                        <h3 className="font-semibold text-foreground mb-1">{notification.title}</h3>
+                        <p className="text-sm text-muted-foreground">{notification.message}</p>
+                        <span className="text-xs text-muted-foreground">{notification.time}</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-                
-                <div className="p-4 rounded-xl bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2 animate-pulse"></div>
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-1">Trade Executed</h3>
-                      <p className="text-sm text-muted-foreground">Your BTC buy order for $1,000 was filled</p>
-                      <span className="text-xs text-muted-foreground">5 minutes ago</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="p-4 rounded-xl bg-gradient-to-r from-chart-2/10 to-chart-2/5 border border-chart-2/20">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-chart-2 rounded-full mt-2 animate-pulse"></div>
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-1">Portfolio Update</h3>
-                      <p className="text-sm text-muted-foreground">Your portfolio is up 3.2% today</p>
-                      <span className="text-xs text-muted-foreground">1 hour ago</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="p-4 rounded-xl bg-gradient-to-r from-chart-4/10 to-chart-4/5 border border-chart-4/20">
-                  <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-chart-4 rounded-full mt-2"></div>
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-1">Account Security</h3>
-                      <p className="text-sm text-muted-foreground">Login from new device detected</p>
-                      <span className="text-xs text-muted-foreground">3 hours ago</span>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
               
               <div className="mt-8">
                 <button
-                  className="w-full px-6 py-3 rounded-xl font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-all duration-200"
-                  onClick={() => setShowNotifications(false)}
+                  className="w-full px-6 py-3 rounded-xl font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={markAllAsRead}
+                  disabled={!hasUnreadNotifications}
                 >
-                  Mark All as Read
+                  {hasUnreadNotifications ? 'Mark All as Read' : 'All Read'}
                 </button>
               </div>
             </div>
