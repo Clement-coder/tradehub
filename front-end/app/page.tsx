@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { TrendingUp, ArrowRight, Wallet, BarChart3, Lock, Menu, X } from 'lucide-react';
+import { TrendingUp, ArrowRight, Wallet, BarChart3, Lock, Sparkles, Menu, X } from 'lucide-react';
 import { GlassCard } from '@/components/glass-card';
 import { useEffect, useState } from 'react';
 
