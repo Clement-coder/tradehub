@@ -225,21 +225,22 @@ export default function LandingPage() {
             </Link>
             <Link
               href="/how-it-works"
-              className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-foreground bg-card border border-border hover:bg-muted/50 transition-all duration-200"
+              className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40"
             >
-              Learn More
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-lg shadow-primary/50" style={{animationDelay: '0.5s'}}></div>
+              <span className="text-primary">Learn More</span>
             </Link>
           </div>
           
           {/* Live Stats - Responsive Grid */}
           <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 md:gap-4 lg:gap-8 text-xs md:text-sm font-mono px-4">
-            <div className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-accent/25 to-accent/15 border border-accent/40">
-              <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-lg shadow-accent/50"></div>
-              <span className="text-accent">Market Open</span>
+            <div className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-lg shadow-primary/50"></div>
+              <span className="text-primary">Market Open</span>
             </div>
-            <div className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-chart-2/25 to-chart-2/15 border border-chart-2/40">
-              <div className="w-2 h-2 bg-chart-2 rounded-full animate-pulse shadow-lg shadow-chart-2/50" style={{animationDelay: '0.5s'}}></div>
-              <span className="text-chart-2">Real-time Data</span>
+            <div className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-lg shadow-primary/50" style={{animationDelay: '0.5s'}}></div>
+              <span className="text-primary">Real-time Data</span>
             </div>
             <div className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40">
               <div className="w-2 h-2 bg-primary rounded-full animate-pulse shadow-lg shadow-primary/50" style={{animationDelay: '1s'}}></div>
