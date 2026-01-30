@@ -16,8 +16,8 @@ describe("TradeHubMultiToken", function () {
 
   // Deploy the contract before each test
   beforeEach(async function () {
-    [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
-    const TradeHubMultiTokenFactory = await ethers.getContractFactory("TradeHubMultiToken");
+    [owner, addr1, addr2, ...addrs] = await hre.ethers.getSigners();
+    const TradeHubMultiTokenFactory = await hre.ethers.getContractFactory("TradeHubMultiToken");
     tradeHubMultiToken = await TradeHubMultiTokenFactory.deploy(owner.address);
     await tradeHubMultiToken.waitForDeployment();
   });
