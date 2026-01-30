@@ -1,0 +1,46 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+/**
+ * @title TradeHub Errors Library
+ * @dev Centralized error definitions for all TradeHub contracts
+ */
+library Errors {
+    // Common errors
+    error ZeroAddress();
+    error InvalidAmount();
+    error InsufficientBalance();
+    error Unauthorized();
+    error ContractPaused();
+    error InvalidInput();
+    
+    // ERC20 specific errors
+    error TransferFailed();
+    error MintingFailed();
+    error BurningFailed();
+    error AllowanceExceeded();
+    
+    // ERC721 specific errors
+    error TokenNotExists();
+    error NotTokenOwner();
+    error TokenAlreadyExists();
+    error InvalidTokenId();
+    error TransferToNonERC721Receiver();
+    
+    // ERC1155 specific errors
+    error ArrayLengthMismatch();
+    error InsufficientTokenBalance();
+    error TransferToNonERC1155Receiver();
+    error InvalidTokenType();
+    
+    // Access control errors
+    error NotOwner();
+    error NotMinter();
+    error NotBurner();
+    error RoleNotGranted();
+    
+    // URI and metadata errors
+    error InvalidURI();
+    error MetadataFrozen();
+    error URINotSet();
+}

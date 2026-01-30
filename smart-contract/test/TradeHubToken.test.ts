@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import hre from "hardhat";
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
-import { TradeHubToken } from "../typechain-types"; // Adjust path as needed
+import { TradeHubToken } from "../typechain-types";
 
 describe("TradeHubToken", function () {
   let tradeHubToken: TradeHubToken;
@@ -12,8 +12,8 @@ describe("TradeHubToken", function () {
 
   // Deploy the contract before each test
   beforeEach(async function () {
-    [owner, addr1, addr2, ...addrs] = await ethers.getSigners();
-    const TradeHubTokenFactory = await ethers.getContractFactory("TradeHubToken");
+    [owner, addr1, addr2, ...addrs] = await hre.ethers.getSigners();
+    const TradeHubTokenFactory = await hre.ethers.getContractFactory("TradeHubToken");
     tradeHubToken = await TradeHubTokenFactory.deploy(owner.address);
     await tradeHubToken.waitForDeployment();
   });
