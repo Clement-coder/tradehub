@@ -93,18 +93,16 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
         } md:static md:translate-x-0 flex flex-col`}
       >
         {/* Header */}
-        <div className="h-16 flex items-center px-6 border-b border-border">
-          <div className="flex items-center gap-3 flex-1">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-lg">TradeHub</span>
-          </div>
+        <div className="h-16 flex items-center px-6 border-b border-border bg-gradient-to-r from-orange-500/10 via-blue-500/10 to-purple-500/10">
+          <Link href="/dashboard" className="flex items-center gap-3 flex-1">
+            <img src="/tradeHub_logo.PNG" alt="TradeHub Logo" className="w-8 h-8" />
+            <span className="font-bold text-lg text-foreground">TradeHub</span>
+          </Link>
           <button
-            className="md:hidden"
+            className="md:hidden p-2 rounded-lg hover:bg-muted/50"
             onClick={() => setSidebarOpen(false)}
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 text-foreground" />
           </button>
         </div>
 
@@ -114,15 +112,20 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              className={`relative flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group ${
                 isActive(item.href)
-                  ? 'bg-primary/10 text-primary'
+                  ? 'bg-gradient-to-r from-primary/20 to-primary/5 text-primary border border-primary/30'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
               onClick={() => setSidebarOpen(false)}
             >
-              <item.icon className="w-5 h-5" />
-              <span className="font-medium">{item.name}</span>
+              {isActive(item.href) && (
+                <div className="absolute inset-0 rounded-lg overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-blue-500/10 to-purple-500/10 opacity-50 animate-pulse"></div>
+                </div>
+              )}
+              <item.icon className="w-5 h-5 relative z-10" />
+              <span className="font-medium relative z-10">{item.name}</span>
             </Link>
           ))}
         </nav>
@@ -133,15 +136,20 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+              className={`relative flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group ${
                 isActive(item.href)
-                  ? 'bg-primary/10 text-primary'
+                  ? 'bg-gradient-to-r from-primary/20 to-primary/5 text-primary border border-primary/30'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               }`}
               onClick={() => setSidebarOpen(false)}
             >
-              <item.icon className="w-5 h-5" />
-              <span className="font-medium">{item.name}</span>
+              {isActive(item.href) && (
+                <div className="absolute inset-0 rounded-lg overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-blue-500/10 to-purple-500/10 opacity-50 animate-pulse"></div>
+                </div>
+              )}
+              <item.icon className="w-5 h-5 relative z-10" />
+              <span className="font-medium relative z-10">{item.name}</span>
             </Link>
           ))}
         </div>
@@ -238,10 +246,11 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
               
               <div className="mt-8">
                 <button
-                  className="w-full px-6 py-3 rounded-xl font-semibold text-primary-foreground bg-primary hover:bg-primary/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed w-full"
                   onClick={markAllAsRead}
                   disabled={!hasUnreadNotifications}
                 >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                   {hasUnreadNotifications ? 'Mark All as Read' : 'All Read'}
                 </button>
               </div>

@@ -1,33 +1,75 @@
 'use client';
 
+import { useBalance } from 'wagmi';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { TrendingUp, Wallet, BarChart3, DollarSign, Activity, History } from 'lucide-react';
+import { usePrivy } from '@privy-io/react-auth';
+import { TrendingUp, Wallet, BarChart3, DollarSign, Activity, History as HistoryIcon } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
-import { formatCurrency, formatPrice } from '@/lib/mock-data';
+import { BtcPriceChart } from '@/components/btc-price-chart';
+
+// Helper functions to format currency and price
+const formatCurrency = (value: number) => 
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+
+const formatPrice = (value: number) => 
+  new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, positions, trades, currentPrice } = useTradingContext();
+  const { authenticated, ready, user: privyUser } = usePrivy();
+  const { user, positions, trades, currentPrice, setUser } = useTradingContext();
   const [mounted, setMounted] = useState(false);
+  const { data: balance } = useBalance({ address: privyUser?.wallet?.address as `0x${string}` });
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (mounted && !user) {
+    if (mounted && ready && !authenticated) {
       router.push('/auth');
     }
-  }, [mounted, user, router]);
+  }, [mounted, ready, authenticated, router]);
 
-  if (!mounted || !user) {
+  useEffect(() => {
+    if (mounted && ready && authenticated && privyUser && !user && balance) {
+      // Determine login method
+      let loginMethod = 'Unknown';
+      if (privyUser.linkedAccounts) {
+        const emailAccount = privyUser.linkedAccounts.find(acc => acc.type === 'email');
+        const googleAccount = privyUser.linkedAccounts.find(acc => acc.type === 'google_oauth');
+        const walletAccount = privyUser.linkedAccounts.find(acc => acc.type === 'wallet');
+
+        if (googleAccount) {
+          loginMethod = 'Google';
+        } else if (emailAccount) {
+          loginMethod = 'Email';
+        } else if (walletAccount) {
+          loginMethod = 'Wallet';
+        }
+      }
+
+      // Initialize user with real wallet data
+      setUser({
+        id: privyUser.id,
+        email: privyUser.email?.address || '',
+        walletAddress: privyUser.wallet?.address || '',
+        balance: balance ? parseFloat((Number(balance.value) / Math.pow(10, balance.decimals)).toFixed(6)) : 0,
+        name: privyUser.google?.name || privyUser.email?.address?.split('@')[0] || '',
+        loginMethod: loginMethod,
+        createdAt: privyUser.createdAt.getTime(),
+      });
+    }
+  }, [mounted, ready, authenticated, privyUser, user, setUser, balance]);
+
+  if (!mounted || !ready || !authenticated) {
     return null;
   }
 
   const totalPnL = trades.reduce((sum, trade) => sum + trade.pnl, 0);
   const positionsValue = positions.reduce((sum, pos) => sum + (pos.quantity * currentPrice), 0);
-  const portfolioValue = user.balance + positionsValue;
+  const portfolioValue = (user?.balance || 0) + positionsValue;
 
   return (
     <div className="min-h-screen bg-background">
@@ -47,7 +89,7 @@ export default function DashboardPage() {
         {/* Portfolio Cards Grid - Fully Responsive */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Total Balance */}
-          <div className="group relative">
+          <div className="group relative z-20">
             <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '2s'}}>
               <div className="absolute top-0 left-0 right-0 h-1 bg-primary"></div>
               <div className="absolute top-0 right-0 bottom-0 w-1 bg-accent"></div>
@@ -59,14 +101,14 @@ export default function DashboardPage() {
               <div className="absolute bottom-0 right-0 w-2 h-2 bg-chart-2 rounded-full"></div>
               <div className="absolute bottom-0 left-0 w-2 h-2 bg-chart-4 rounded-full"></div>
             </div>
-            <div className="relative bg-card/95 backdrop-blur-sm rounded-xl p-5 sm:p-6 hover:shadow-lg transition-all duration-300 z-10 m-1 group-hover:bg-card/90">
+            <div className="relative bg-card/95 backdrop-blur-sm rounded-xl p-5 sm:p-6 hover:shadow-lg transition-all duration-300 m-1 group-hover:bg-card/90">
               <div className="flex items-center justify-between mb-3 sm:mb-4">
                 <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">Balance</h3>
                 <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center group-hover:from-primary/30 group-hover:to-primary/15 transition-all duration-300">
                   <Wallet className="w-4 h-4 sm:w-5 sm:h-5 text-primary group-hover:scale-110 transition-transform duration-300" />
                 </div>
               </div>
-              <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{formatCurrency(user.balance)}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{formatCurrency(user?.balance || 0)}</p>
               <p className="text-xs text-muted-foreground">Available to trade</p>
             </div>
           </div>
@@ -147,6 +189,12 @@ export default function DashboardPage() {
               <p className="text-xs text-muted-foreground">Current price</p>
             </div>
           </div>
+        </div>
+
+        {/* BTC Price Chart */}
+        <div className="bg-card/95 backdrop-blur-sm border border-border/40 rounded-xl p-4 sm:p-5 hover:shadow-lg transition-all duration-300">
+          <h3 className="text-lg font-semibold mb-4">BTC Price (24h)</h3>
+          <BtcPriceChart />
         </div>
 
         {/* Quick Stats - Responsive Grid */}
@@ -243,11 +291,11 @@ export default function DashboardPage() {
                   </div>
                   <h3 className="font-bold text-base sm:text-lg mb-2 text-foreground">Manage Wallet</h3>
                   <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed mb-4">
-                    Check your <span className="font-semibold text-accent">Wallet</span> to manage your balance and track your demo funds
+                    Check your <span className="font-semibold text-accent">Wallet</span> to manage your balance and track your funds
                   </p>
                   <div className="flex items-center gap-2 text-xs text-accent font-medium">
                     <div className="w-2 h-2 bg-accent rounded-full animate-pulse shadow-lg shadow-accent/50"></div>
-                    {formatCurrency(user.balance)} available
+                    {formatCurrency(user?.balance || 0)} available
                   </div>
                 </div>
               </div>
@@ -268,7 +316,7 @@ export default function DashboardPage() {
                 <div className="relative p-5 sm:p-6 lg:p-7 rounded-xl sm:rounded-2xl bg-card/95 backdrop-blur-sm group-hover:scale-105 transition-all duration-300 z-10 m-0.5">
                   <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
                     <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-chart-2/25 to-chart-2/15 flex items-center justify-center group-hover:from-chart-2/35 group-hover:to-chart-2/20 transition-all duration-300 shadow-lg shadow-chart-2/10">
-                      <History className="w-5 h-5 sm:w-6 sm:h-6 text-chart-2 group-hover:scale-110 transition-transform duration-300" />
+                      <HistoryIcon className="w-5 h-5 sm:w-6 sm:h-6 text-chart-2 group-hover:scale-110 transition-transform duration-300" />
                     </div>
                     <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-chart-2 to-chart-2/80 text-white flex items-center justify-center text-xs sm:text-sm font-bold shadow-lg shadow-chart-2/30">
                       3

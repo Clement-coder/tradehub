@@ -9,8 +9,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Trading Platform - Demo',
-  description: 'A premium iOS-style demo trading platform. Trade Bitcoin with simulated funds in a beautiful, intuitive interface.',
+  title: 'Trading Platform',
+  description: 'A premium iOS-style trading platform. Trade Bitcoin with real funds in a beautiful, intuitive interface.',
   generator: 'v0.app',
   viewport: {
     width: 'device-width',
@@ -37,6 +37,8 @@ export const metadata: Metadata = {
   },
 }
 
+import { Providers } from '@/app/providers'
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -45,9 +47,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans antialiased`}>
-        <TradingProvider>
-          {children}
-        </TradingProvider>
+        <Providers>
+          <TradingProvider>
+            {children}
+          </TradingProvider>
+        </Providers>
         <Analytics />
       </body>
     </html>

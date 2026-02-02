@@ -4,9 +4,12 @@ import React from 'react';
 import { useState } from 'react';
 import { ArrowUpRight, ArrowDownLeft, Check } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
-import { formatCurrency } from '@/lib/mock-data';
 import { TradeModal } from '@/components/trade-modal';
 import GlassCard from '@/components/glass-card'; // Import GlassCard
+
+// Helper function to format currency
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
 export default function TradingInterface() {
   const { user, currentPrice, addPosition, updateBalance } = useTradingContext();

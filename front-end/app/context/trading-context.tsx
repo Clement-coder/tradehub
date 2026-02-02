@@ -1,6 +1,7 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import { useBTCPrice } from '@/lib/hooks/useBTCPrice';
 
 export interface Position {
   id: string;
@@ -27,6 +28,9 @@ export interface User {
   email: string;
   walletAddress: string;
   balance: number;
+  name?: string; // Optional name field
+  loginMethod?: string; // Optional login method
+  createdAt?: number; // Optional creation timestamp
 }
 
 interface TradingContextType {
@@ -46,32 +50,16 @@ const TradingContext = createContext<TradingContextType | undefined>(undefined);
 
 export function TradingProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [currentPrice, setCurrentPrice] = useState(45230);
+  const [currentPrice, setCurrentPrice] = useState(0);
   const [positions, setPositions] = useState<Position[]>([]);
-  const [trades, setTrades] = useState<Trade[]>([
-    {
-      id: '1',
-      entryPrice: 42500,
-      exitPrice: 44200,
-      quantity: 0.5,
-      pnl: 850,
-      pnlPercent: 4.0,
-      timestamp: Date.now() - 86400000 * 3,
-      duration: 3600000,
-      type: 'long',
-    },
-    {
-      id: '2',
-      entryPrice: 44800,
-      exitPrice: 43500,
-      quantity: 0.3,
-      pnl: -390,
-      pnlPercent: -3.1,
-      timestamp: Date.now() - 86400000,
-      duration: 1800000,
-      type: 'short',
-    },
-  ]);
+  const [trades, setTrades] = useState<Trade[]>([]);
+  const { data: btcPrice } = useBTCPrice();
+
+  useEffect(() => {
+    if (btcPrice) {
+      setCurrentPrice(btcPrice);
+    }
+  }, [btcPrice]);
 
   const addPosition = useCallback((position: Position) => {
     setPositions((prev) => [...prev, position]);

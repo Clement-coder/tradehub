@@ -2,7 +2,13 @@
 
 import React from 'react';
 import { X, AlertCircle, CheckCircle } from 'lucide-react';
-import { formatCurrency, formatPrice } from '@/lib/mock-data';
+
+// Helper functions to format currency and price
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+
+const formatPrice = (value: number) =>
+  new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 
 interface TradeModalProps {
   isOpen: boolean;
@@ -82,7 +88,7 @@ export function TradeModal({
           <div className="flex gap-3 bg-primary/5 border border-primary/20 rounded-lg p-3">
             <AlertCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
             <p className="text-sm text-foreground">
-              This is a demo trade on testnet. No real funds will be transferred.
+              This is a trade. Real funds will be transferred.
             </p>
           </div>
         </div>
@@ -92,19 +98,20 @@ export function TradeModal({
           <button
             onClick={onCancel}
             disabled={isLoading}
-            className="flex-1 px-4 py-2 rounded-lg border border-border text-foreground font-medium hover:bg-muted transition-colors disabled:opacity-50"
+            className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40 disabled:opacity-50"
           >
-            Cancel
+            <span className="text-primary">Cancel</span>
           </button>
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className={`flex-1 px-4 py-2 rounded-lg font-medium text-white transition-colors disabled:opacity-50 ${
+            className={`group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground transition-all duration-300 transform hover:-translate-y-1 overflow-hidden disabled:opacity-50 shadow-xl hover:shadow-2xl ${
               tradeType === 'buy'
-                ? 'bg-accent hover:bg-accent/90'
-                : 'bg-destructive hover:bg-destructive/90'
+                ? 'bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70'
+                : 'bg-gradient-to-r from-destructive to-destructive/80 hover:from-destructive/90 hover:to-destructive/70'
             }`}
           >
+            <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
             {isLoading ? 'Processing...' : `Confirm ${tradeType === 'buy' ? 'Buy' : 'Sell'}`}
           </button>
         </div>

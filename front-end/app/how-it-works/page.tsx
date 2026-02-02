@@ -9,12 +9,12 @@ export default function HowItWorksPage() {
     {
       icon: UserPlus,
       title: 'Sign Up',
-      description: 'Create your account and get instantly connected to a demo wallet with $10,000 in simulated trading funds.',
+      description: 'Create your account and get instantly connected to a wallet with $10,000 in trading funds.',
     },
     {
       icon: BarChart3,
       title: 'View Markets',
-      description: 'Access live BTC/USD price charts with real-time market simulation. See price movements update dynamically.',
+      description: 'Access live BTC/USD price charts with real-time market data. See price movements update dynamically.',
     },
     {
       icon: ShoppingCart,
@@ -34,7 +34,7 @@ export default function HowItWorksPage() {
     {
       icon: Shield,
       title: 'Learn Safely',
-      description: 'Practice trading strategies without any real money risk. All funds are simulated for educational purposes.',
+      description: 'Practice trading strategies without any real money risk. All funds are for educational purposes.',
     },
   ];
 
@@ -50,14 +50,15 @@ export default function HowItWorksPage() {
           <div className="flex gap-4">
             <Link
               href="/"
-              className="px-6 py-2 rounded-full font-medium text-foreground hover:bg-muted transition-colors"
+              className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40"
             >
-              Home
+              <span className="text-primary">Home</span>
             </Link>
             <Link
               href="/auth"
-              className="px-6 py-2 rounded-full font-medium text-white bg-primary hover:bg-primary/90 transition-colors"
+              className="group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
             >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               Get Started
             </Link>
           </div>
@@ -68,7 +69,7 @@ export default function HowItWorksPage() {
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">How It Works</h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Get started with our demo trading platform in 6 simple steps. Trade Bitcoin with simulated funds and learn at your own pace.
+          Get started with our trading platform in 6 simple steps. Trade Bitcoin with real funds and learn at your own pace.
         </p>
       </section>
 
@@ -101,7 +102,7 @@ export default function HowItWorksPage() {
           <GlassCard className="p-8">
             <h3 className="text-xl font-semibold text-foreground mb-4">Realistic Trading Experience</h3>
             <p className="text-muted-foreground mb-4">
-              Experience true-to-life trading mechanics with real price movements, order execution, and profit/loss calculations. Our simulated market behaves like the real BTC market.
+              Experience true-to-life trading mechanics with real price movements, order execution, and profit/loss calculations. Our market behaves like the real BTC market.
             </p>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
@@ -127,7 +128,7 @@ export default function HowItWorksPage() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
-                <span className="text-muted-foreground">$10,000 demo funds</span>
+                <span className="text-muted-foreground">$10,000 funds</span>
               </li>
               <li className="flex items-start gap-3">
                 <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2" />
@@ -189,7 +190,7 @@ export default function HowItWorksPage() {
         <GlassCard className="p-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">Ready to Start Trading?</h2>
           <p className="text-muted-foreground mb-8 text-lg">
-            Join thousands of traders practicing on our demo platform. Get your $10,000 demo balance today.
+            Join thousands of traders practicing on our platform. Get your $10,000 balance today.
           </p>
           <Link
             href="/auth"

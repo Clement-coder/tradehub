@@ -181,8 +181,8 @@ export default function SettingsPage() {
                 <p className="font-medium text-foreground">Two-Factor Authentication</p>
                 <p className="text-sm text-muted-foreground">Add an extra layer of security</p>
               </div>
-              <button className="px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 text-foreground text-sm font-medium transition-colors">
-                Set Up
+              <button className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40">
+                <span className="text-primary">Set Up</span>
               </button>
             </div>
 
@@ -191,8 +191,8 @@ export default function SettingsPage() {
                 <p className="font-medium text-foreground">API Keys</p>
                 <p className="text-sm text-muted-foreground">Manage API access for trading</p>
               </div>
-              <button className="px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 text-foreground text-sm font-medium transition-colors">
-                Manage
+              <button className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40">
+                <span className="text-primary">Manage</span>
               </button>
             </div>
 
@@ -201,8 +201,8 @@ export default function SettingsPage() {
                 <p className="font-medium text-foreground">Active Sessions</p>
                 <p className="text-sm text-muted-foreground">Manage your connected devices</p>
               </div>
-              <button className="px-4 py-2 rounded-lg bg-muted hover:bg-muted/80 text-foreground text-sm font-medium transition-colors">
-                View
+              <button className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40">
+                <span className="text-primary">View</span>
               </button>
             </div>
           </div>

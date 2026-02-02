@@ -4,7 +4,13 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { History, TrendingUp, TrendingDown } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
-import { formatCurrency, formatPrice } from '@/lib/mock-data';
+
+// Helper functions to format currency and price
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+
+const formatPrice = (value: number) =>
+  new Intl.NumberFormat('en-US', { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 
 export default function HistoryPage() {
   const router = useRouter();
@@ -137,35 +143,38 @@ export default function HistoryPage() {
         <div className="bg-card/95 backdrop-blur-sm border border-border/40 rounded-xl p-4 flex flex-wrap gap-2">
           <button
             onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            className={`transition-all duration-200 ${
               filter === 'all'
-                ? 'bg-primary text-primary-foreground shadow-lg'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                ? 'group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 overflow-hidden'
+                : 'flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40'
             }`}
           >
-            All Trades
+            {filter === 'all' && <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>}
+            <span className={filter === 'all' ? '' : 'text-primary'}>All Trades</span>
           </button>
           <button
             onClick={() => setFilter('long')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+            className={`transition-all duration-200 ${
               filter === 'long'
-                ? 'bg-accent text-white shadow-lg'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                ? 'group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 overflow-hidden'
+                : 'flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40'
             }`}
           >
-            <TrendingUp className="w-4 h-4" />
-            Long
+            {filter === 'long' && <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>}
+            <TrendingUp className="w-4 md:w-5 h-4 md:h-5" />
+            <span className={filter === 'long' ? '' : 'text-primary'}>Long</span>
           </button>
           <button
             onClick={() => setFilter('short')}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+            className={`transition-all duration-200 ${
               filter === 'short'
-                ? 'bg-destructive text-white shadow-lg'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                ? 'group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-destructive to-destructive/80 hover:from-destructive/90 hover:to-destructive/70 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 overflow-hidden'
+                : 'flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40'
             }`}
           >
-            <TrendingDown className="w-4 h-4" />
-            Short
+            {filter === 'short' && <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>}
+            <TrendingDown className="w-4 md:w-5 h-4 md:h-5" />
+            <span className={filter === 'short' ? '' : 'text-primary'}>Short</span>
           </button>
         </div>
 
@@ -174,47 +183,47 @@ export default function HistoryPage() {
           {filteredTrades.length > 0 ? (
             <div className="divide-y divide-border/50">
               {filteredTrades.map((trade) => (
-                <div key={trade.id} className="p-4 sm:p-6 hover:bg-muted/30 transition-colors">
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center ${
+                <div key={trade.id} className="p-3 sm:p-4 hover:bg-muted/30 transition-colors">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 sm:gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center ${
                         trade.type === 'long' ? 'bg-accent/20' : 'bg-destructive/20'
                       }`}>
                         {trade.type === 'long' ? (
-                          <TrendingUp className={`w-5 h-5 sm:w-6 sm:h-6 ${trade.pnl >= 0 ? 'text-accent' : 'text-destructive'}`} />
+                          <TrendingUp className={`w-4 h-4 sm:w-5 sm:h-5 ${trade.pnl >= 0 ? 'text-accent' : 'text-destructive'}`} />
                         ) : (
-                          <TrendingDown className={`w-5 h-5 sm:w-6 sm:h-6 ${trade.pnl >= 0 ? 'text-accent' : 'text-destructive'}`} />
+                          <TrendingDown className={`w-4 h-4 sm:w-5 sm:h-5 ${trade.pnl >= 0 ? 'text-accent' : 'text-destructive'}`} />
                         )}
                       </div>
                       <div>
-                        <p className="font-semibold text-foreground capitalize text-sm sm:text-base">
+                        <p className="font-semibold text-foreground capitalize text-sm">
                           {trade.type === 'long' ? 'Long' : 'Short'} Trade
                         </p>
-                        <p className="text-xs sm:text-sm text-muted-foreground">
+                        <p className="text-xs text-muted-foreground">
                           {new Date(trade.timestamp).toLocaleDateString()} {new Date(trade.timestamp).toLocaleTimeString()}
                         </p>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 lg:flex lg:items-center lg:gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:flex lg:items-center lg:gap-4">
                       <div className="text-center lg:text-left">
-                        <p className="text-xs sm:text-sm text-muted-foreground">Entry</p>
-                        <p className="font-semibold text-foreground text-sm sm:text-base">${formatPrice(trade.entryPrice)}</p>
+                        <p className="text-xs text-muted-foreground">Entry</p>
+                        <p className="font-semibold text-foreground text-sm">${formatPrice(trade.entryPrice)}</p>
                       </div>
                       <div className="text-center lg:text-left">
-                        <p className="text-xs sm:text-sm text-muted-foreground">Exit</p>
-                        <p className="font-semibold text-foreground text-sm sm:text-base">${formatPrice(trade.exitPrice)}</p>
+                        <p className="text-xs text-muted-foreground">Exit</p>
+                        <p className="font-semibold text-foreground text-sm">${formatPrice(trade.exitPrice)}</p>
                       </div>
                       <div className="text-center lg:text-left">
-                        <p className="text-xs sm:text-sm text-muted-foreground">Amount</p>
-                        <p className="font-semibold text-foreground text-sm sm:text-base">{trade.quantity.toFixed(6)} BTC</p>
+                        <p className="text-xs text-muted-foreground">Amount</p>
+                        <p className="font-semibold text-foreground text-sm">{trade.quantity.toFixed(6)} BTC</p>
                       </div>
                       <div className="text-center lg:text-right">
-                        <p className="text-xs sm:text-sm text-muted-foreground">P&L</p>
-                        <p className={`font-bold text-lg sm:text-xl ${trade.pnl >= 0 ? 'text-accent' : 'text-destructive'}`}>
+                        <p className="text-xs text-muted-foreground">P&L</p>
+                        <p className={`font-bold text-base sm:text-lg ${trade.pnl >= 0 ? 'text-accent' : 'text-destructive'}`}>
                           {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
                         </p>
-                        <p className={`text-xs sm:text-sm ${trade.pnl >= 0 ? 'text-accent' : 'text-destructive'}`}>
+                        <p className={`text-xs ${trade.pnl >= 0 ? 'text-accent' : 'text-destructive'}`}>
                           {trade.pnlPercent >= 0 ? '+' : ''}{trade.pnlPercent.toFixed(2)}%
                         </p>
                       </div>

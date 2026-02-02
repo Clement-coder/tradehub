@@ -2,21 +2,20 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Wallet, Copy, ArrowDownLeft, ArrowUpRight, Plus, Minus } from 'lucide-react';
+import { Wallet, Copy } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
-import { formatCurrency } from '@/lib/mock-data';
+import { useBTCPrice } from '@/lib/hooks/useBTCPrice';
+
+// Helper function to format currency
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
 export default function WalletPage() {
   const router = useRouter();
-  const { user, updateBalance } = useTradingContext();
+  const { user } = useTradingContext();
   const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [depositAmount, setDepositAmount] = useState('');
-  const [withdrawAmount, setWithdrawAmount] = useState('');
-  const [showDepositModal, setShowDepositModal] = useState(false);
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-  const [processingDeposit, setProcessingDeposit] = useState(false);
-  const [processingWithdraw, setProcessingWithdraw] = useState(false);
+  const { data: btcPrice, isLoading: btcPriceLoading } = useBTCPrice();
 
   useEffect(() => {
     setMounted(true);
@@ -38,31 +37,7 @@ export default function WalletPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleDeposit = () => {
-    const amount = parseFloat(depositAmount);
-    if (amount > 0 && amount <= 100000) {
-      setProcessingDeposit(true);
-      setTimeout(() => {
-        updateBalance(amount);
-        setDepositAmount('');
-        setShowDepositModal(false);
-        setProcessingDeposit(false);
-      }, 1500);
-    }
-  };
-
-  const handleWithdraw = () => {
-    const amount = parseFloat(withdrawAmount);
-    if (amount > 0 && amount <= user.balance) {
-      setProcessingWithdraw(true);
-      setTimeout(() => {
-        updateBalance(-amount);
-        setWithdrawAmount('');
-        setShowWithdrawModal(false);
-        setProcessingWithdraw(false);
-      }, 1500);
-    }
-  };
+  const btcEquivalent = btcPrice ? (user?.balance || 0) / btcPrice : 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -73,7 +48,7 @@ export default function WalletPage() {
             <Wallet className="w-6 h-6 text-primary" />
             <h1 className="text-2xl font-bold">Wallet</h1>
           </div>
-          <p className="text-muted-foreground text-sm">Manage your demo account funds</p>
+          <p className="text-muted-foreground text-sm">Manage your account funds</p>
         </div>
       </div>
 
@@ -82,68 +57,93 @@ export default function WalletPage() {
         {/* Balance Card */}
         <div className="bg-card border border-border rounded-lg p-8 mb-6">
           <p className="text-muted-foreground text-sm mb-2">Total Balance</p>
-          <p className="text-5xl font-bold mb-4">{formatCurrency(user.balance)}</p>
-          <p className="text-xs text-muted-foreground">Demo USD Balance (Testnet)</p>
+          <p className="text-5xl font-bold mb-4">{formatCurrency(user?.balance || 0)}</p>
+          <p className="text-xs text-muted-foreground">USDC Balance</p>
+
+          <div className="mt-4 pt-4 border-t border-border">
+            <p className="text-muted-foreground text-sm mb-1">BTC Equivalent</p>
+            <p className="text-2xl font-bold text-foreground">
+              {btcPriceLoading ? 'Loading...' : `${btcEquivalent.toFixed(6)} BTC`}
+            </p>
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-border">
+            <p className="text-muted-foreground text-sm mb-1">USD Equivalent</p>
+            <p className="text-2xl font-bold text-foreground">{formatCurrency(user?.balance || 0)}</p>
+          </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons - Disabled */}
         <div className="grid grid-cols-2 gap-4 mb-8">
           <button
-            onClick={() => setShowDepositModal(true)}
-            className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition-colors"
+            disabled
+            className="group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-xs sm:text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 shadow-xl transition-all duration-300 transform overflow-hidden opacity-50 cursor-not-allowed"
           >
-            <Plus className="w-5 h-5" />
-            Deposit
+            Deposit (Agent Only)
           </button>
           <button
-            onClick={() => setShowWithdrawModal(true)}
-            className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-muted hover:bg-muted/80 text-foreground font-medium transition-colors"
+            disabled
+            className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40 opacity-50 cursor-not-allowed"
           >
-            <Minus className="w-5 h-5" />
-            Withdraw
+            <span className="text-primary text-xs sm:text-sm md:text-base">Withdraw (Agent Only)</span>
           </button>
         </div>
 
         {/* Wallet Info */}
         <div className="bg-card border border-border rounded-lg p-6 space-y-6 mb-8">
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">Wallet Address</h3>
-            <div className="bg-muted/50 rounded-lg p-4 flex items-center justify-between">
-              <code className="font-mono text-sm text-foreground break-all">{user.walletAddress}</code>
-              <button
-                onClick={copyAddress}
-                className="ml-2 p-2 rounded-lg hover:bg-muted transition-colors"
-              >
-                <Copy className="w-5 h-5 text-muted-foreground" />
-              </button>
-            </div>
-            {copied && <p className="text-xs text-accent mt-2">Copied to clipboard</p>}
-          </div>
+          {/* Removed Wallet Address section */}
 
           <div>
             <h3 className="font-semibold text-foreground mb-4">Network</h3>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-accent" />
-              <span className="text-sm text-foreground">Testnet / Demo Network</span>
+              <span className="text-sm text-foreground">Network</span>
             </div>
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-4">About This Wallet</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
-                <span>This is a demo wallet for testing purposes only</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
-                <span>No real cryptocurrency is involved</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary mt-1">→</span>
-                <span>All balances are simulated for demonstration</span>
-              </li>
-            </ul>
+            <h3 className="font-semibold text-foreground mb-4">How to Fund Your Wallet</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-muted/50 rounded-lg p-4 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user-plus text-primary"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground mb-1">Step 1: Contact an Agent</p>
+                  <p className="text-sm text-muted-foreground">Reach out to our support team to connect with an agent for funding assistance.</p>
+                </div>
+              </div>
+              <div className="bg-muted/50 rounded-lg p-4 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-mail text-primary"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground mb-1">Step 2: Provide Your Email</p>
+                  <p className="text-sm text-muted-foreground">Share your registered email address with the agent for verification.</p>
+                </div>
+              </div>
+              <div className="bg-muted/50 rounded-lg p-4 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 0 0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dollar-sign text-primary"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground mb-1">Step 3: Specify Amount</p>
+                  <p className="text-sm text-muted-foreground">Clearly state the amount you wish to deposit to your account.</p>
+                </div>
+              </div>
+              <div className="bg-muted/50 rounded-lg p-4 flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check-circle text-primary"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground mb-1">Step 4: Confirm & Fund</p>
+                  <p className="text-sm text-muted-foreground">The agent will confirm and process the transaction to credit your wallet.</p>
+                </div>
+              </div>
+            </div>
+            <p className="text-yellow-500 font-semibold text-sm mt-4">
+              ⚠️ Funds can only be credited to your wallet through our agents.
+            </p>
           </div>
         </div>
 
@@ -151,89 +151,14 @@ export default function WalletPage() {
         <div className="bg-card border border-border rounded-lg p-6">
           <h3 className="font-semibold text-foreground mb-4">Recent Transactions</h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between py-3 border-b border-border">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
-                  <ArrowDownLeft className="w-5 h-5 text-accent" />
-                </div>
-                <div>
-                  <p className="font-medium text-foreground">Initial Deposit</p>
-                  <p className="text-xs text-muted-foreground">Demo Account Setup</p>
-                </div>
-              </div>
-              <p className="font-semibold text-accent">+$10,000.00</p>
+            {/* Assuming trades are available from useTradingContext, otherwise display a message */}
+            {/* For now, we'll display a placeholder for no transactions */}
+            <div className="text-center py-4 text-muted-foreground">
+              No recent transactions
             </div>
           </div>
         </div>
       </div>
-
-      {/* Deposit Modal */}
-      {showDepositModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">Deposit Funds</h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              Add demo funds to your trading account (max $100,000)
-            </p>
-            <input
-              type="number"
-              value={depositAmount}
-              onChange={(e) => setDepositAmount(e.target.value)}
-              placeholder="Amount (USD)"
-              className="w-full px-4 py-2 rounded-lg bg-muted border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary mb-4"
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowDepositModal(false)}
-                className="flex-1 px-4 py-2 rounded-lg border border-border text-foreground hover:bg-muted transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeposit}
-                disabled={processingDeposit || !depositAmount}
-                className="flex-1 px-4 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
-              >
-                {processingDeposit ? 'Processing...' : 'Deposit'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Withdraw Modal */}
-      {showWithdrawModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-xl font-bold mb-4">Withdraw Funds</h2>
-            <p className="text-sm text-muted-foreground mb-4">
-              Withdraw demo funds from your account
-            </p>
-            <input
-              type="number"
-              value={withdrawAmount}
-              onChange={(e) => setWithdrawAmount(e.target.value)}
-              placeholder="Amount (USD)"
-              className="w-full px-4 py-2 rounded-lg bg-muted border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary mb-4"
-            />
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowWithdrawModal(false)}
-                className="flex-1 px-4 py-2 rounded-lg border border-border text-foreground hover:bg-muted transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleWithdraw}
-                disabled={processingWithdraw || !withdrawAmount}
-                className="flex-1 px-4 py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
-              >
-                {processingWithdraw ? 'Processing...' : 'Withdraw'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

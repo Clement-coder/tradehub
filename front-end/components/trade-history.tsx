@@ -3,7 +3,10 @@
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { GlassCard } from '@/components/glass-card';
 import { useTradingContext } from '@/app/context/trading-context';
-import { formatCurrency } from '@/lib/mock-data';
+
+// Helper function to format currency
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
 interface TradeHistoryProps {
   limit?: number;

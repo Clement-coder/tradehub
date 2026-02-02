@@ -4,7 +4,16 @@ import { useState } from 'react';
 import { X, Check } from 'lucide-react';
 import { GlassCard } from '@/components/glass-card';
 import { useTradingContext } from '@/app/context/trading-context';
-import { calculatePnL, formatCurrency } from '@/lib/mock-data';
+
+// Helper functions to format currency and calculate PnL
+const formatCurrency = (value: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
+
+const calculatePnL = (entryPrice: number, currentPrice: number, quantity: number) => {
+  const pnl = (currentPrice - entryPrice) * quantity;
+  const pnlPercent = ((currentPrice - entryPrice) / entryPrice) * 100;
+  return { pnl, pnlPercent };
+};
 
 export default function PositionsTable() {
   const { positions, currentPrice, closePosition } = useTradingContext();
@@ -72,16 +81,17 @@ export default function PositionsTable() {
               <button
                 onClick={() => handleClosePosition(position.id)}
                 disabled={isClosing}
-                className="w-full py-2 px-3 rounded-lg text-sm font-medium text-white bg-primary/80 hover:bg-primary disabled:bg-primary/50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+                className="group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed w-full"
               >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                 {isClosing ? (
                   <>
-                    <Check className="w-4 h-4" />
+                    <Check className="w-4 md:w-5 h-4 md:h-5" />
                     Closing...
                   </>
                 ) : (
                   <>
-                    <X className="w-4 h-4" />
+                    <X className="w-4 md:w-5 h-4 md:h-5" />
                     Close Position
                   </>
                 )}
