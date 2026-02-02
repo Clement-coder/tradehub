@@ -16,7 +16,9 @@ import {
   Bell,
 } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
+import { useNotifications } from '@/app/context/notifications-context';
 import { useState } from 'react';
+import { LogoutModal } from '@/components/logout-modal';
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -34,53 +36,24 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useTradingContext();
+  const { notifications, markAllAsRead, hasUnreadNotifications } = useNotifications();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "Market Alert",
-      message: "BTC reached $67,420 - up 2.4% today",
-      time: "2 minutes ago",
-      unread: true,
-      color: "accent"
-    },
-    {
-      id: 2,
-      title: "Trade Executed",
-      message: "Your BTC buy order for $1,000 was filled",
-      time: "5 minutes ago",
-      unread: true,
-      color: "primary"
-    },
-    {
-      id: 3,
-      title: "Portfolio Update",
-      message: "Your portfolio is up 3.2% today",
-      time: "1 hour ago",
-      unread: true,
-      color: "chart-2"
-    },
-    {
-      id: 4,
-      title: "Account Security",
-      message: "Login from new device detected",
-      time: "3 hours ago",
-      unread: false,
-      color: "chart-4"
-    }
-  ]);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = () => {
+    setShowLogoutModal(true);
+  };
+
+  const confirmLogout = () => {
     logout();
     router.push('/');
+    setShowLogoutModal(false);
   };
 
-  const markAllAsRead = () => {
-    setNotifications(prev => prev.map(notif => ({ ...notif, unread: false })));
+  const cancelLogout = () => {
+    setShowLogoutModal(false);
   };
-
-  const hasUnreadNotifications = notifications.some(notif => notif.unread);
 
   const isActive = (href: string) => pathname === href;
 
@@ -94,7 +67,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
       >
         {/* Header */}
         <div className="h-16 flex items-center px-6 border-b border-border bg-gradient-to-r from-orange-500/10 via-blue-500/10 to-purple-500/10">
-          <Link href="/dashboard" className="flex items-center gap-3 flex-1">
+          <Link href="/" className="flex items-center gap-3 flex-1">
             <img src="/tradeHub_logo.PNG" alt="TradeHub Logo" className="w-8 h-8" />
             <span className="font-bold text-lg text-foreground">TradeHub</span>
           </Link>
@@ -258,6 +231,13 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
           </div>
         </>
       )}
+
+      {/* Logout Confirmation Modal */}
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onConfirm={confirmLogout}
+        onCancel={cancelLogout}
+      />
     </div>
   );
 }

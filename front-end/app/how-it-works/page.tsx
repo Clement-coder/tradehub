@@ -39,37 +39,44 @@ export default function HowItWorksPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 dark:from-background dark:via-background dark:to-accent/10">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 dark:from-background dark:via-background dark:to-primary/10 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-orange-500/20 via-blue-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-500/20 via-pink-500/20 to-orange-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 backdrop-blur-lg bg-white/50 dark:bg-white/5 border-b border-white/20 dark:border-white/10">
+      <nav className="sticky top-0 z-50 backdrop-blur-lg bg-white/50 dark:bg-black/20 border-b border-white/20 dark:border-white/10 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="text-2xl font-bold text-primary flex items-center gap-2">
-            <TrendingUp className="w-6 h-6" />
+            <img src="/tradeHub_logo.PNG" alt="TradeHub Logo" className="w-8 h-8" />
             TradeHub
           </div>
           <div className="flex gap-4">
             <Link
               href="/"
-              className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40"
+              className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40 hover:from-primary/35 hover:to-primary/25 transition-all duration-300"
             >
-              <span className="text-primary">Home</span>
+              <span className="text-primary font-medium">Home</span>
             </Link>
             <Link
               href="/auth"
               className="group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              Get Started
+              <span className="relative z-10">Get Started</span>
             </Link>
           </div>
         </div>
       </nav>
 
       {/* Header */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
-        <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">How It Works</h1>
+      <section className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 text-center">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent mb-6 leading-tight">
+          How It Works
+        </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Get started with our trading platform in 6 simple steps. Trade Bitcoin with real funds and learn at your own pace.
+          Get started with our trading platform in 6 simple steps. Trade Bitcoin with virtual funds and learn at your own pace.
         </p>
       </section>
 
