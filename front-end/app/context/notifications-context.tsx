@@ -28,7 +28,7 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
     {
       id: 1,
       title: "Welcome to TradeHub",
-      message: "Your account is ready with $10,000 virtual funds",
+      message: "Your account is ready to start trading",
       time: "Just now",
       unread: true,
       type: "portfolio",

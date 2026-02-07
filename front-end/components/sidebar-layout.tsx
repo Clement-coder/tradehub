@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
@@ -67,9 +68,9 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
       >
         {/* Header */}
         <div className="h-16 flex items-center px-6 border-b border-border bg-gradient-to-r from-orange-500/10 via-blue-500/10 to-purple-500/10">
-          <Link href="/" className="flex items-center gap-3 flex-1">
-            <img src="/tradeHub_logo.PNG" alt="TradeHub Logo" className="w-8 h-8" />
-            <span className="font-bold text-lg text-foreground">TradeHub</span>
+          <Link href="/" className="flex items-center gap-3 flex-1 group">
+            <Image src="/tradeHub_logo.PNG" alt="TradeHub Logo" width={32} height={32} className="w-8 h-8 group-hover:scale-110 transition-transform" />
+            <span className="font-bold text-lg text-blue-600 dark:text-blue-400">TradeHub</span>
           </Link>
           <button
             className="md:hidden p-2 rounded-lg hover:bg-muted/50"
@@ -148,13 +149,20 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}
-        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-6">
+        <header className="h-16 border-b border-border bg-card flex items-center justify-between px-4 sm:px-6">
           <button
-            className="md:hidden"
+            className="md:hidden p-2 rounded-lg hover:bg-muted/50"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu className="w-6 h-6" />
           </button>
+          
+          {/* Logo and Name - Visible on mobile when sidebar is closed */}
+          <Link href="/" className="flex md:hidden items-center gap-2 group">
+            <Image src="/tradeHub_logo.PNG" alt="TradeHub Logo" width={32} height={32} className="w-8 h-8 group-hover:scale-110 transition-transform" />
+            <span className="font-bold text-base sm:text-lg text-blue-600 dark:text-blue-400">TradeHub</span>
+          </Link>
+          
           <div className="flex-1" />
           <div className="flex items-center gap-4">
             <button 

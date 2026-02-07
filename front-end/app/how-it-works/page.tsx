@@ -83,8 +83,9 @@ export default function HowItWorksPage() {
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-blue-700/10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            <Link href="/" className="flex items-center gap-2 group">
-              <Image src="/tradeHub_logo.PNG" alt="TradeHub Logo" width={48} height={48} className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 group-hover:scale-110 transition-transform duration-300" />
+            <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
+              <Image src="/tradeHub_logo.PNG" alt="TradeHub Logo" width={48} height={48} className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 group-hover:scale-110 transition-transform duration-300" />
+              <span className="font-bold text-base sm:text-lg md:text-xl text-blue-600 dark:text-blue-400">TradeHub</span>
             </Link>
 
             <div className="hidden md:flex items-center gap-2">

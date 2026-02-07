@@ -9,8 +9,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'TardeHub Trading Platform',
-  description: 'Trade Bitcoin with real funds in a beautiful, intuitive interface.',
+  title: 'TradeHub - Bitcoin Trading Platform',
+  description: 'Trade Bitcoin with real-time market data. Professional BTC/USD trading platform with advanced charts and instant order execution.',
   viewport: {
     width: 'device-width',
     initialScale: 1,
@@ -18,21 +18,8 @@ export const metadata: Metadata = {
     userScalable: false,
   },
   icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+    icon: '/tradeHub_logo.PNG',
+    apple: '/tradeHub_logo.PNG',
   },
 }
 

@@ -153,7 +153,7 @@ export default function ProfilePage() {
             </li>
             <li className="flex items-start gap-3">
               <span className="text-[oklch(0.68_0.11_40)] mt-0.5">•</span>
-              <span>All trades and balances are for testing only</span>
+              <span>All trades and balances are real</span>
             </li>
             <li className="flex items-start gap-3">
               <span className="text-[oklch(0.68_0.11_40)] mt-0.5">•</span>

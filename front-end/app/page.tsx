@@ -71,23 +71,24 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group">
+            <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
               <Image 
                 src="/tradeHub_logo.PNG" 
                 alt="TradeHub Logo" 
                 width={48} 
                 height={48} 
-                className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 group-hover:scale-110 transition-transform duration-300" 
+                className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 group-hover:scale-110 transition-transform duration-300" 
               />
+              <span className="font-bold text-base sm:text-lg md:text-xl text-blue-600 dark:text-blue-400">TradeHub</span>
             </Link>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-2">
-              <Link href="/" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500/20 to-orange-500/10 border border-orange-500/30 text-white hover:from-orange-500/30 hover:to-orange-500/20 transition-all duration-200 font-medium backdrop-blur-sm">
+              <Link href="/" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500/20 to-orange-500/10 border border-orange-500/30 text-orange-600 hover:from-orange-500/30 hover:to-orange-500/20 transition-all duration-200 font-medium backdrop-blur-sm">
                 <Home className="w-4 h-4" />
                 Home
               </Link>
-              <Link href="/how-it-works" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500/20 to-blue-500/10 border border-blue-500/30 text-white hover:from-blue-500/30 hover:to-blue-500/20 transition-all duration-200 font-medium backdrop-blur-sm">
+              <Link href="/how-it-works" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500/20 to-blue-500/10 border border-blue-500/30 text-blue-600 hover:from-blue-500/30 hover:to-blue-500/20 transition-all duration-200 font-medium backdrop-blur-sm">
                 <BookOpen className="w-4 h-4" />
                 How It Works
               </Link>
@@ -116,11 +117,11 @@ export default function LandingPage() {
 
           <div className={`md:hidden overflow-hidden transition-all duration-300 ${mobileMenuOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
             <div className="py-4 space-y-2 border-t border-border/40">
-              <Link href="/" className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-gradient-to-r from-orange-500/20 to-orange-500/10 border border-orange-500/30 text-white transition-all" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/" className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-gradient-to-r from-orange-500/20 to-orange-500/10 border border-orange-500/30 text-black transition-all" onClick={() => setMobileMenuOpen(false)}>
                 <Home className="w-4 h-4" />
                 Home
               </Link>
-              <Link href="/how-it-works" className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-gradient-to-r from-blue-500/20 to-blue-500/10 border border-blue-500/30 text-white transition-all" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/how-it-works" className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-gradient-to-r from-blue-500/20 to-blue-500/10 border border-blue-500/30 text-black transition-all" onClick={() => setMobileMenuOpen(false)}>
                 <BookOpen className="w-4 h-4" />
                 How It Works
               </Link>

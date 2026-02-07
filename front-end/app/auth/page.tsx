@@ -75,14 +75,15 @@ export default function AuthPage() {
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 400 }}
             >
-              <Link href="/" className="flex items-center gap-2 group">
+              <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
                 <Image 
                   src="/tradeHub_logo.PNG" 
                   alt="TradeHub Logo" 
                   width={48} 
                   height={48} 
-                  className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 group-hover:scale-110 transition-transform duration-300" 
+                  className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 group-hover:scale-110 transition-transform duration-300" 
                 />
+                <span className="font-bold text-base sm:text-lg md:text-xl text-blue-600 dark:text-blue-400">TradeHub</span>
               </Link>
             </motion.div>
 
@@ -163,13 +164,13 @@ export default function AuthPage() {
               }}
             >
               <div className="min-w-[200px] h-20 bg-blue-500/30 rounded-lg flex items-center justify-center text-xs font-medium text-white backdrop-blur-sm px-4 text-center">
-                Practice trading with $10,000 virtual funds
+                Start trading with real funds
               </div>
               <div className="min-w-[200px] h-20 bg-orange-500/30 rounded-lg flex items-center justify-center text-xs font-medium text-white backdrop-blur-sm px-4 text-center">
                 Real-time market data and live price feeds
               </div>
               <div className="min-w-[200px] h-20 bg-green-500/30 rounded-lg flex items-center justify-center text-xs font-medium text-white backdrop-blur-sm px-4 text-center">
-                Zero financial risk - learn without losing money
+                Secure and reliable trading platform
               </div>
               <div className="min-w-[200px] h-20 bg-purple-500/30 rounded-lg flex items-center justify-center text-xs font-medium text-white backdrop-blur-sm px-4 text-center">
                 Professional charts with technical indicators
@@ -178,10 +179,10 @@ export default function AuthPage() {
                 Track your performance with detailed analytics
               </div>
               <div className="min-w-[200px] h-20 bg-orange-500/30 rounded-lg flex items-center justify-center text-xs font-medium text-white backdrop-blur-sm px-4 text-center">
-                Build confidence before real trading
+                Fast and instant order execution
               </div>
               <div className="min-w-[200px] h-20 bg-green-500/30 rounded-lg flex items-center justify-center text-xs font-medium text-white backdrop-blur-sm px-4 text-center">
-                Practice trading with $10,000 virtual funds
+                Start trading with real funds
               </div>
               <div className="min-w-[200px] h-20 bg-purple-500/30 rounded-lg flex items-center justify-center text-xs font-medium text-white backdrop-blur-sm px-4 text-center">
                 Real-time market data and live price feeds
