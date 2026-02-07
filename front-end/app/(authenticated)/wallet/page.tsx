@@ -2,11 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Wallet, Copy } from 'lucide-react';
+import { Wallet, Copy, DollarSign, TrendingUp, UserPlus, Mail, CheckCircle, History } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import { useBTCPrice } from '@/lib/hooks/useBTCPrice';
 
-// Helper function to format currency
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
@@ -42,32 +41,42 @@ export default function WalletPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Page Header */}
-      <div className="border-b border-border bg-card">
+      <div className="border-b border-border bg-gradient-to-r from-[oklch(0.65_0.15_260)]/10 to-[oklch(0.72_0.12_140)]/10">
         <div className="px-6 py-6">
           <div className="flex items-center gap-3 mb-2">
-            <Wallet className="w-6 h-6 text-primary" />
-            <h1 className="text-2xl font-bold">Wallet</h1>
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[oklch(0.65_0.15_260)]/20 to-[oklch(0.65_0.15_260)]/10 flex items-center justify-center">
+              <Wallet className="w-6 h-6 text-[oklch(0.65_0.15_260)]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold">Wallet</h1>
+              <p className="text-muted-foreground text-sm">Manage your account funds</p>
+            </div>
           </div>
-          <p className="text-muted-foreground text-sm">Manage your account funds</p>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="p-6 max-w-2xl">
         {/* Balance Card */}
-        <div className="bg-card border border-border rounded-lg p-8 mb-6">
-          <p className="text-muted-foreground text-sm mb-2">Total Balance</p>
+        <div className="bg-gradient-to-br from-[oklch(0.65_0.15_260)]/20 to-[oklch(0.72_0.12_140)]/20 border border-[oklch(0.65_0.15_260)]/30 rounded-xl p-8 mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <DollarSign className="w-5 h-5 text-[oklch(0.65_0.15_260)]" />
+            <p className="text-muted-foreground text-sm">Total Balance</p>
+          </div>
           <p className="text-5xl font-bold mb-4">{formatCurrency(user?.balance || 0)}</p>
           <p className="text-xs text-muted-foreground">USDC Balance</p>
 
-          <div className="mt-4 pt-4 border-t border-border">
-            <p className="text-muted-foreground text-sm mb-1">BTC Equivalent</p>
+          <div className="mt-4 pt-4 border-t border-border/50">
+            <div className="flex items-center gap-2 mb-1">
+              <TrendingUp className="w-4 h-4 text-[oklch(0.72_0.12_140)]" />
+              <p className="text-muted-foreground text-sm">BTC Equivalent</p>
+            </div>
             <p className="text-2xl font-bold text-foreground">
               {btcPriceLoading ? 'Loading...' : `${btcEquivalent.toFixed(6)} BTC`}
             </p>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-border">
+          <div className="mt-4 pt-4 border-t border-border/50">
             <p className="text-muted-foreground text-sm mb-1">USD Equivalent</p>
             <p className="text-2xl font-bold text-foreground">{formatCurrency(user?.balance || 0)}</p>
           </div>
@@ -77,26 +86,24 @@ export default function WalletPage() {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <button
             disabled
-            className="group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-xs sm:text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 shadow-xl transition-all duration-300 transform overflow-hidden opacity-50 cursor-not-allowed"
+            className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-white bg-[oklch(0.72_0.12_140)] opacity-50 cursor-not-allowed"
           >
             Deposit (Agent Only)
           </button>
           <button
             disabled
-            className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-primary/25 to-primary/15 border border-primary/40 opacity-50 cursor-not-allowed"
+            className="flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-semibold text-white bg-[oklch(0.62_0.13_320)] opacity-50 cursor-not-allowed"
           >
-            <span className="text-primary text-xs sm:text-sm md:text-base">Withdraw (Agent Only)</span>
+            Withdraw (Agent Only)
           </button>
         </div>
 
         {/* Wallet Info */}
-        <div className="bg-card border border-border rounded-lg p-6 space-y-6 mb-8">
-          {/* Removed Wallet Address section */}
-
+        <div className="bg-card border border-border rounded-xl p-6 space-y-6 mb-8">
           <div>
             <h3 className="font-semibold text-foreground mb-4">Network</h3>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-accent" />
+              <div className="w-2 h-2 rounded-full bg-[oklch(0.72_0.12_140)]" />
               <span className="text-sm text-foreground">Network</span>
             </div>
           </div>
@@ -104,36 +111,36 @@ export default function WalletPage() {
           <div>
             <h3 className="font-semibold text-foreground mb-4">How to Fund Your Wallet</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-muted/50 rounded-lg p-4 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user-plus text-primary"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg>
+              <div className="bg-[oklch(0.65_0.15_260)]/10 rounded-lg p-4 flex items-start gap-3 border border-[oklch(0.65_0.15_260)]/30">
+                <div className="w-8 h-8 rounded-full bg-[oklch(0.65_0.15_260)]/20 flex items-center justify-center flex-shrink-0">
+                  <UserPlus className="w-5 h-5 text-[oklch(0.65_0.15_260)]" />
                 </div>
                 <div>
                   <p className="font-semibold text-foreground mb-1">Step 1: Contact an Agent</p>
                   <p className="text-sm text-muted-foreground">Reach out to our support team to connect with an agent for funding assistance.</p>
                 </div>
               </div>
-              <div className="bg-muted/50 rounded-lg p-4 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-mail text-primary"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <div className="bg-[oklch(0.72_0.12_140)]/10 rounded-lg p-4 flex items-start gap-3 border border-[oklch(0.72_0.12_140)]/30">
+                <div className="w-8 h-8 rounded-full bg-[oklch(0.72_0.12_140)]/20 flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-5 h-5 text-[oklch(0.72_0.12_140)]" />
                 </div>
                 <div>
                   <p className="font-semibold text-foreground mb-1">Step 2: Provide Your Email</p>
                   <p className="text-sm text-muted-foreground">Share your registered email address with the agent for verification.</p>
                 </div>
               </div>
-              <div className="bg-muted/50 rounded-lg p-4 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 0 0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dollar-sign text-primary"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <div className="bg-[oklch(0.68_0.14_180)]/10 rounded-lg p-4 flex items-start gap-3 border border-[oklch(0.68_0.14_180)]/30">
+                <div className="w-8 h-8 rounded-full bg-[oklch(0.68_0.14_180)]/20 flex items-center justify-center flex-shrink-0">
+                  <DollarSign className="w-5 h-5 text-[oklch(0.68_0.14_180)]" />
                 </div>
                 <div>
                   <p className="font-semibold text-foreground mb-1">Step 3: Specify Amount</p>
                   <p className="text-sm text-muted-foreground">Clearly state the amount you wish to deposit to your account.</p>
                 </div>
               </div>
-              <div className="bg-muted/50 rounded-lg p-4 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check-circle text-primary"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <div className="bg-[oklch(0.62_0.13_320)]/10 rounded-lg p-4 flex items-start gap-3 border border-[oklch(0.62_0.13_320)]/30">
+                <div className="w-8 h-8 rounded-full bg-[oklch(0.62_0.13_320)]/20 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle className="w-5 h-5 text-[oklch(0.62_0.13_320)]" />
                 </div>
                 <div>
                   <p className="font-semibold text-foreground mb-1">Step 4: Confirm & Fund</p>
@@ -141,20 +148,25 @@ export default function WalletPage() {
                 </div>
               </div>
             </div>
-            <p className="text-yellow-500 font-semibold text-sm mt-4">
+            <p className="text-[oklch(0.68_0.11_40)] font-semibold text-sm mt-4 bg-[oklch(0.68_0.11_40)]/10 p-3 rounded-lg border border-[oklch(0.68_0.11_40)]/30">
               ⚠️ Funds can only be credited to your wallet through our agents.
             </p>
           </div>
         </div>
 
         {/* Transaction History */}
-        <div className="bg-card border border-border rounded-lg p-6">
-          <h3 className="font-semibold text-foreground mb-4">Recent Transactions</h3>
+        <div className="bg-card border border-[oklch(0.65_0.15_260)]/30 rounded-xl p-6">
+          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+            <History className="w-5 h-5 text-[oklch(0.65_0.15_260)]" />
+            Recent Transactions
+          </h3>
           <div className="space-y-3">
-            {/* Assuming trades are available from useTradingContext, otherwise display a message */}
-            {/* For now, we'll display a placeholder for no transactions */}
-            <div className="text-center py-4 text-muted-foreground">
-              No recent transactions
+            <div className="text-center py-8">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+                <History className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <p className="text-muted-foreground font-medium">No recent transactions</p>
+              <p className="text-sm text-muted-foreground mt-2">Your transaction history will appear here</p>
             </div>
           </div>
         </div>

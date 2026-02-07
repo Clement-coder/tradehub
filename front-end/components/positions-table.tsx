@@ -34,7 +34,13 @@ export default function PositionsTable() {
       <GlassCard className="p-6">
         <h2 className="text-lg font-semibold text-foreground mb-6">Open Positions</h2>
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No open positions yet</p>
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-8 h-8 text-muted-foreground">
+              <rect x="3" y="3" width="18" height="18" rx="2" strokeWidth="2"/>
+              <path d="M3 9h18M9 21V9" strokeWidth="2"/>
+            </svg>
+          </div>
+          <p className="text-muted-foreground font-medium">No open positions yet</p>
           <p className="text-sm text-muted-foreground mt-2">Start trading to open a position</p>
         </div>
       </GlassCard>

@@ -36,7 +36,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Page Header */}
-      <div className="border-b border-border bg-card">
+      <div className="border-b border-border bg-gradient-to-r from-[oklch(0.62_0.13_320)]/10 to-[oklch(0.68_0.11_40)]/10">
         <div className="px-6 py-6">
           <div className="flex items-center gap-3 mb-2">
             <User className="w-6 h-6 text-primary" />

@@ -21,7 +21,15 @@ export default function TradeHistory({ limit }: TradeHistoryProps = {}) {
       <GlassCard className="p-6">
         <h2 className="text-lg font-semibold text-foreground mb-6">Trade History</h2>
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No trades yet</p>
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-8 h-8 text-muted-foreground">
+              <path d="M3 3v18h18" strokeWidth="2" strokeLinecap="round"/>
+              <path d="M18 17l-5-5-4 4-3-3" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="18" cy="17" r="2" fill="currentColor"/>
+            </svg>
+          </div>
+          <p className="text-muted-foreground font-medium">No trades yet</p>
+          <p className="text-sm text-muted-foreground mt-2">Your trading history will appear here</p>
         </div>
       </GlassCard>
     );

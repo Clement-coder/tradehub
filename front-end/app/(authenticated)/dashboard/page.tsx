@@ -73,8 +73,8 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Page Header - Responsive */}
-      <div className="border-b border-border/40 bg-card/95 backdrop-blur-sm sticky top-0 z-10">
+      {/* Page Header */}
+      <div className="border-b border-border bg-gradient-to-r from-[oklch(0.65_0.15_260)]/10 to-[oklch(0.72_0.12_140)]/10">
         <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
             <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
