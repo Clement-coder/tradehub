@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { TrendingUp, ArrowRight, Wallet, BarChart3, Lock, Sparkles, Menu, X } from 'lucide-react';
+import { TrendingUp, ArrowRight, Wallet, BarChart3, Lock, Sparkles, Menu, X, Home, BookOpen, Mail } from 'lucide-react';
 import { GlassCard } from '@/components/glass-card';
 import { useEffect, useState } from 'react';
+import { usePrivy } from '@privy-io/react-auth';
 
 export default function LandingPage() {
+  const { authenticated, ready } = usePrivy();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -80,19 +82,21 @@ export default function LandingPage() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-3 lg:gap-4">
-              <Link
-                href="/auth"
-                className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-white/20 to-white/10 border border-primary/40 backdrop-blur-sm"
-              >
-                <span className="text-primary">Sign In</span>
+            <div className="hidden md:flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500/20 to-orange-500/10 border border-orange-500/30 text-white hover:from-orange-500/30 hover:to-orange-500/20 transition-all duration-200 font-medium backdrop-blur-sm">
+                <Home className="w-4 h-4" />
+                Home
+              </Link>
+              <Link href="/how-it-works" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500/20 to-blue-500/10 border border-blue-500/30 text-white hover:from-blue-500/30 hover:to-blue-500/20 transition-all duration-200 font-medium backdrop-blur-sm">
+                <BookOpen className="w-4 h-4" />
+                How It Works
               </Link>
               <Link
-                href="/auth"
-                className="group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
+                href={authenticated ? "/dashboard" : "/auth"}
+                className="ml-2 group relative inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                Get Started
+                {authenticated ? "Dashboard" : "Get Started"}
               </Link>
             </div>
 
@@ -110,27 +114,22 @@ export default function LandingPage() {
             </button>
           </div>
 
-          {/* Mobile Menu */}
-          <div
-            className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-              mobileMenuOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'
-            }`}
-          >
-            <div className="py-4 space-y-3 border-t border-border/40">
-              <Link
-                href="/auth"
-                className="flex items-center justify-center gap-2 px-4 md:px-6 py-2 md:py-3 rounded-full bg-gradient-to-r from-white/20 to-white/10 border border-primary/40 backdrop-blur-sm w-full"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <span className="text-primary">Sign In</span>
+          <div className={`md:hidden overflow-hidden transition-all duration-300 ${mobileMenuOpen ? 'max-h-48 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="py-4 space-y-2 border-t border-border/40">
+              <Link href="/" className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-gradient-to-r from-orange-500/20 to-orange-500/10 border border-orange-500/30 text-white transition-all" onClick={() => setMobileMenuOpen(false)}>
+                <Home className="w-4 h-4" />
+                Home
+              </Link>
+              <Link href="/how-it-works" className="flex items-center justify-center gap-2 py-2 px-4 rounded-xl bg-gradient-to-r from-blue-500/20 to-blue-500/10 border border-blue-500/30 text-white transition-all" onClick={() => setMobileMenuOpen(false)}>
+                <BookOpen className="w-4 h-4" />
+                How It Works
               </Link>
               <Link
-                href="/auth"
-                className="group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden w-full"
+                href={authenticated ? "/dashboard" : "/auth"}
+                className="group relative inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm text-primary-foreground bg-gradient-to-r from-primary to-primary/80 w-full mt-2"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                Get Started
+                {authenticated ? "Dashboard" : "Get Started"}
               </Link>
             </div>
           </div>
@@ -225,12 +224,12 @@ export default function LandingPage() {
           
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 lg:gap-6 justify-center mb-10 md:mb-16 lg:mb-20 px-4">
             <Link
-              href="/auth"
+              href={authenticated ? "/dashboard" : "/auth"}
               className="group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
               <TrendingUp className="w-4 md:w-5 h-4 md:h-5" />
-              <span>Start Trading Now</span>
+              <span>{authenticated ? "Go to Dashboard" : "Start Trading Now"}</span>
               <ArrowRight className="w-4 md:w-5 h-4 md:h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
@@ -343,13 +342,158 @@ export default function LandingPage() {
         </GlassCard>
       </section>
 
+      {/* Testimonials Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">What Traders Say</h2>
+        <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+          Join thousands of traders who are mastering their skills on TradeHub
+        </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.55_0.15_260)] to-[oklch(0.55_0.15_260)]/50 flex items-center justify-center text-white font-bold">
+                JD
+              </div>
+              <div>
+                <h4 className="font-semibold">John Doe</h4>
+                <p className="text-sm text-muted-foreground">Day Trader</p>
+              </div>
+            </div>
+            <p className="text-muted-foreground">
+              "TradeHub helped me practice strategies without risking real money. The interface is incredibly smooth and the real-time data makes it feel authentic."
+            </p>
+          </GlassCard>
+
+          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.65_0.12_140)] to-[oklch(0.65_0.12_140)]/50 flex items-center justify-center text-white font-bold">
+                SM
+              </div>
+              <div>
+                <h4 className="font-semibold">Sarah Miller</h4>
+                <p className="text-sm text-muted-foreground">Crypto Enthusiast</p>
+              </div>
+            </div>
+            <p className="text-muted-foreground">
+              "Best trading simulator I've used. The $10,000 starting balance gives you plenty of room to experiment with different trading strategies."
+            </p>
+          </GlassCard>
+
+          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.6_0.14_180)] to-[oklch(0.6_0.14_180)]/50 flex items-center justify-center text-white font-bold">
+                MJ
+              </div>
+              <div>
+                <h4 className="font-semibold">Mike Johnson</h4>
+                <p className="text-sm text-muted-foreground">Beginner Trader</p>
+              </div>
+            </div>
+            <p className="text-muted-foreground">
+              "As a complete beginner, this platform gave me the confidence to learn trading. The zero-risk environment is perfect for learning."
+            </p>
+          </GlassCard>
+
+          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.5_0.13_320)] to-[oklch(0.5_0.13_320)]/50 flex items-center justify-center text-white font-bold">
+                EW
+              </div>
+              <div>
+                <h4 className="font-semibold">Emily White</h4>
+                <p className="text-sm text-muted-foreground">Swing Trader</p>
+              </div>
+            </div>
+            <p className="text-muted-foreground">
+              "The real-time charts and instant execution make this feel like a professional trading platform. Highly recommend for practice!"
+            </p>
+          </GlassCard>
+
+          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.58_0.11_40)] to-[oklch(0.58_0.11_40)]/50 flex items-center justify-center text-white font-bold">
+                DB
+              </div>
+              <div>
+                <h4 className="font-semibold">David Brown</h4>
+                <p className="text-sm text-muted-foreground">Technical Analyst</p>
+              </div>
+            </div>
+            <p className="text-muted-foreground">
+              "Perfect for backtesting strategies. The analytics and trade history features help me understand what works and what doesn't."
+            </p>
+          </GlassCard>
+
+          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.55_0.15_260)] to-[oklch(0.55_0.15_260)]/50 flex items-center justify-center text-white font-bold">
+                LG
+              </div>
+              <div>
+                <h4 className="font-semibold">Lisa Garcia</h4>
+                <p className="text-sm text-muted-foreground">Portfolio Manager</p>
+              </div>
+            </div>
+            <p className="text-muted-foreground">
+              "Excellent platform for honing trading skills. The beautiful UI and smooth performance make trading practice enjoyable."
+            </p>
+          </GlassCard>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Why Choose TradeHub?</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <GlassCard className="p-8 relative overflow-hidden group hover:scale-105 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.55_0.15_260)]/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
+              <h3 className="text-2xl font-bold mb-4">No Hidden Fees</h3>
+              <p className="text-muted-foreground">
+                Completely free to use. No subscriptions, no hidden charges, no credit card required. Just sign up and start trading immediately.
+              </p>
+            </div>
+          </GlassCard>
+
+          <GlassCard className="p-8 relative overflow-hidden group hover:scale-105 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.65_0.12_140)]/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
+              <h3 className="text-2xl font-bold mb-4">Real Market Data</h3>
+              <p className="text-muted-foreground">
+                Practice with actual Bitcoin price movements. Our platform uses real-time market data so you experience authentic trading conditions.
+              </p>
+            </div>
+          </GlassCard>
+
+          <GlassCard className="p-8 relative overflow-hidden group hover:scale-105 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.6_0.14_180)]/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
+              <h3 className="text-2xl font-bold mb-4">Instant Execution</h3>
+              <p className="text-muted-foreground">
+                Experience lightning-fast order execution. Place trades instantly at current market prices, just like professional trading platforms.
+              </p>
+            </div>
+          </GlassCard>
+
+          <GlassCard className="p-8 relative overflow-hidden group hover:scale-105 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.5_0.13_320)]/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
+              <h3 className="text-2xl font-bold mb-4">Comprehensive Analytics</h3>
+              <p className="text-muted-foreground">
+                Track your performance with detailed analytics. View your trade history, monitor open positions, and analyze your P&L in real-time.
+              </p>
+            </div>
+          </GlassCard>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-border/40 bg-muted/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 md:gap-6">
             <div className="flex items-center gap-2 text-lg md:text-xl font-bold text-primary">
               <Image 
-                src="/tradeHub_log.PNG" 
+                src="/tradeHub_logo.PNG" 
                 alt="TradeHub Logo" 
                 width={24} 
                 height={24} 
@@ -357,6 +501,10 @@ export default function LandingPage() {
               />
               TradeHub
             </div>
+            <a href="mailto:tradehuhWorldWide@gmail.com" className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+              <Mail className="w-4 h-4" />
+              tradehuhWorldWide@gmail.com
+            </a>
             <p className="text-muted-foreground text-center text-xs md:text-sm">
               © 2024 TradeHub. Trading platform for educational purposes.
             </p>
