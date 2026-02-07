@@ -9,9 +9,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Trading Platform',
-  description: 'A premium iOS-style trading platform. Trade Bitcoin with real funds in a beautiful, intuitive interface.',
-  generator: 'v0.app',
+  title: 'TardeHub Trading Platform',
+  description: 'Trade Bitcoin with real funds in a beautiful, intuitive interface.',
   viewport: {
     width: 'device-width',
     initialScale: 1,

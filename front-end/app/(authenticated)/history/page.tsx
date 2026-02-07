@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { History, TrendingUp, TrendingDown } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 
@@ -51,10 +52,10 @@ export default function HistoryPage() {
       <div className="border-b border-border bg-gradient-to-r from-[oklch(0.68_0.14_180)]/10 to-[oklch(0.62_0.13_320)]/10">
         <div className="px-4 sm:px-6 py-4 sm:py-6">
           <div className="flex items-center gap-3 mb-2">
-            <History className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+            <Image src="/btc-logo.svg" alt="BTC" width={24} height={24} className="w-6 h-6" />
             <h1 className="text-xl sm:text-2xl font-bold">Trade History</h1>
           </div>
-          <p className="text-muted-foreground text-xs sm:text-sm">View all your completed trades and performance</p>
+          <p className="text-muted-foreground text-xs sm:text-sm">View all your completed BTC trades and performance</p>
         </div>
       </div>
 
@@ -64,77 +65,73 @@ export default function HistoryPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {/* Total Trades */}
           <div className="group relative">
-            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '2s'}}>
-              <div className="absolute top-0 left-0 right-0 h-1 bg-primary"></div>
-              <div className="absolute top-0 right-0 bottom-0 w-1 bg-accent"></div>
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-chart-2"></div>
-              <div className="absolute top-0 left-0 bottom-0 w-1 bg-chart-4"></div>
-              <div className="absolute top-0 left-0 w-2 h-2 bg-primary rounded-full"></div>
-              <div className="absolute top-0 right-0 w-2 h-2 bg-accent rounded-full"></div>
-              <div className="absolute bottom-0 right-0 w-2 h-2 bg-chart-2 rounded-full"></div>
-              <div className="absolute bottom-0 left-0 w-2 h-2 bg-chart-4 rounded-full"></div>
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '3s'}}>
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.55_0.15_260)]/60 to-transparent"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.65_0.12_140)]/60 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.6_0.14_180)]/60 to-transparent"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.5_0.13_320)]/60 to-transparent"></div>
             </div>
-            <div className="relative bg-card/95 backdrop-blur-sm rounded-xl p-4 sm:p-6 transition-all duration-300 z-10 m-1 group-hover:bg-card/90">
-              <p className="text-muted-foreground text-xs sm:text-sm mb-2">Total Trades</p>
-              <p className="text-2xl sm:text-3xl font-bold text-foreground">{trades.length}</p>
+            <div className="relative bg-card/95 backdrop-blur-sm border border-[oklch(0.55_0.15_260)]/30 rounded-xl p-4 sm:p-6 hover:shadow-lg transition-all duration-300 m-px overflow-hidden group-hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.55_0.15_260)]/15 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <p className="text-muted-foreground text-xs sm:text-sm mb-2">Total Trades</p>
+                <p className="text-2xl sm:text-3xl font-bold text-foreground">{trades.length}</p>
+              </div>
             </div>
           </div>
 
           {/* Total P&L */}
           <div className="group relative">
-            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '2.2s', animationDelay: '0.3s'}}>
-              <div className="absolute top-0 left-0 right-0 h-1 bg-accent"></div>
-              <div className="absolute top-0 right-0 bottom-0 w-1 bg-chart-2"></div>
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-chart-4"></div>
-              <div className="absolute top-0 left-0 bottom-0 w-1 bg-primary"></div>
-              <div className="absolute top-0 left-0 w-2 h-2 bg-accent rounded-full"></div>
-              <div className="absolute top-0 right-0 w-2 h-2 bg-chart-2 rounded-full"></div>
-              <div className="absolute bottom-0 right-0 w-2 h-2 bg-chart-4 rounded-full"></div>
-              <div className="absolute bottom-0 left-0 w-2 h-2 bg-primary rounded-full"></div>
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '3s', animationDelay: '0.5s'}}>
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.65_0.12_140)]/60 to-transparent"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.6_0.14_180)]/60 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.5_0.13_320)]/60 to-transparent"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.55_0.15_260)]/60 to-transparent"></div>
             </div>
-            <div className="relative bg-card/95 backdrop-blur-sm rounded-xl p-4 sm:p-6 transition-all duration-300 z-10 m-1 group-hover:bg-card/90">
-              <p className="text-muted-foreground text-xs sm:text-sm mb-2">Total P&L</p>
-              <p className={`text-2xl sm:text-3xl font-bold ${totalPnL >= 0 ? 'text-accent' : 'text-destructive'}`}>
-                {formatCurrency(totalPnL)}
-              </p>
+            <div className="relative bg-card/95 backdrop-blur-sm border border-[oklch(0.65_0.12_140)]/30 rounded-xl p-4 sm:p-6 hover:shadow-lg transition-all duration-300 m-px overflow-hidden group-hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.65_0.12_140)]/15 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <p className="text-muted-foreground text-xs sm:text-sm mb-2">Total P&L</p>
+                <p className={`text-2xl sm:text-3xl font-bold ${totalPnL >= 0 ? 'text-accent' : 'text-destructive'}`}>
+                  {formatCurrency(totalPnL)}
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Win Rate */}
           <div className="group relative">
-            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '2.4s', animationDelay: '0.6s'}}>
-              <div className="absolute top-0 left-0 right-0 h-1 bg-chart-2"></div>
-              <div className="absolute top-0 right-0 bottom-0 w-1 bg-chart-4"></div>
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary"></div>
-              <div className="absolute top-0 left-0 bottom-0 w-1 bg-accent"></div>
-              <div className="absolute top-0 left-0 w-2 h-2 bg-chart-2 rounded-full"></div>
-              <div className="absolute top-0 right-0 w-2 h-2 bg-chart-4 rounded-full"></div>
-              <div className="absolute bottom-0 right-0 w-2 h-2 bg-primary rounded-full"></div>
-              <div className="absolute bottom-0 left-0 w-2 h-2 bg-accent rounded-full"></div>
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '3s', animationDelay: '1s'}}>
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.6_0.14_180)]/60 to-transparent"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.5_0.13_320)]/60 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.55_0.15_260)]/60 to-transparent"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.65_0.12_140)]/60 to-transparent"></div>
             </div>
-            <div className="relative bg-card/95 backdrop-blur-sm rounded-xl p-4 sm:p-6 transition-all duration-300 z-10 m-1 group-hover:bg-card/90">
-              <p className="text-muted-foreground text-xs sm:text-sm mb-2">Win Rate</p>
-              <p className="text-2xl sm:text-3xl font-bold text-foreground">{winRate}%</p>
+            <div className="relative bg-card/95 backdrop-blur-sm border border-[oklch(0.6_0.14_180)]/30 rounded-xl p-4 sm:p-6 hover:shadow-lg transition-all duration-300 m-px overflow-hidden group-hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.6_0.14_180)]/15 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <p className="text-muted-foreground text-xs sm:text-sm mb-2">Win Rate</p>
+                <p className="text-2xl sm:text-3xl font-bold text-foreground">{winRate}%</p>
+              </div>
             </div>
           </div>
 
           {/* Average Trade */}
           <div className="group relative">
-            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '2.6s', animationDelay: '0.9s'}}>
-              <div className="absolute top-0 left-0 right-0 h-1 bg-chart-4"></div>
-              <div className="absolute top-0 right-0 bottom-0 w-1 bg-primary"></div>
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent"></div>
-              <div className="absolute top-0 left-0 bottom-0 w-1 bg-chart-2"></div>
-              <div className="absolute top-0 left-0 w-2 h-2 bg-chart-4 rounded-full"></div>
-              <div className="absolute top-0 right-0 w-2 h-2 bg-primary rounded-full"></div>
-              <div className="absolute bottom-0 right-0 w-2 h-2 bg-accent rounded-full"></div>
-              <div className="absolute bottom-0 left-0 w-2 h-2 bg-chart-2 rounded-full"></div>
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '3s', animationDelay: '1.5s'}}>
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.5_0.13_320)]/60 to-transparent"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.55_0.15_260)]/60 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.65_0.12_140)]/60 to-transparent"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.6_0.14_180)]/60 to-transparent"></div>
             </div>
-            <div className="relative bg-card/95 backdrop-blur-sm rounded-xl p-4 sm:p-6 transition-all duration-300 z-10 m-1 group-hover:bg-card/90">
-              <p className="text-muted-foreground text-xs sm:text-sm mb-2">Avg. Trade</p>
-              <p className={`text-2xl sm:text-3xl font-bold ${averageProfit >= 0 ? 'text-accent' : 'text-destructive'}`}>
-                {formatCurrency(averageProfit)}
-              </p>
+            <div className="relative bg-card/95 backdrop-blur-sm border border-[oklch(0.5_0.13_320)]/30 rounded-xl p-4 sm:p-6 hover:shadow-lg transition-all duration-300 m-px overflow-hidden group-hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.5_0.13_320)]/15 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <p className="text-muted-foreground text-xs sm:text-sm mb-2">Avg. Trade</p>
+                <p className={`text-2xl sm:text-3xl font-bold ${averageProfit >= 0 ? 'text-accent' : 'text-destructive'}`}>
+                  {formatCurrency(averageProfit)}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -216,7 +213,10 @@ export default function HistoryPage() {
                       </div>
                       <div className="text-center lg:text-left">
                         <p className="text-xs text-muted-foreground">Amount</p>
-                        <p className="font-semibold text-foreground text-sm">{trade.quantity.toFixed(6)} BTC</p>
+                        <p className="font-semibold text-foreground text-sm flex items-center justify-center lg:justify-start gap-1">
+                          <Image src="/btc-logo.svg" alt="BTC" width={16} height={16} className="w-4 h-4" />
+                          {trade.quantity.toFixed(6)} BTC
+                        </p>
                       </div>
                       <div className="text-center lg:text-right">
                         <p className="text-xs text-muted-foreground">P&L</p>

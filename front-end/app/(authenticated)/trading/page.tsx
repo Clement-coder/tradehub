@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { TrendingUp, TrendingDown, Activity, DollarSign, BarChart3, Clock, Zap, Star, Bell } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import TradingChart from '@/components/trading-chart';
@@ -96,50 +97,92 @@ export default function TradingPage() {
       {/* Quick Stats Cards */}
       <div className="px-4 sm:px-6 pt-6">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div className="bg-card border border-border rounded-xl p-4 hover:border-primary/50 transition-colors">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <DollarSign className="w-4 h-4 text-blue-500" />
-              </div>
-              <p className="text-xs text-muted-foreground">Balance</p>
+          <div className="group relative">
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '3s'}}>
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.55_0.15_260)]/60 to-transparent"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.65_0.12_140)]/60 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.6_0.14_180)]/60 to-transparent"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.5_0.13_320)]/60 to-transparent"></div>
             </div>
-            <p className="text-lg font-bold">${user.balance.toFixed(2)}</p>
+            <div className="relative bg-card/95 backdrop-blur-sm border border-[oklch(0.55_0.15_260)]/30 rounded-xl p-4 hover:shadow-lg transition-all duration-300 m-px overflow-hidden group-hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.55_0.15_260)]/15 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <Image src="/usdc-logo.svg" alt="USDC" width={24} height={24} className="w-6 h-6" />
+                  <p className="text-xs text-muted-foreground">Balance</p>
+                </div>
+                <p className="text-lg font-bold">${user.balance.toFixed(2)}</p>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-4 hover:border-primary/50 transition-colors">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 text-green-500" />
-              </div>
-              <p className="text-xs text-muted-foreground">Positions Value</p>
+          <div className="group relative">
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '3s', animationDelay: '0.5s'}}>
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.65_0.12_140)]/60 to-transparent"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.6_0.14_180)]/60 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.5_0.13_320)]/60 to-transparent"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.55_0.15_260)]/60 to-transparent"></div>
             </div>
-            <p className="text-lg font-bold">${totalPositionsValue.toFixed(2)}</p>
+            <div className="relative bg-card/95 backdrop-blur-sm border border-[oklch(0.65_0.12_140)]/30 rounded-xl p-4 hover:shadow-lg transition-all duration-300 m-px overflow-hidden group-hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.65_0.12_140)]/15 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-[oklch(0.65_0.12_140)]/20 flex items-center justify-center">
+                    <TrendingUp className="w-4 h-4 text-[oklch(0.65_0.12_140)]" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">Positions Value</p>
+                </div>
+                <p className="text-lg font-bold">${totalPositionsValue.toFixed(2)}</p>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-4 hover:border-primary/50 transition-colors">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
-                <Zap className="w-4 h-4 text-purple-500" />
-              </div>
-              <p className="text-xs text-muted-foreground">24h High</p>
+          <div className="group relative">
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '3s', animationDelay: '1s'}}>
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.6_0.14_180)]/60 to-transparent"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.5_0.13_320)]/60 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.55_0.15_260)]/60 to-transparent"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.65_0.12_140)]/60 to-transparent"></div>
             </div>
-            <p className="text-lg font-bold">${(currentPrice + 1200).toLocaleString()}</p>
+            <div className="relative bg-card/95 backdrop-blur-sm border border-[oklch(0.6_0.14_180)]/30 rounded-xl p-4 hover:shadow-lg transition-all duration-300 m-px overflow-hidden group-hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.6_0.14_180)]/15 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-[oklch(0.6_0.14_180)]/20 flex items-center justify-center">
+                    <Zap className="w-4 h-4 text-[oklch(0.6_0.14_180)]" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">24h High</p>
+                </div>
+                <p className="text-lg font-bold">${(currentPrice + 1200).toLocaleString()}</p>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-4 hover:border-primary/50 transition-colors">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                <Activity className="w-4 h-4 text-orange-500" />
-              </div>
-              <p className="text-xs text-muted-foreground">24h Low</p>
+          <div className="group relative">
+            <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '3s', animationDelay: '1.5s'}}>
+              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.5_0.13_320)]/60 to-transparent"></div>
+              <div className="absolute top-0 right-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.55_0.15_260)]/60 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.65_0.12_140)]/60 to-transparent"></div>
+              <div className="absolute top-0 left-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[oklch(0.6_0.14_180)]/60 to-transparent"></div>
             </div>
-            <p className="text-lg font-bold">${(currentPrice - 800).toLocaleString()}</p>
+            <div className="relative bg-card/95 backdrop-blur-sm border border-[oklch(0.5_0.13_320)]/30 rounded-xl p-4 hover:shadow-lg transition-all duration-300 m-px overflow-hidden group-hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.5_0.13_320)]/15 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-lg bg-[oklch(0.5_0.13_320)]/20 flex items-center justify-center">
+                    <Activity className="w-4 h-4 text-[oklch(0.5_0.13_320)]" />
+                  </div>
+                  <p className="text-xs text-muted-foreground">24h Low</p>
+                </div>
+                <p className="text-lg font-bold">${(currentPrice - 800).toLocaleString()}</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+      <div className="p-4 sm:px-6 space-y-4 sm:space-y-6">
         {/* Trading Section */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
           {/* Chart */}
