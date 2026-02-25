@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { History, TrendingUp, TrendingDown } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
+import { CurrencyDisplay } from '@/components/currency-display';
+import { usePrivy } from '@privy-io/react-auth';
 
 // Helper functions to format currency and price
 const formatCurrency = (value: number) =>
@@ -15,6 +17,7 @@ const formatPrice = (value: number) =>
 
 export default function HistoryPage() {
   const router = useRouter();
+  const { ready, authenticated } = usePrivy();
   const { user, trades } = useTradingContext();
   const [mounted, setMounted] = useState(false);
   const [filter, setFilter] = useState<'all' | 'long' | 'short'>('all');
@@ -24,12 +27,12 @@ export default function HistoryPage() {
   }, []);
 
   useEffect(() => {
-    if (mounted && !user) {
+    if (mounted && ready && !authenticated) {
       router.push('/auth');
     }
-  }, [mounted, user, router]);
+  }, [mounted, ready, authenticated, router]);
 
-  if (!mounted || !user) {
+  if (!mounted || !ready || !authenticated || !user) {
     return null;
   }
 
@@ -93,7 +96,7 @@ export default function HistoryPage() {
               <div className="relative z-10">
                 <p className="text-muted-foreground text-xs sm:text-sm mb-2">Total P&L</p>
                 <p className={`text-2xl sm:text-3xl font-bold ${totalPnL >= 0 ? 'text-accent' : 'text-destructive'}`}>
-                  {formatCurrency(totalPnL)}
+                  <CurrencyDisplay amount={totalPnL} logoSize={0} />
                 </p>
               </div>
             </div>
@@ -129,7 +132,7 @@ export default function HistoryPage() {
               <div className="relative z-10">
                 <p className="text-muted-foreground text-xs sm:text-sm mb-2">Avg. Trade</p>
                 <p className={`text-2xl sm:text-3xl font-bold ${averageProfit >= 0 ? 'text-accent' : 'text-destructive'}`}>
-                  {formatCurrency(averageProfit)}
+                  <CurrencyDisplay amount={averageProfit} logoSize={0} />
                 </p>
               </div>
             </div>

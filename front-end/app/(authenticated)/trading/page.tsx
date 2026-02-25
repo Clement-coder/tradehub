@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { TrendingUp, TrendingDown, Activity, DollarSign, BarChart3, Clock, Zap, Star, Bell } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
+import { usePrivy } from '@privy-io/react-auth';
 import TradingChart from '@/components/trading-chart';
 import TradingInterface from '@/components/trading-interface';
 import PositionsTable from '@/components/positions-table';
@@ -12,6 +13,7 @@ import TradeHistory from '@/components/trade-history';
 
 export default function TradingPage() {
   const router = useRouter();
+  const { ready, authenticated } = usePrivy();
   const { user, currentPrice, positions } = useTradingContext();
   const [mounted, setMounted] = useState(false);
   const [priceChange, setPriceChange] = useState(0);
@@ -22,10 +24,10 @@ export default function TradingPage() {
   }, []);
 
   useEffect(() => {
-    if (mounted && !user) {
+    if (mounted && ready && !authenticated) {
       router.push('/auth');
     }
-  }, [mounted, user, router]);
+  }, [mounted, ready, authenticated, router]);
 
   useEffect(() => {
     const change = (Math.random() - 0.5) * 1000;
@@ -34,7 +36,7 @@ export default function TradingPage() {
     setPriceChangePercent(percent);
   }, [currentPrice]);
 
-  if (!mounted || !user) {
+  if (!mounted || !ready || !authenticated || !user) {
     return null;
   }
 

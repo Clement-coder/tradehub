@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Settings, ToggleLeftIcon as ToggleIcon, Bell, Eye, Lock } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
+import { usePrivy } from '@privy-io/react-auth';
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { ready, authenticated } = usePrivy();
   const { user } = useTradingContext();
   const [mounted, setMounted] = useState(false);
   const [settings, setSettings] = useState({
@@ -22,12 +24,12 @@ export default function SettingsPage() {
   }, []);
 
   useEffect(() => {
-    if (mounted && !user) {
+    if (mounted && ready && !authenticated) {
       router.push('/auth');
     }
-  }, [mounted, user, router]);
+  }, [mounted, ready, authenticated, router]);
 
-  if (!mounted || !user) {
+  if (!mounted || !ready || !authenticated || !user) {
     return null;
   }
 

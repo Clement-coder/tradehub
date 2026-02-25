@@ -20,6 +20,7 @@ import { useTradingContext } from '@/app/context/trading-context';
 import { useNotifications } from '@/app/context/notifications-context';
 import { useState } from 'react';
 import { LogoutModal } from '@/components/logout-modal';
+import { usePrivy } from '@privy-io/react-auth';
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -37,6 +38,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useTradingContext();
+  const { logout: privyLogout } = usePrivy();
   const { notifications, markAllAsRead, hasUnreadNotifications } = useNotifications();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -46,8 +48,13 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
     setShowLogoutModal(true);
   };
 
-  const confirmLogout = () => {
+  const confirmLogout = async () => {
     logout();
+    try {
+      await privyLogout();
+    } catch (error) {
+      console.error('Privy logout failed:', error);
+    }
     router.push('/');
     setShowLogoutModal(false);
   };

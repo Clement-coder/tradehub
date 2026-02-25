@@ -7,12 +7,14 @@ import { Wallet, Copy, DollarSign, TrendingUp, UserPlus, Mail, CheckCircle, Hist
 import { useTradingContext } from '@/app/context/trading-context';
 import { useBTCPrice } from '@/lib/hooks/useBTCPrice';
 import { CurrencyDisplay } from '@/components/currency-display';
+import { usePrivy } from '@privy-io/react-auth';
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
 export default function WalletPage() {
   const router = useRouter();
+  const { ready, authenticated } = usePrivy();
   const { user, updateBalance } = useTradingContext();
   const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -28,12 +30,12 @@ export default function WalletPage() {
   }, []);
 
   useEffect(() => {
-    if (mounted && !user) {
+    if (mounted && ready && !authenticated) {
       router.push('/auth');
     }
-  }, [mounted, user, router]);
+  }, [mounted, ready, authenticated, router]);
 
-  if (!mounted || !user) {
+  if (!mounted || !ready || !authenticated || !user) {
     return null;
   }
 

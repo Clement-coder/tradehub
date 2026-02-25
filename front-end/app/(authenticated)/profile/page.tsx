@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, Mail, Copy, Calendar } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
+import { usePrivy } from '@privy-io/react-auth';
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { ready, authenticated } = usePrivy();
   const { user } = useTradingContext();
   const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -16,12 +18,12 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (mounted && !user) {
+    if (mounted && ready && !authenticated) {
       router.push('/auth');
     }
-  }, [mounted, user, router]);
+  }, [mounted, ready, authenticated, router]);
 
-  if (!mounted || !user) {
+  if (!mounted || !ready || !authenticated || !user) {
     return null;
   }
 
