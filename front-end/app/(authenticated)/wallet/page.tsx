@@ -16,7 +16,6 @@ export default function WalletPage() {
   const router = useRouter();
   const { ready, authenticated } = usePrivy();
   const { user, updateBalance } = useTradingContext();
-  const [mounted, setMounted] = useState(false);
   const [copied, setCopied] = useState(false);
   const { data: btcPrice, isLoading: btcPriceLoading } = useBTCPrice();
 
@@ -26,16 +25,24 @@ export default function WalletPage() {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (mounted && ready && !authenticated) {
+    if (ready && !authenticated) {
       router.push('/auth');
     }
-  }, [mounted, ready, authenticated, router]);
+  }, [ready, authenticated, router]);
 
-  if (!mounted || !ready || !authenticated || !user) {
+  if (!ready) {
+    return <div className="min-h-screen bg-background p-6">Loading...</div>;
+  }
+
+  if (!authenticated) {
+    return null;
+  }
+
+  if (!user) {
+    return <div className="min-h-screen bg-background p-6">Loading account...</div>;
+  }
+
+  if (!ready || !authenticated || !user) {
     return null;
   }
 
@@ -146,11 +153,23 @@ export default function WalletPage() {
 
               <div className="mt-4 pt-4 border-t border-border/50">
                 <p className="text-muted-foreground text-sm mb-2">Display Conversions</p>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <p className="text-foreground">EUR: {formatCurrency(eurEquivalent).replace('$', 'EUR ')}</p>
-                  <p className="text-foreground">GBP: {formatCurrency(gbpEquivalent).replace('$', 'GBP ')}</p>
-                  <p className="text-foreground">USDC: {usdcEquivalent.toFixed(2)}</p>
-                  <p className="text-foreground">USDT: {usdtEquivalent.toFixed(2)}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                  <div className="flex items-center gap-2 text-foreground">
+                    <Image src="/eur-logo.svg" alt="EUR" width={16} height={16} className="w-4 h-4" />
+                    <span>EUR: {formatCurrency(eurEquivalent).replace('$', 'EUR ')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-foreground">
+                    <Image src="/gbp-logo.svg" alt="GBP" width={16} height={16} className="w-4 h-4" />
+                    <span>GBP: {formatCurrency(gbpEquivalent).replace('$', 'GBP ')}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-foreground">
+                    <Image src="/usdc-logo.svg" alt="USDC" width={16} height={16} className="w-4 h-4" />
+                    <span>USDC: {usdcEquivalent.toFixed(2)}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-foreground">
+                    <Image src="/usdt-logo.svg" alt="USDT" width={16} height={16} className="w-4 h-4" />
+                    <span>USDT: {usdtEquivalent.toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
             </div>
