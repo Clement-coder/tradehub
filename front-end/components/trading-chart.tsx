@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart, ComposedChart, Bar } from 'recharts';
 import { GlassCard } from '@/components/glass-card';
 import { useTradingContext } from '@/app/context/trading-context';
-import { TrendingUp, BarChart3, LineChart as LineChartIcon } from 'lucide-react';
+import { TrendingUp, BarChart3, LineChart as LineChartIcon, Maximize2, Minimize2, X } from 'lucide-react';
 
 interface ChartDataPoint {
   time: string;
@@ -21,6 +21,7 @@ export default function TradingChart() {
   const [chartType, setChartType] = useState<'line' | 'candlestick'>('line');
   const [timeframe, setTimeframe] = useState<'1m' | '5m' | '15m' | '1H' | '4H' | '1D' | '1W'>('1m');
   const [historicalData, setHistoricalData] = useState<ChartDataPoint[]>([]);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     // Initialize 24 hours of historical data
@@ -162,8 +163,8 @@ export default function TradingChart() {
     '1W': '1 Week',
   };
 
-  return (
-    <GlassCard className="p-4 sm:p-6">
+  const chartContent = (
+    <>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center flex-shrink-0 mt-1">
@@ -207,6 +208,15 @@ export default function TradingChart() {
             </button>
           </div>
           
+          {/* Fullscreen Button */}
+          <button
+            onClick={() => setIsFullscreen(true)}
+            className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            title="Fullscreen"
+          >
+            <Maximize2 className="w-4 h-4" />
+          </button>
+          
           {/* Desktop: Show all buttons */}
           <div className="hidden sm:flex gap-1">
             {(['1m', '5m', '15m', '1H', '4H', '1D', '1W'] as const).map((tf) => (
@@ -235,12 +245,12 @@ export default function TradingChart() {
                 {timeframeLabels[tf]}
               </option>
             ))}
-          ))}
+          </select>
         </div>
       </div>
 
       {chartData.length > 0 && (
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={isFullscreen ? '100%' : 300}>
           {chartType === 'line' ? (
             <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <defs>
@@ -358,6 +368,34 @@ export default function TradingChart() {
           )}
         </ResponsiveContainer>
       )}
-    </GlassCard>
+    </>
+  );
+
+  return (
+    <>
+      <GlassCard className="p-4 sm:p-6">
+        {chartContent}
+      </GlassCard>
+
+      {/* Fullscreen Modal */}
+      {isFullscreen && (
+        <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col">
+          <div className="flex items-center justify-between p-4 border-b border-border">
+            <h2 className="text-xl font-bold">BTC/USD Chart</h2>
+            <button
+              onClick={() => setIsFullscreen(false)}
+              className="p-2 rounded-lg hover:bg-muted transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="flex-1 p-4 overflow-auto">
+            <div className="h-full">
+              {chartContent}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
