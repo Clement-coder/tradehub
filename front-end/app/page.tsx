@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { TrendingUp, ArrowRight, Wallet, BarChart3, Lock, Sparkles, Menu, X, Home, BookOpen, Mail } from 'lucide-react';
+import { TrendingUp, ArrowRight, Wallet, BarChart3, Lock, Sparkles, Menu, X, Home, BookOpen, Mail, DollarSign, Zap, Shield, LineChart } from 'lucide-react';
 import { GlassCard } from '@/components/glass-card';
 import { useEffect, useState } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
@@ -313,27 +313,55 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Stats Section - Ready to Start Trading */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
-        <GlassCard className="p-8 md:p-12 lg:p-16 xl:p-20 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-accent/8 to-chart-2/8 animate-pulse" style={{animationDuration: '4s'}}></div>
-          <div className="relative z-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3 md:mb-4">Ready to Start Trading?</h2>
-            <p className="text-muted-foreground mb-8 md:mb-12 text-sm md:text-base lg:text-lg">Join thousands learning to trade with our platform</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 lg:gap-12">
-              <div className="space-y-2">
-                <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-primary animate-pulse">Real Funds</div>
-                <p className="text-muted-foreground font-medium text-sm md:text-base">Starting Balance</p>
+        <GlassCard className="p-8 md:p-12 lg:p-16 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-blue-500/10 to-purple-500/10"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-green-500/20 to-transparent rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-orange-500/20 to-transparent rounded-full blur-3xl"></div>
+          
+          <div className="relative z-10 text-center">
+            <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/20 to-green-500/10 border border-green-500/30">
+              <Sparkles className="w-4 h-4 text-green-500" />
+              <span className="text-green-500 font-semibold text-sm">Start Your Journey</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Ready to Start Trading?</h2>
+            <p className="text-muted-foreground mb-10 text-base md:text-lg max-w-2xl mx-auto">Join thousands of traders mastering the markets with our professional platform</p>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
+              <div className="group p-6 rounded-2xl bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-500/20 hover:border-orange-500/40 transition-all hover:scale-105">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-orange-500/25 to-orange-500/15 flex items-center justify-center">
+                  <Wallet className="w-7 h-7 text-orange-500" />
+                </div>
+                <div className="text-4xl md:text-5xl font-bold text-orange-500 mb-2">$10,000</div>
+                <p className="text-muted-foreground font-medium">Starting Balance</p>
               </div>
-              <div className="space-y-2">
-                <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-accent animate-pulse" style={{animationDelay: '0.5s'}}>24/7</div>
-                <p className="text-muted-foreground font-medium text-sm md:text-base">Market Access</p>
+              
+              <div className="group p-6 rounded-2xl bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 hover:border-blue-500/40 transition-all hover:scale-105">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-blue-500/25 to-blue-500/15 flex items-center justify-center">
+                  <TrendingUp className="w-7 h-7 text-blue-500" />
+                </div>
+                <div className="text-4xl md:text-5xl font-bold text-blue-500 mb-2">24/7</div>
+                <p className="text-muted-foreground font-medium">Market Access</p>
               </div>
-              <div className="space-y-2">
-                <div className="text-3xl md:text-4xl lg:text-5xl font-bold text-chart-2 animate-pulse" style={{animationDelay: '1s'}}>0%</div>
-                <p className="text-muted-foreground font-medium text-sm md:text-base">Zero Risk</p>
+              
+              <div className="group p-6 rounded-2xl bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 hover:border-green-500/40 transition-all hover:scale-105">
+                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-green-500/25 to-green-500/15 flex items-center justify-center">
+                  <Lock className="w-7 h-7 text-green-500" />
+                </div>
+                <div className="text-4xl md:text-5xl font-bold text-green-500 mb-2">0%</div>
+                <p className="text-muted-foreground font-medium">Zero Risk</p>
               </div>
             </div>
+            
+            <Link
+              href={authenticated ? "/dashboard" : "/auth"}
+              className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 mt-10 rounded-xl font-bold text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-2xl hover:shadow-primary/50 transition-all duration-300 transform hover:-translate-y-1"
+            >
+              <Sparkles className="w-5 h-5" />
+              {authenticated ? "Go to Dashboard" : "Start Trading Now"}
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
         </GlassCard>
       </section>
@@ -457,43 +485,62 @@ export default function LandingPage() {
 
       {/* Why Choose Us Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Why Choose TradeHub?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <GlassCard className="p-8 relative overflow-hidden group hover:scale-105 transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.55_0.15_260)]/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 border border-primary/30">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-primary font-semibold text-sm">Why TradeHub</span>
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold">Why Choose TradeHub?</h2>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          <GlassCard className="group p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-              <h3 className="text-2xl font-bold mb-4">No Hidden Fees</h3>
-              <p className="text-muted-foreground">
+              <div className="w-14 h-14 mb-5 rounded-xl bg-gradient-to-br from-orange-500/25 to-orange-500/15 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <DollarSign className="w-7 h-7 text-orange-500" />
+              </div>
+              <h3 className="text-2xl font-bold mb-3 text-foreground">No Hidden Fees</h3>
+              <p className="text-muted-foreground leading-relaxed">
                 Completely free to use. No subscriptions, no hidden charges, no credit card required. Just sign up and start trading immediately.
               </p>
             </div>
           </GlassCard>
 
-          <GlassCard className="p-8 relative overflow-hidden group hover:scale-105 transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.65_0.12_140)]/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <GlassCard className="group p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-              <h3 className="text-2xl font-bold mb-4">Real Market Data</h3>
-              <p className="text-muted-foreground">
+              <div className="w-14 h-14 mb-5 rounded-xl bg-gradient-to-br from-blue-500/25 to-blue-500/15 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <LineChart className="w-7 h-7 text-blue-500" />
+              </div>
+              <h3 className="text-2xl font-bold mb-3 text-foreground">Real Market Data</h3>
+              <p className="text-muted-foreground leading-relaxed">
                 Practice with actual Bitcoin price movements. Our platform uses real-time market data so you experience authentic trading conditions.
               </p>
             </div>
           </GlassCard>
 
-          <GlassCard className="p-8 relative overflow-hidden group hover:scale-105 transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.6_0.14_180)]/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <GlassCard className="group p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-              <h3 className="text-2xl font-bold mb-4">Instant Execution</h3>
-              <p className="text-muted-foreground">
+              <div className="w-14 h-14 mb-5 rounded-xl bg-gradient-to-br from-green-500/25 to-green-500/15 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Zap className="w-7 h-7 text-green-500" />
+              </div>
+              <h3 className="text-2xl font-bold mb-3 text-foreground">Instant Execution</h3>
+              <p className="text-muted-foreground leading-relaxed">
                 Experience lightning-fast order execution. Place trades instantly at current market prices, just like professional trading platforms.
               </p>
             </div>
           </GlassCard>
 
-          <GlassCard className="p-8 relative overflow-hidden group hover:scale-105 transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.5_0.13_320)]/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          <GlassCard className="group p-8 relative overflow-hidden hover:scale-105 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-              <h3 className="text-2xl font-bold mb-4">Comprehensive Analytics</h3>
-              <p className="text-muted-foreground">
+              <div className="w-14 h-14 mb-5 rounded-xl bg-gradient-to-br from-purple-500/25 to-purple-500/15 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <BarChart3 className="w-7 h-7 text-purple-500" />
+              </div>
+              <h3 className="text-2xl font-bold mb-3 text-foreground">Comprehensive Analytics</h3>
+              <p className="text-muted-foreground leading-relaxed">
                 Track your performance with detailed analytics. View your trade history, monitor open positions, and analyze your P&L in real-time.
               </p>
             </div>
