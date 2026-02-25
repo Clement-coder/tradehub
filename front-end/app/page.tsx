@@ -321,10 +321,6 @@ export default function LandingPage() {
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-gradient-to-tr from-orange-500/20 to-transparent rounded-full blur-3xl"></div>
           
           <div className="relative z-10 text-center">
-            <div className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/20 to-green-500/10 border border-green-500/30">
-              <Sparkles className="w-4 h-4 text-green-500" />
-              <span className="text-green-500 font-semibold text-sm">Start Your Journey</span>
-            </div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Ready to Start Trading?</h2>
             <p className="text-muted-foreground mb-10 text-base md:text-lg max-w-2xl mx-auto">Join thousands of traders mastering the markets with our professional platform</p>
             
@@ -353,15 +349,6 @@ export default function LandingPage() {
                 <p className="text-muted-foreground font-medium">Zero Risk</p>
               </div>
             </div>
-            
-            <Link
-              href={authenticated ? "/dashboard" : "/auth"}
-              className="group relative inline-flex items-center justify-center gap-2 px-8 py-4 mt-10 rounded-xl font-bold text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-2xl hover:shadow-primary/50 transition-all duration-300 transform hover:-translate-y-1"
-            >
-              <Sparkles className="w-5 h-5" />
-              {authenticated ? "Go to Dashboard" : "Start Trading Now"}
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
           </div>
         </GlassCard>
       </section>
