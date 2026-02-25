@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart, ComposedChart, Bar } from 'recharts';
 import { GlassCard } from '@/components/glass-card';
 import { useTradingContext } from '@/app/context/trading-context';
-import { TrendingUp, BarChart3, LineChart as LineChartIcon, Maximize2, X } from 'lucide-react';
+import { TrendingUp, BarChart3, LineChart as LineChartIcon, Maximize2, X, Menu } from 'lucide-react';
 import TradingInterface from './trading-interface';
 
 interface ChartDataPoint {
@@ -23,6 +23,7 @@ export default function TradingChart() {
   const [timeframe, setTimeframe] = useState<'1m' | '5m' | '15m' | '1H' | '4H' | '1D' | '1W'>('1m');
   const [historicalData, setHistoricalData] = useState<ChartDataPoint[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showTradingPanel, setShowTradingPanel] = useState(false);
 
   useEffect(() => {
     // Initialize 24 hours of historical data
@@ -251,7 +252,7 @@ export default function TradingChart() {
       </div>
 
       {chartData.length > 0 && (
-        <ResponsiveContainer width="100%" height={isFullscreen ? '100%' : 300} className={isFullscreen ? 'min-h-[600px]' : ''}>
+        <ResponsiveContainer width="100%" height={isFullscreen ? '100%' : 300}>
           {chartType === 'line' ? (
             <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
               <defs>
@@ -380,7 +381,7 @@ export default function TradingChart() {
 
       {/* Fullscreen Modal */}
       {isFullscreen && (
-        <div className="fixed inset-0 z-50 bg-background animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-50 bg-background">
           {/* Header */}
           <div className="h-16 border-b border-border bg-card/95 backdrop-blur-sm flex items-center justify-between px-6">
             <div className="flex items-center gap-3">
@@ -394,29 +395,66 @@ export default function TradingChart() {
                 <p className="text-xs text-muted-foreground">${currentPrice.toLocaleString()}</p>
               </div>
             </div>
-            <button
-              onClick={() => setIsFullscreen(false)}
-              className="p-2 rounded-lg hover:bg-muted transition-all hover:rotate-90 duration-300"
-              title="Close Fullscreen"
-            >
-              <X className="w-6 h-6" />
-            </button>
+            <div className="flex items-center gap-2">
+              {/* Mobile Trade Button */}
+              <button
+                onClick={() => setShowTradingPanel(true)}
+                className="lg:hidden p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                title="Open Trading Panel"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setIsFullscreen(false)}
+                className="p-2 rounded-lg hover:bg-muted transition-all hover:rotate-90 duration-300"
+                title="Close Fullscreen"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
           </div>
 
           {/* Main Content */}
           <div className="h-[calc(100vh-4rem)] flex">
-            {/* Chart Section - 70% */}
-            <div className="flex-1 p-6 flex flex-col">
-              <div className="flex-1 bg-card/50 backdrop-blur-sm rounded-2xl p-6 border border-border">
+            {/* Chart Section */}
+            <div className="flex-1 p-4 lg:p-6 flex flex-col overflow-hidden">
+              <div className="flex-1 bg-card/50 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-border overflow-hidden">
                 {chartContent}
               </div>
             </div>
 
-            {/* Trading Panel - 30% */}
-            <div className="w-[400px] p-6 border-l border-border bg-card/30 backdrop-blur-sm overflow-y-auto animate-in slide-in-from-right duration-500">
+            {/* Trading Panel - Desktop (hidden on mobile) */}
+            <div className="hidden lg:block w-[400px] p-6 border-l border-border bg-card/30 backdrop-blur-sm overflow-y-auto">
               <TradingInterface />
             </div>
           </div>
+
+          {/* Trading Panel - Mobile Slide-in */}
+          {showTradingPanel && (
+            <>
+              {/* Backdrop */}
+              <div 
+                className="lg:hidden fixed inset-0 bg-black/50 z-50 animate-in fade-in duration-300"
+                onClick={() => setShowTradingPanel(false)}
+              />
+              
+              {/* Slide-in Panel */}
+              <div className="lg:hidden fixed top-0 right-0 bottom-0 w-full sm:w-[400px] bg-background z-50 overflow-y-auto animate-in slide-in-from-right duration-300 shadow-2xl">
+                <div className="sticky top-0 bg-background/95 backdrop-blur-sm border-b border-border p-4 flex items-center justify-between z-10">
+                  <h3 className="text-lg font-semibold">Trade BTC</h3>
+                  <button
+                    onClick={() => setShowTradingPanel(false)}
+                    className="p-2 rounded-lg hover:bg-muted transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="p-4">
+                  <TradingInterface />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 
