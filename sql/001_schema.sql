@@ -134,14 +134,17 @@ create index if not exists idx_notifications_privy_user_id on public.notificatio
 create index if not exists idx_notifications_unread on public.notifications(unread);
 create index if not exists idx_notifications_created_at on public.notifications(created_at desc);
 
+drop trigger if exists trg_users_updated_at on public.users;
 create trigger trg_users_updated_at
 before update on public.users
 for each row execute function public.set_updated_at();
 
+drop trigger if exists trg_balances_updated_at on public.balances;
 create trigger trg_balances_updated_at
 before update on public.balances
 for each row execute function public.set_updated_at();
 
+drop trigger if exists trg_notifications_updated_at on public.notifications;
 create trigger trg_notifications_updated_at
 before update on public.notifications
 for each row execute function public.set_updated_at();
@@ -155,3 +158,52 @@ grant select, insert, update on table public.positions to anon, authenticated;
 grant select, insert on table public.trades to anon, authenticated;
 grant select, insert on table public.transactions to anon, authenticated;
 grant select, insert, update on table public.notifications to anon, authenticated;
+
+-- Aggregated user snapshot view (user + balance + related arrays)
+create or replace view public.user_account_snapshot as
+select
+  u.id,
+  u.privy_user_id,
+  u.wallet_address,
+  u.email,
+  u.username,
+  u.login_method,
+  u.created_at,
+  u.updated_at,
+  coalesce(b.amount, 0)::numeric(20,8) as balance,
+  coalesce(
+    (
+      select jsonb_agg(p order by p.created_at desc)
+      from public.positions p
+      where p.user_id = u.id
+    ),
+    '[]'::jsonb
+  ) as positions,
+  coalesce(
+    (
+      select jsonb_agg(t order by t.closed_at desc)
+      from public.trades t
+      where t.user_id = u.id
+    ),
+    '[]'::jsonb
+  ) as trades,
+  coalesce(
+    (
+      select jsonb_agg(tx order by tx.created_at desc)
+      from public.transactions tx
+      where tx.user_id = u.id
+    ),
+    '[]'::jsonb
+  ) as transactions,
+  coalesce(
+    (
+      select jsonb_agg(n order by n.created_at desc)
+      from public.notifications n
+      where n.user_id = u.id
+    ),
+    '[]'::jsonb
+  ) as notifications
+from public.users u
+left join public.balances b on b.user_id = u.id;
+
+grant select on public.user_account_snapshot to anon, authenticated;
