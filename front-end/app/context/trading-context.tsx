@@ -59,7 +59,7 @@ interface TradingContextType {
   trades: Trade[];
   addPosition: (position: Position) => Promise<boolean>;
   closePosition: (id: string, exitPrice: number) => Promise<boolean>;
-  updateBalance: (amount: number) => Promise<boolean>;
+  updateBalance: (amount: number, metadata?: Record<string, unknown>) => Promise<boolean>;
   updatePrice: (price: number) => void;
   logout: () => void;
   refreshUserData: () => Promise<void>;
@@ -234,7 +234,7 @@ export function TradingProvider({ children }: { children: ReactNode }) {
   );
 
   const updateBalance = useCallback(
-    async (amount: number): Promise<boolean> => {
+    async (amount: number, metadata?: Record<string, unknown>): Promise<boolean> => {
       if (!user) return false;
 
       const type = amount >= 0 ? 'deposit' : 'withdrawal';
@@ -243,6 +243,7 @@ export function TradingProvider({ children }: { children: ReactNode }) {
         privyUserId: user.privyUserId,
         delta: amount,
         type,
+        metadata,
       });
 
       if (!result.ok) {

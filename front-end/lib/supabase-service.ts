@@ -38,6 +38,7 @@ interface BalanceAdjustmentInput {
   privyUserId: string;
   delta: number;
   type: 'deposit' | 'withdrawal';
+  metadata?: Record<string, unknown>;
 }
 
 interface ServiceResult {
@@ -519,7 +520,7 @@ export async function adjustBalance(input: BalanceAdjustmentInput): Promise<Serv
       balance_before: currentBalance,
       balance_after: nextBalance,
       status: 'completed',
-      metadata: null,
+      metadata: input.metadata ?? null,
     });
 
     await createNotification({
