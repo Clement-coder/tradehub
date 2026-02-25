@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Wallet, Copy, DollarSign, TrendingUp, UserPlus, Mail, CheckCircle, History } from 'lucide-react';
+import { Wallet, DollarSign, UserPlus, Mail, CheckCircle, History } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import { useBTCPrice } from '@/lib/hooks/useBTCPrice';
 import { CurrencyDisplay } from '@/components/currency-display';
@@ -16,13 +16,11 @@ export default function WalletPage() {
   const router = useRouter();
   const { ready, authenticated } = usePrivy();
   const { user, updateBalance } = useTradingContext();
-  const [copied, setCopied] = useState(false);
   const { data: btcPrice, isLoading: btcPriceLoading } = useBTCPrice();
 
-  const [depositAmount, setDepositAmount] = useState('');
   const [withdrawAmount, setWithdrawAmount] = useState('');
-  const [showDepositModal, setShowDepositModal] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [withdrawError, setWithdrawError] = useState('');
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -46,12 +44,6 @@ export default function WalletPage() {
     return null;
   }
 
-  const copyAddress = () => {
-    navigator.clipboard.writeText(user.walletAddress);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const btcEquivalent = btcPrice ? (user?.balance || 0) / btcPrice : 0;
   const usdBalance = user?.balance || 0;
   const eurEquivalent = usdBalance * 0.92;
@@ -60,32 +52,27 @@ export default function WalletPage() {
   const usdtEquivalent = usdBalance;
 
   const resetAmounts = () => {
-    setDepositAmount('');
     setWithdrawAmount('');
-  };
-
-  const handleDeposit = async () => {
-    if (!depositAmount) return;
-    const amount = parseFloat(depositAmount);
-    if (isNaN(amount) || amount <= 0) return;
-
-    const success = await updateBalance(amount);
-    if (!success) return;
-    resetAmounts();
-    setShowDepositModal(false);
-    console.log(`Deposited: ${amount}`);
+    setWithdrawError('');
   };
 
   const handleWithdraw = async () => {
+    setWithdrawError('');
     if (!withdrawAmount) return;
     const amount = parseFloat(withdrawAmount);
-    if (isNaN(amount) || amount <= 0) return;
+    if (isNaN(amount) || amount <= 0) {
+      setWithdrawError('Enter a valid amount.');
+      return;
+    }
 
     if (user && user.balance >= amount) {
       const success = await updateBalance(-amount);
-      if (!success) return;
+      if (!success) {
+        setWithdrawError('Withdrawal failed. Please try again.');
+        return;
+      }
     } else {
-      console.error('Insufficient balance for withdrawal');
+      setWithdrawError('Insufficient balance for withdrawal.');
       return;
     }
     resetAmounts();
@@ -177,17 +164,13 @@ export default function WalletPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
-          <button
-            onClick={() => setShowDepositModal(true)}
-            className="group relative overflow-hidden py-3 sm:py-4 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-green-600 to-green-500 flex items-center justify-center gap-2"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full transition-transform duration-1000"></div>
-            <span className="relative z-10">Deposit</span>
-          </button>
+        <div className="mb-8 space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[oklch(0.68_0.11_40)]/10 border border-[oklch(0.68_0.11_40)]/30 text-[oklch(0.68_0.11_40)] text-xs font-semibold">
+            Agents Only
+          </div>
           <button
             onClick={() => setShowWithdrawModal(true)}
-            className="group relative overflow-hidden py-3 sm:py-4 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 flex items-center justify-center gap-2"
+            className="group relative overflow-hidden w-full py-3 sm:py-4 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 flex items-center justify-center gap-2"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full transition-transform duration-1000"></div>
             <span className="relative z-10">Withdraw</span>
@@ -289,36 +272,6 @@ export default function WalletPage() {
           </div>
         </div>
 
-        {/* Deposit Modal */}
-        {showDepositModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-card p-6 rounded-lg shadow-lg w-full max-w-md border border-border">
-              <h2 className="text-xl font-bold mb-4">Deposit Funds</h2>
-              <input
-                type="number"
-                placeholder="Amount to deposit"
-                value={depositAmount}
-                onChange={(e) => setDepositAmount(e.target.value)}
-                className="w-full p-3 rounded-md bg-background border border-border mb-4 text-foreground"
-              />
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => setShowDepositModal(false)}
-                  className="px-4 py-2 rounded-md border border-border text-muted-foreground hover:bg-muted"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeposit}
-                  className="px-4 py-2 rounded-md bg-green-600 text-white hover:bg-green-700"
-                >
-                  Confirm Deposit
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Withdraw Modal */}
         {showWithdrawModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -331,6 +284,9 @@ export default function WalletPage() {
                 onChange={(e) => setWithdrawAmount(e.target.value)}
                 className="w-full p-3 rounded-md bg-background border border-border mb-4 text-foreground"
               />
+              {withdrawError && (
+                <p className="text-sm text-destructive mb-3">{withdrawError}</p>
+              )}
               <div className="flex justify-end gap-3">
                 <button
                   onClick={() => setShowWithdrawModal(false)}
