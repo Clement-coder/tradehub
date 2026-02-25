@@ -567,7 +567,7 @@ export default function LandingPage() {
               tradehuhWorldWide@gmail.com
             </a>
             <p className="text-muted-foreground text-center text-xs md:text-sm">
-              © 2024 TradeHub. Trading platform for educational purposes.
+              © 2026 TradeHub. Master BTC trading with real-time simulations. Practice strategies, build confidence, and earn your trading edge.
             </p>
           </div>
         </div>
