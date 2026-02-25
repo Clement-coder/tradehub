@@ -163,18 +163,25 @@ export default function TradingChart() {
   };
 
   return (
-    <GlassCard className="p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <TrendingUp className="w-5 h-5 text-primary" />
-          <h2 className="text-lg font-semibold text-foreground">BTC/USD</h2>
-          <div className={`px-2 py-1 rounded text-xs font-medium ${
-            isUpTrend ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'
-          }`}>
-            {isUpTrend ? '+' : ''}{priceChange.toFixed(0)} ({percentChange.toFixed(2)}%)
+    <GlassCard className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center flex-shrink-0 mt-1">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-orange-500">
+              <path d="M23.638 14.904c-1.602 6.43-8.113 10.34-14.542 8.736C2.67 22.05-1.244 15.525.362 9.105 1.962 2.67 8.475-1.243 14.9.358c6.43 1.605 10.342 8.115 8.738 14.548v-.002zm-6.35-4.613c.24-1.59-.974-2.45-2.64-3.03l.54-2.153-1.315-.33-.525 2.107c-.345-.087-.705-.167-1.064-.25l.526-2.127-1.32-.33-.54 2.165c-.285-.067-.565-.132-.84-.2l-1.815-.45-.35 1.407s.975.225.955.236c.535.136.63.486.615.766l-1.477 5.92c-.075.166-.24.406-.614.314.015.02-.96-.24-.96-.24l-.66 1.51 1.71.426.93.242-.54 2.19 1.32.327.54-2.17c.36.1.705.19 1.05.273l-.51 2.154 1.32.33.545-2.19c2.24.427 3.93.257 4.64-1.774.57-1.637-.03-2.58-1.217-3.196.854-.193 1.5-.76 1.68-1.93h.01zm-3.01 4.22c-.404 1.64-3.157.75-4.05.53l.72-2.9c.896.23 3.757.67 3.33 2.37zm.41-4.24c-.37 1.49-2.662.735-3.405.55l.654-2.64c.744.18 3.137.524 2.75 2.084v.006z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold text-foreground">BTC/USD</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">Updated: {new Date().toLocaleTimeString()}</p>
+            <div className={`inline-flex px-2 py-0.5 rounded text-xs font-medium mt-1 ${
+              isUpTrend ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'
+            }`}>
+              {isUpTrend ? '+' : ''}{priceChange.toFixed(0)} ({percentChange.toFixed(2)}%)
+            </div>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <div className="flex items-center gap-2">
           <div className="flex gap-1 bg-muted/50 rounded-lg p-1">
             <button
               onClick={() => setChartType('line')}
@@ -199,18 +206,35 @@ export default function TradingChart() {
               <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
           </div>
-          {(['1m', '5m', '15m', '1H', '4H', '1D', '1W'] as const).map((tf) => (
-            <button
-              key={tf}
-              onClick={() => setTimeframe(tf)}
-              className={`px-2 py-1 sm:px-3 rounded text-xs sm:text-sm font-medium transition-colors ${
-                timeframe === tf
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted/50 text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {tf}
-            </button>
+          
+          {/* Desktop: Show all buttons */}
+          <div className="hidden sm:flex gap-1">
+            {(['1m', '5m', '15m', '1H', '4H', '1D', '1W'] as const).map((tf) => (
+              <button
+                key={tf}
+                onClick={() => setTimeframe(tf)}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  timeframe === tf
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted/50 text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                {tf}
+              </button>
+            ))}
+          </div>
+          
+          {/* Mobile: Dropdown */}
+          <select
+            value={timeframe}
+            onChange={(e) => setTimeframe(e.target.value as typeof timeframe)}
+            className="sm:hidden px-3 py-1.5 rounded-lg text-sm font-medium bg-primary text-primary-foreground border-0 focus:outline-none focus:ring-2 focus:ring-primary/50"
+          >
+            {(['1m', '5m', '15m', '1H', '4H', '1D', '1W'] as const).map((tf) => (
+              <option key={tf} value={tf}>
+                {timeframeLabels[tf]}
+              </option>
+            ))}
           ))}
         </div>
       </div>
