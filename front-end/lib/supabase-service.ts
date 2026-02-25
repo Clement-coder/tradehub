@@ -10,6 +10,8 @@ import {
   type Numeric,
 } from './supabase';
 
+export type { Transaction };
+
 interface UserInput {
   privyUserId: string;
   walletAddress: string;

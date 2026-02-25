@@ -10,24 +10,21 @@ import TradingChart from '@/components/trading-chart';
 import TradingInterface from '@/components/trading-interface';
 import PositionsTable from '@/components/positions-table';
 import TradeHistory from '@/components/trade-history';
+import OrderBook from '@/components/order-book';
+import RecentTrades from '@/components/recent-trades';
 
 export default function TradingPage() {
   const router = useRouter();
   const { ready, authenticated } = usePrivy();
   const { user, currentPrice, positions } = useTradingContext();
-  const [mounted, setMounted] = useState(false);
   const [priceChange, setPriceChange] = useState(0);
   const [priceChangePercent, setPriceChangePercent] = useState(0);
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (mounted && ready && !authenticated) {
+    if (ready && !authenticated) {
       router.push('/auth');
     }
-  }, [mounted, ready, authenticated, router]);
+  }, [ready, authenticated, router]);
 
   useEffect(() => {
     const change = (Math.random() - 0.5) * 1000;
@@ -36,7 +33,19 @@ export default function TradingPage() {
     setPriceChangePercent(percent);
   }, [currentPrice]);
 
-  if (!mounted || !ready || !authenticated || !user) {
+  if (!ready) {
+    return <div className="min-h-screen bg-background p-6">Loading...</div>;
+  }
+
+  if (!authenticated) {
+    return null;
+  }
+
+  if (!user) {
+    return <div className="min-h-screen bg-background p-6">Loading account...</div>;
+  }
+
+  if (!ready || !authenticated || !user) {
     return null;
   }
 
@@ -189,42 +198,19 @@ export default function TradingPage() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
           {/* Chart */}
           <div className="xl:col-span-2 order-2 xl:order-1">
-            <div className="bg-card rounded-xl border border-border p-4 sm:p-6 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
-                      <span className="text-orange-500 font-bold text-sm">₿</span>
-                    </div>
-                    <div>
-                      <h2 className="text-lg font-bold">BTC/USD</h2>
-                      <p className="text-xs text-muted-foreground">Bitcoin</p>
-                    </div>
-                  </div>
-                  <div className={`flex items-center gap-1 px-2 py-1 rounded-lg ${isPositive ? 'bg-green-500/10 text-green-500' : 'bg-red-500/10 text-red-500'}`}>
-                    {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                    <span className="text-xs font-semibold">{isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%</span>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <button className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">
-                    <Clock className="w-3 h-3 inline mr-1" />
-                    1H
-                  </button>
-                  <button className="px-3 py-1.5 rounded-lg hover:bg-muted text-xs font-medium transition-colors">4H</button>
-                  <button className="px-3 py-1.5 rounded-lg hover:bg-muted text-xs font-medium transition-colors">1D</button>
-                  <button className="px-3 py-1.5 rounded-lg hover:bg-muted text-xs font-medium transition-colors">1W</button>
-                </div>
-              </div>
-              <TradingChart />
-            </div>
+            <TradingChart />
           </div>
 
           {/* Trading Panel */}
           <div className="order-1 xl:order-2">
             <TradingInterface />
           </div>
+        </div>
+
+        {/* Market Data Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <OrderBook />
+          <RecentTrades />
         </div>
 
         {/* Positions and History */}

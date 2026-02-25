@@ -142,7 +142,7 @@ export function TradingProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadUserFromPrivy = async (currentPrivyUser: PrivyUser) => {
       const walletAddress = currentPrivyUser.wallet?.address ?? '';
-      const email = currentPrivyUser.email?.address ?? '';
+      const email = currentPrivyUser.google?.email ?? currentPrivyUser.email?.address ?? '';
       const loginMethod = inferLoginMethod(currentPrivyUser);
       const username =
         currentPrivyUser.google?.name ??

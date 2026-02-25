@@ -3,11 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Wallet, DollarSign, UserPlus, Mail, CheckCircle, History } from 'lucide-react';
+import { Wallet, DollarSign, UserPlus, Mail, CheckCircle, History, ArrowDownCircle, ShieldCheck, Clock3, Coins, SendHorizontal, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import { useBTCPrice } from '@/lib/hooks/useBTCPrice';
 import { CurrencyDisplay } from '@/components/currency-display';
 import { usePrivy } from '@privy-io/react-auth';
+import { getTransactionHistory, type Transaction } from '@/lib/supabase-service';
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
@@ -20,18 +21,42 @@ export default function WalletPage() {
 
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawAddress, setWithdrawAddress] = useState('');
-  const [withdrawNetwork, setWithdrawNetwork] = useState<'Base' | 'Ethereum' | 'Arbitrum'>('Base');
+  const NETWORKS = [
+    { id: 'Base', logo: '/network-base.svg', fee: 0.25, eta: '1-3 min', description: 'Low-cost Ethereum L2' },
+    { id: 'Ethereum', logo: '/network-ethereum.svg', fee: 2.5, eta: '3-10 min', description: 'Mainnet, highest liquidity' },
+    { id: 'Arbitrum', logo: '/network-arbitrum.svg', fee: 0.6, eta: '1-5 min', description: 'Fast Ethereum L2' },
+    { id: 'Optimism', logo: '/network-optimism.svg', fee: 0.55, eta: '1-5 min', description: 'OP Stack Ethereum L2' },
+    { id: 'Polygon', logo: '/network-polygon.svg', fee: 0.35, eta: '1-4 min', description: 'Low-fee sidechain' },
+    { id: 'BNB Chain', logo: '/network-bnb.svg', fee: 0.4, eta: '1-4 min', description: 'EVM network with broad support' },
+    { id: 'Avalanche', logo: '/network-avalanche.svg', fee: 0.5, eta: '1-5 min', description: 'High-throughput EVM chain' },
+    { id: 'zkSync Era', logo: '/network-zksync.svg', fee: 0.45, eta: '1-4 min', description: 'ZK-rollup on Ethereum' },
+    { id: 'Linea', logo: '/network-linea.svg', fee: 0.4, eta: '1-4 min', description: 'Consensys zkEVM rollup' },
+    { id: 'Scroll', logo: '/network-scroll.svg', fee: 0.42, eta: '1-4 min', description: 'zkEVM for Ethereum' },
+  ] as const;
+  type NetworkName = (typeof NETWORKS)[number]['id'];
+  const [withdrawNetwork, setWithdrawNetwork] = useState<NetworkName>('Base');
   const [withdrawMemo, setWithdrawMemo] = useState('');
   const [withdrawConfirmed, setWithdrawConfirmed] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawError, setWithdrawError] = useState('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
     if (ready && !authenticated) {
       router.push('/auth');
     }
   }, [ready, authenticated, router]);
+
+  useEffect(() => {
+    const loadTransactions = async () => {
+      if (user) {
+        const txs = await getTransactionHistory(user.id, user.privyUserId);
+        setTransactions(txs);
+      }
+    };
+    loadTransactions();
+  }, [user]);
 
   if (!ready) {
     return <div className="min-h-screen bg-background p-6">Loading...</div>;
@@ -55,17 +80,8 @@ export default function WalletPage() {
   const gbpEquivalent = usdBalance * 0.79;
   const usdcEquivalent = usdBalance;
   const usdtEquivalent = usdBalance;
-  const networkFeeMap: Record<'Base' | 'Ethereum' | 'Arbitrum', number> = {
-    Base: 0.25,
-    Ethereum: 2.5,
-    Arbitrum: 0.6,
-  };
-  const networkEtaMap: Record<'Base' | 'Ethereum' | 'Arbitrum', string> = {
-    Base: '1-3 min',
-    Ethereum: '3-10 min',
-    Arbitrum: '1-5 min',
-  };
-  const selectedFee = networkFeeMap[withdrawNetwork];
+  const selectedNetwork = NETWORKS.find((network) => network.id === withdrawNetwork) ?? NETWORKS[0];
+  const selectedFee = selectedNetwork.fee;
   const parsedWithdrawAmount = Number(withdrawAmount);
   const isWithdrawAmountValid = Number.isFinite(parsedWithdrawAmount) && parsedWithdrawAmount > 0;
   const withdrawAddressIsValid = /^0x[a-fA-F0-9]{40}$/.test(withdrawAddress.trim());
@@ -115,7 +131,7 @@ export default function WalletPage() {
         requested_amount: amount,
         network_fee: selectedFee,
         net_amount: receiveAmount,
-        eta: networkEtaMap[withdrawNetwork],
+        eta: selectedNetwork.eta,
       });
       if (!success) {
         setWithdrawError('Withdrawal failed. Please try again.');
@@ -234,7 +250,11 @@ export default function WalletPage() {
             disabled
             className="relative py-3 sm:py-4 px-6 rounded-xl font-semibold text-[oklch(0.68_0.11_40)] bg-[oklch(0.68_0.11_40)]/10 border border-[oklch(0.68_0.11_40)]/30 flex items-center justify-center gap-2 cursor-not-allowed"
           >
-            <span>Deposit</span>
+            <Coins className="w-5 h-5" />
+            <div className="flex flex-col items-start">
+              <span>Deposit</span>
+              <span className="text-[11px] font-medium opacity-80">Contact support agent to fund</span>
+            </div>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[oklch(0.68_0.11_40)]/20 border border-[oklch(0.68_0.11_40)]/30">
               Agents Only
             </span>
@@ -244,7 +264,11 @@ export default function WalletPage() {
             className="group relative overflow-hidden py-3 sm:py-4 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 flex items-center justify-center gap-2"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full transition-transform duration-1000"></div>
-            <span className="relative z-10">Withdraw</span>
+            <SendHorizontal className="w-5 h-5 relative z-10" />
+            <div className="relative z-10 flex flex-col items-start">
+              <span>Withdraw</span>
+              <span className="text-[11px] font-medium text-white/80">Send to external wallet</span>
+            </div>
           </button>
         </div>
 
@@ -331,13 +355,53 @@ export default function WalletPage() {
                 Recent Transactions
               </h3>
               <div className="space-y-3">
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
-                    <History className="w-8 h-8 text-muted-foreground" />
+                {transactions.length === 0 ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+                      <History className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground font-medium">No recent transactions</p>
+                    <p className="text-sm text-muted-foreground mt-2">Your transaction history will appear here</p>
                   </div>
-                  <p className="text-muted-foreground font-medium">No recent transactions</p>
-                  <p className="text-sm text-muted-foreground mt-2">Your transaction history will appear here</p>
-                </div>
+                ) : (
+                  transactions.slice(0, 10).map((tx) => {
+                    const isPositive = Number(tx.amount) >= 0;
+                    const txType = tx.type === 'deposit' ? 'Deposit' : 
+                                   tx.type === 'withdrawal' ? 'Withdrawal' :
+                                   tx.type === 'trade_open' ? 'Trade Open' :
+                                   tx.type === 'trade_close' ? 'Trade Close' : 'Transaction';
+                    
+                    return (
+                      <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                            isPositive ? 'bg-green-500/20' : 'bg-red-500/20'
+                          }`}>
+                            {isPositive ? (
+                              <ArrowDownLeft className="w-5 h-5 text-green-500" />
+                            ) : (
+                              <ArrowUpRight className="w-5 h-5 text-red-500" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium text-foreground">{txType}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(tx.created_at).toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className={`font-bold ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                            {isPositive ? '+' : ''}<CurrencyDisplay amount={Number(tx.amount)} logoSize={14} />
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Balance: ${Number(tx.balance_after).toFixed(2)}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
           </div>
@@ -345,100 +409,118 @@ export default function WalletPage() {
 
         {/* Withdraw Modal */}
         {showWithdrawModal && (
-          <div className="fixed inset-0 bg-black/35 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-card/95 backdrop-blur-xl p-6 rounded-lg shadow-lg w-full max-w-md border border-border">
-              <h2 className="text-xl font-bold mb-4">Withdraw to Wallet</h2>
-              <div className="mb-4 rounded-lg border border-border/60 bg-muted/20 p-3 text-sm">
-                <p className="font-semibold text-foreground mb-2">Before You Withdraw</p>
-                <ul className="space-y-1 text-muted-foreground">
-                  <li>1. Enter the wallet address where you want to receive funds.</li>
-                  <li>2. Choose the exact network that destination supports.</li>
-                  <li>3. Double-check details. Blockchain transfers cannot be reversed.</li>
-                  <li>4. Network fee is charged when you submit the withdrawal.</li>
-                </ul>
-              </div>
-              <label className="text-sm font-semibold text-foreground mb-1 block">Destination Wallet Address</label>
-              <input
-                type="text"
-                placeholder="0x..."
-                value={withdrawAddress}
-                onChange={(e) => setWithdrawAddress(e.target.value)}
-                className="w-full p-3 rounded-md bg-background border border-border mb-3 text-foreground"
-              />
-              <label className="text-sm font-semibold text-foreground mb-1 block">Network</label>
-              <select
-                value={withdrawNetwork}
-                onChange={(e) => setWithdrawNetwork(e.target.value as 'Base' | 'Ethereum' | 'Arbitrum')}
-                className="w-full p-3 rounded-md bg-background border border-border mb-3 text-foreground"
-              >
-                <option value="Base">Base</option>
-                <option value="Ethereum">Ethereum</option>
-                <option value="Arbitrum">Arbitrum</option>
-              </select>
-              <label className="text-sm font-semibold text-foreground mb-1 block">Memo / Tag (Optional)</label>
-              <input
-                type="text"
-                placeholder="Only if your destination platform requires it"
-                value={withdrawMemo}
-                onChange={(e) => setWithdrawMemo(e.target.value)}
-                className="w-full p-3 rounded-md bg-background border border-border mb-3 text-foreground"
-              />
-              <label className="text-sm font-semibold text-foreground mb-1 block">Amount</label>
-              <input
-                type="number"
-                placeholder="Amount to withdraw"
-                value={withdrawAmount}
-                onChange={(e) => setWithdrawAmount(e.target.value)}
-                className="w-full p-3 rounded-md bg-background border border-border mb-3 text-foreground"
-              />
-              <p className="text-xs text-muted-foreground mb-2">
-                Available: {formatCurrency(user.balance)}
-              </p>
-              <div className="mb-3 rounded-lg border border-border/60 bg-muted/20 p-3 text-sm space-y-1">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Network fee</span>
-                  <span className="font-semibold text-foreground">{formatCurrency(selectedFee)}</span>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md">
+              <div className="flex items-center justify-between p-4 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <ArrowDownCircle className="w-5 h-5 text-red-500" />
+                  <h2 className="text-lg font-bold">Withdraw</h2>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">You will receive</span>
-                  <span className="font-semibold text-foreground">{formatCurrency(receiveAmount)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Estimated arrival</span>
-                  <span className="font-semibold text-foreground">{networkEtaMap[withdrawNetwork]}</span>
-                </div>
-              </div>
-              <label className="flex items-start gap-2 mb-3 text-sm text-muted-foreground">
-                <input
-                  type="checkbox"
-                  checked={withdrawConfirmed}
-                  onChange={(e) => setWithdrawConfirmed(e.target.checked)}
-                  className="mt-1"
-                />
-                <span>I confirm the destination address and network are correct.</span>
-              </label>
-              {exceedsBalance && (
-                <p className="text-sm text-destructive mb-3">Amount + network fee exceeds your available balance.</p>
-              )}
-              {!withdrawAddressIsValid && withdrawAddress.length > 0 && (
-                <p className="text-sm text-destructive mb-3">Enter a valid EVM wallet address (starts with 0x).</p>
-              )}
-              {withdrawError && (
-                <p className="text-sm text-destructive mb-3">{withdrawError}</p>
-              )}
-              <div className="flex justify-end gap-3">
-                <button
+                <button 
                   onClick={() => setShowWithdrawModal(false)}
-                  className="px-4 py-2 rounded-md border border-border text-muted-foreground hover:bg-muted"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-4 space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Address</label>
+                  <input
+                    type="text"
+                    placeholder="0x..."
+                    value={withdrawAddress}
+                    onChange={(e) => setWithdrawAddress(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Network</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {NETWORKS.slice(0, 6).map((network) => (
+                      <button
+                        key={network.id}
+                        onClick={() => setWithdrawNetwork(network.id)}
+                        className={`p-2 rounded-lg border text-left text-sm transition-colors ${
+                          withdrawNetwork === network.id
+                            ? 'border-primary bg-primary/10'
+                            : 'border-border hover:bg-muted/40'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Image src={network.logo} alt={network.id} width={16} height={16} />
+                          <span className="font-medium">{network.id}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-0.5">Fee: ${network.fee}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium mb-1.5 block">Amount</label>
+                  <input
+                    type="number"
+                    placeholder="0.00"
+                    value={withdrawAmount}
+                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Available: {formatCurrency(user.balance)}
+                  </p>
+                </div>
+
+                <div className="bg-muted/30 rounded-lg p-3 space-y-1.5 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Fee</span>
+                    <span>{formatCurrency(selectedFee)}</span>
+                  </div>
+                  <div className="flex justify-between font-medium">
+                    <span>You receive</span>
+                    <span>{formatCurrency(receiveAmount)}</span>
+                  </div>
+                </div>
+
+                <label className="flex items-start gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={withdrawConfirmed}
+                    onChange={(e) => setWithdrawConfirmed(e.target.checked)}
+                    className="mt-0.5"
+                  />
+                  <span className="text-muted-foreground">I confirm the address and network</span>
+                </label>
+
+                {exceedsBalance && (
+                  <p className="text-sm text-destructive">Insufficient balance</p>
+                )}
+                {!withdrawAddressIsValid && withdrawAddress.length > 0 && (
+                  <p className="text-sm text-destructive">Invalid address</p>
+                )}
+                {withdrawError && (
+                  <p className="text-sm text-destructive">{withdrawError}</p>
+                )}
+              </div>
+
+              <div className="flex gap-2 p-4 border-t border-border">
+                <button
+                  onClick={() => {
+                    setShowWithdrawModal(false);
+                    resetAmounts();
+                  }}
+                  className="flex-1 px-4 py-2 rounded-lg border border-border hover:bg-muted"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleWithdraw}
                   disabled={!canSubmitWithdraw}
-                  className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
                 >
-                  {isWithdrawing ? 'Processing...' : 'Confirm Withdraw'}
+                  {isWithdrawing ? 'Processing...' : 'Withdraw'}
                 </button>
               </div>
             </div>

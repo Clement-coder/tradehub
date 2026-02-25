@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { X, AlertCircle, CheckCircle } from 'lucide-react';
+import { CurrencyDisplay } from '@/components/currency-display';
 
 // Helper functions to format currency and price
 const formatCurrency = (value: number) =>
@@ -64,7 +65,7 @@ export function TradeModal({
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground text-sm">Amount</span>
-              <span className="font-semibold text-foreground">{formatCurrency(amount)}</span>
+              <span className="font-semibold text-foreground"><CurrencyDisplay amount={amount} logoSize={16} /></span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground text-sm">Price per BTC</span>
@@ -76,11 +77,11 @@ export function TradeModal({
             </div>
             <div className="border-t border-border pt-3 flex justify-between">
               <span className="text-muted-foreground text-sm">Fee (0.1%)</span>
-              <span className="font-semibold text-foreground">{formatCurrency(fee)}</span>
+              <span className="font-semibold text-foreground"><CurrencyDisplay amount={fee} logoSize={16} /></span>
             </div>
             <div className="border-t border-border pt-3 flex justify-between">
               <span className="text-foreground font-medium">Total</span>
-              <span className="font-bold text-lg">{formatCurrency(total)}</span>
+              <span className="font-bold text-lg"><CurrencyDisplay amount={total} logoSize={18} /></span>
             </div>
           </div>
 

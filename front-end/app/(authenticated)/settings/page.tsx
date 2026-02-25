@@ -10,7 +10,6 @@ export default function SettingsPage() {
   const router = useRouter();
   const { ready, authenticated } = usePrivy();
   const { user } = useTradingContext();
-  const [mounted, setMounted] = useState(false);
   const [settings, setSettings] = useState({
     notifications: true,
     priceAlerts: true,
@@ -20,16 +19,24 @@ export default function SettingsPage() {
   });
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (mounted && ready && !authenticated) {
+    if (ready && !authenticated) {
       router.push('/auth');
     }
-  }, [mounted, ready, authenticated, router]);
+  }, [ready, authenticated, router]);
 
-  if (!mounted || !ready || !authenticated || !user) {
+  if (!ready) {
+    return <div className="min-h-screen bg-background p-6">Loading...</div>;
+  }
+
+  if (!authenticated) {
+    return null;
+  }
+
+  if (!user) {
+    return <div className="min-h-screen bg-background p-6">Loading account...</div>;
+  }
+
+  if (!ready || !authenticated || !user) {
     return null;
   }
 

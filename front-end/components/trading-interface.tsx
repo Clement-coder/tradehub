@@ -12,7 +12,7 @@ const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
 export default function TradingInterface() {
-  const { user, currentPrice, addPosition } = useTradingContext();
+  const { user, currentPrice, addPosition, positions } = useTradingContext();
   const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +24,7 @@ export default function TradingInterface() {
 
   const btcQuantity = amount ? parseFloat(amount) / currentPrice : 0;
   const totalCost = btcQuantity * currentPrice;
+  const totalBTC = positions.reduce((sum, pos) => sum + pos.quantity, 0);
 
   const handleTradeClick = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,9 +35,17 @@ export default function TradingInterface() {
       return;
     }
 
-    if (parseFloat(amount) > user.balance && tradeType === 'buy') {
+    if (tradeType === 'buy' && parseFloat(amount) > user.balance) {
       setErrorMessage('Insufficient balance');
       return;
+    }
+
+    if (tradeType === 'sell') {
+      const totalBTC = positions.reduce((sum, pos) => sum + pos.quantity, 0);
+      if (btcQuantity > totalBTC) {
+        setErrorMessage('Insufficient BTC balance');
+        return;
+      }
     }
 
     setShowModal(true);
@@ -207,9 +216,15 @@ export default function TradingInterface() {
         </form>
 
         {/* Available Balance */}
-        <div className="mt-6 pt-6 border-t border-border">
-          <p className="text-xs text-muted-foreground mb-1">Available Balance</p>
-          <p className="text-lg font-semibold text-foreground"><CurrencyDisplay amount={user.balance} logoSize={16} /></p>
+        <div className="mt-6 pt-6 border-t border-border space-y-3">
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Available Balance</p>
+            <p className="text-lg font-semibold text-foreground"><CurrencyDisplay amount={user.balance} logoSize={16} /></p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">BTC Holdings</p>
+            <p className="text-lg font-semibold text-foreground">{totalBTC.toFixed(6)} BTC</p>
+          </div>
         </div>
       </div>
 

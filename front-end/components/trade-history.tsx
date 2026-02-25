@@ -3,6 +3,7 @@
 import { ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { GlassCard } from '@/components/glass-card';
 import { useTradingContext } from '@/app/context/trading-context';
+import { CurrencyDisplay } from '@/components/currency-display';
 
 // Helper function to format currency
 const formatCurrency = (value: number) =>
@@ -64,7 +65,7 @@ export default function TradeHistory({ limit }: TradeHistoryProps = {}) {
               </div>
               <div className="text-right">
                 <p className={`text-sm font-semibold ${trade.pnl >= 0 ? 'text-accent' : 'text-destructive'}`}>
-                  {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
+                  {trade.pnl >= 0 ? '+' : ''}<CurrencyDisplay amount={Math.abs(trade.pnl)} logoSize={14} />
                 </p>
                 <p className={`text-xs ${trade.pnl >= 0 ? 'text-accent' : 'text-destructive'}`}>
                   {trade.pnl >= 0 ? '+' : ''}{trade.pnlPercent.toFixed(2)}%

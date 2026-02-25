@@ -66,11 +66,9 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Responsive Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl bg-blue-700/10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
-            {/* Logo */}
             <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
               <Image 
                 src="/tradeHub_logo.PNG" 
@@ -82,7 +80,6 @@ export default function LandingPage() {
               <span className="font-bold text-base sm:text-lg md:text-xl text-blue-600 dark:text-blue-400">TradeHub</span>
             </Link>
 
-            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-2">
               <Link href="/" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500/20 to-orange-500/10 border border-orange-500/30 text-orange-600 hover:from-orange-500/30 hover:to-orange-500/20 transition-all duration-200 font-medium backdrop-blur-sm">
                 <Home className="w-4 h-4" />
@@ -101,7 +98,6 @@ export default function LandingPage() {
               </Link>
             </div>
 
-            {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden p-2 rounded-lg hover:bg-muted/80 transition-colors"
@@ -142,7 +138,6 @@ export default function LandingPage() {
         <div className="w-full bg-cover bg-center bg-no-repeat relative" style={{backgroundImage: 'url(/background_image.jpeg)'}}>
           <div className="absolute inset-0 bg-gradient-to-br from-primary/80 via-slate-900/70 to-background/90"></div>
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 md:pt-16 pb-8 md:pb-12">
-        {/* Floating Price Tickers - Optimized for mobile */}
         <div className="absolute inset-0 pointer-events-none hidden lg:block">
           <div 
             className="absolute animate-float"

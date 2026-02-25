@@ -15,6 +15,6 @@ export function useBTCPrice() {
   return useQuery({
     queryKey: ['btc-price'],
     queryFn: fetchBTCPrice,
-    refetchInterval: 10000, // Refetch every 10 seconds
+    refetchInterval: 1000, // Refetch every 1 second
   });
 }

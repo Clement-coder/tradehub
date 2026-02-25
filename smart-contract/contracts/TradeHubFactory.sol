@@ -5,6 +5,7 @@ import "./TradeHubToken.sol";
 import "./TradeHubNFT.sol";
 import "./TradeHubMultiToken.sol";
 import "./SocialRegistry.sol";
+import "./TradeHubVault.sol"; // Import the new TradeHubVault contract
 import "./lib/Events.sol";
 
 contract TradeHubFactory {
@@ -15,6 +16,7 @@ contract TradeHubFactory {
         address nft;
         address multiToken;
         address socialRegistry;
+        address vault; // Add vault address
     }
     
     mapping(address => DeployedContracts) public deployments;
@@ -25,7 +27,8 @@ contract TradeHubFactory {
         address token,
         address nft,
         address multiToken,
-        address socialRegistry
+        address socialRegistry,
+        address vault // Add vault address to event signature
     );
     
     constructor() {
@@ -37,12 +40,14 @@ contract TradeHubFactory {
         TradeHubNFT nft = new TradeHubNFT(msg.sender);
         TradeHubMultiToken multiToken = new TradeHubMultiToken(msg.sender);
         SocialRegistry socialRegistry = new SocialRegistry(msg.sender);
+        TradeHubVault vault = new TradeHubVault(msg.sender); // Deploy TradeHubVault
         
         DeployedContracts memory contracts = DeployedContracts({
             token: address(token),
             nft: address(nft),
             multiToken: address(multiToken),
-            socialRegistry: address(socialRegistry)
+            socialRegistry: address(socialRegistry),
+            vault: address(vault) // Add vault address
         });
         
         deployments[msg.sender] = contracts;
@@ -53,7 +58,8 @@ contract TradeHubFactory {
             address(token),
             address(nft),
             address(multiToken),
-            address(socialRegistry)
+            address(socialRegistry),
+            address(vault) // Add vault address to event
         );
         
         return contracts;
