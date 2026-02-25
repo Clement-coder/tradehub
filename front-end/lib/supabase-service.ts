@@ -146,7 +146,7 @@ export async function getOrCreateUser(input: UserInput): Promise<UserWithBalance
         userId: userRow.id,
         privyUserId: input.privyUserId,
         title: 'Welcome to TradeHub',
-        message: 'Your account is ready. Ask admin to credit your balance in Supabase.',
+        message: 'Your account is ready. Contact agent to fund your wallet.',
         type: 'portfolio',
         color: 'primary',
       });
