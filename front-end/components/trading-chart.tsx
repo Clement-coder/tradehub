@@ -237,17 +237,22 @@ export default function TradingChart() {
           </div>
           
           {/* Mobile: Dropdown */}
-          <select
-            value={timeframe}
-            onChange={(e) => setTimeframe(e.target.value as typeof timeframe)}
-            className="sm:hidden px-3 py-1.5 rounded-lg text-sm font-medium bg-primary text-primary-foreground border-0 focus:outline-none focus:ring-2 focus:ring-primary/50"
-          >
-            {(['1m', '5m', '15m', '1H', '4H', '1D', '1W'] as const).map((tf) => (
-              <option key={tf} value={tf}>
-                {timeframeLabels[tf]}
-              </option>
-            ))}
-          </select>
+          <div className="sm:hidden relative">
+            <select
+              value={timeframe}
+              onChange={(e) => setTimeframe(e.target.value as typeof timeframe)}
+              className="appearance-none px-4 py-2 pr-10 rounded-xl text-sm font-medium bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all cursor-pointer shadow-lg"
+            >
+              {(['1m', '5m', '15m', '1H', '4H', '1D', '1W'] as const).map((tf) => (
+                <option key={tf} value={tf} className="bg-background text-foreground">
+                  {timeframeLabels[tf]}
+                </option>
+              ))}
+            </select>
+            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
         </div>
       </div>
 
@@ -415,10 +420,10 @@ export default function TradingChart() {
           </div>
 
           {/* Main Content */}
-          <div className="h-[calc(100vh-4rem)] flex">
+          <div className="h-[calc(100vh-4rem)] flex overflow-hidden">
             {/* Chart Section */}
-            <div className="flex-1 p-4 lg:p-6 flex flex-col overflow-hidden">
-              <div className="flex-1 bg-card/50 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-border overflow-hidden">
+            <div className="flex-1 p-4 lg:p-6 flex flex-col overflow-y-auto">
+              <div className="flex-1 bg-card/50 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-border">
                 {chartContent}
               </div>
             </div>
