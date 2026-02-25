@@ -145,3 +145,13 @@ for each row execute function public.set_updated_at();
 create trigger trg_notifications_updated_at
 before update on public.notifications
 for each row execute function public.set_updated_at();
+
+-- Grants for Supabase client roles (required in addition to RLS policies)
+grant usage on schema public to anon, authenticated;
+
+grant select, insert, update on table public.users to anon, authenticated;
+grant select, insert, update on table public.balances to anon, authenticated;
+grant select, insert, update on table public.positions to anon, authenticated;
+grant select, insert on table public.trades to anon, authenticated;
+grant select, insert on table public.transactions to anon, authenticated;
+grant select, insert, update on table public.notifications to anon, authenticated;
