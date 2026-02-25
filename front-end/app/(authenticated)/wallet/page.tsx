@@ -21,6 +21,7 @@ export default function WalletPage() {
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawError, setWithdrawError] = useState('');
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -50,6 +51,10 @@ export default function WalletPage() {
   const gbpEquivalent = usdBalance * 0.79;
   const usdcEquivalent = usdBalance;
   const usdtEquivalent = usdBalance;
+  const parsedWithdrawAmount = Number(withdrawAmount);
+  const isWithdrawAmountValid = Number.isFinite(parsedWithdrawAmount) && parsedWithdrawAmount > 0;
+  const exceedsBalance = isWithdrawAmountValid && parsedWithdrawAmount > user.balance;
+  const canSubmitWithdraw = isWithdrawAmountValid && !exceedsBalance && !isWithdrawing;
 
   const resetAmounts = () => {
     setWithdrawAmount('');
@@ -65,18 +70,23 @@ export default function WalletPage() {
       return;
     }
 
+    setIsWithdrawing(true);
+
     if (user && user.balance >= amount) {
       const success = await updateBalance(-amount);
       if (!success) {
         setWithdrawError('Withdrawal failed. Please try again.');
+        setIsWithdrawing(false);
         return;
       }
     } else {
       setWithdrawError('Insufficient balance for withdrawal.');
+      setIsWithdrawing(false);
       return;
     }
     resetAmounts();
     setShowWithdrawModal(false);
+    setIsWithdrawing(false);
     console.log(`Withdrew: ${amount}`);
   };
 
@@ -140,22 +150,34 @@ export default function WalletPage() {
 
               <div className="mt-4 pt-4 border-t border-border/50">
                 <p className="text-muted-foreground text-sm mb-2">Display Conversions</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                  <div className="flex items-center gap-2 text-foreground">
-                    <Image src="/eur-logo.svg" alt="EUR" width={16} height={16} className="w-4 h-4" />
-                    <span>EUR: {formatCurrency(eurEquivalent).replace('$', 'EUR ')}</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex items-center justify-between rounded-lg border border-border/50 bg-card/60 px-3 py-2">
+                    <div className="flex items-center gap-2 text-foreground">
+                      <Image src="/eur-logo.svg" alt="EUR" width={20} height={20} className="w-5 h-5" />
+                      <span className="font-semibold">EUR</span>
+                    </div>
+                    <span className="text-base sm:text-lg font-bold text-foreground">{formatCurrency(eurEquivalent).replace('$', 'EUR ')}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-foreground">
-                    <Image src="/gbp-logo.svg" alt="GBP" width={16} height={16} className="w-4 h-4" />
-                    <span>GBP: {formatCurrency(gbpEquivalent).replace('$', 'GBP ')}</span>
+                  <div className="flex items-center justify-between rounded-lg border border-border/50 bg-card/60 px-3 py-2">
+                    <div className="flex items-center gap-2 text-foreground">
+                      <Image src="/gbp-logo.svg" alt="GBP" width={20} height={20} className="w-5 h-5" />
+                      <span className="font-semibold">GBP</span>
+                    </div>
+                    <span className="text-base sm:text-lg font-bold text-foreground">{formatCurrency(gbpEquivalent).replace('$', 'GBP ')}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-foreground">
-                    <Image src="/usdc-logo.svg" alt="USDC" width={16} height={16} className="w-4 h-4" />
-                    <span>USDC: {usdcEquivalent.toFixed(2)}</span>
+                  <div className="flex items-center justify-between rounded-lg border border-border/50 bg-card/60 px-3 py-2">
+                    <div className="flex items-center gap-2 text-foreground">
+                      <Image src="/usdc-logo.svg" alt="USDC" width={20} height={20} className="w-5 h-5" />
+                      <span className="font-semibold">USDC</span>
+                    </div>
+                    <span className="text-base sm:text-lg font-bold text-foreground">{usdcEquivalent.toFixed(2)}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-foreground">
-                    <Image src="/usdt-logo.svg" alt="USDT" width={16} height={16} className="w-4 h-4" />
-                    <span>USDT: {usdtEquivalent.toFixed(2)}</span>
+                  <div className="flex items-center justify-between rounded-lg border border-border/50 bg-card/60 px-3 py-2">
+                    <div className="flex items-center gap-2 text-foreground">
+                      <Image src="/usdt-logo.svg" alt="USDT" width={20} height={20} className="w-5 h-5" />
+                      <span className="font-semibold">USDT</span>
+                    </div>
+                    <span className="text-base sm:text-lg font-bold text-foreground">{usdtEquivalent.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -164,13 +186,19 @@ export default function WalletPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="mb-8 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[oklch(0.68_0.11_40)]/10 border border-[oklch(0.68_0.11_40)]/30 text-[oklch(0.68_0.11_40)] text-xs font-semibold">
-            Agents Only
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
+          <button
+            disabled
+            className="relative py-3 sm:py-4 px-6 rounded-xl font-semibold text-[oklch(0.68_0.11_40)] bg-[oklch(0.68_0.11_40)]/10 border border-[oklch(0.68_0.11_40)]/30 flex items-center justify-center gap-2 cursor-not-allowed"
+          >
+            <span>Deposit</span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[oklch(0.68_0.11_40)]/20 border border-[oklch(0.68_0.11_40)]/30">
+              Agents Only
+            </span>
+          </button>
           <button
             onClick={() => setShowWithdrawModal(true)}
-            className="group relative overflow-hidden w-full py-3 sm:py-4 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 flex items-center justify-center gap-2"
+            className="group relative overflow-hidden py-3 sm:py-4 px-6 rounded-xl font-semibold text-white bg-gradient-to-r from-red-600 to-red-500 flex items-center justify-center gap-2"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full transition-transform duration-1000"></div>
             <span className="relative z-10">Withdraw</span>
@@ -274,9 +302,18 @@ export default function WalletPage() {
 
         {/* Withdraw Modal */}
         {showWithdrawModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-card p-6 rounded-lg shadow-lg w-full max-w-md border border-border">
+          <div className="fixed inset-0 bg-black/35 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-card/95 backdrop-blur-xl p-6 rounded-lg shadow-lg w-full max-w-md border border-border">
               <h2 className="text-xl font-bold mb-4">Withdraw Funds</h2>
+              <div className="mb-4 rounded-lg border border-border/60 bg-muted/20 p-3 text-sm">
+                <p className="font-semibold text-foreground mb-2">Withdrawal Requirements</p>
+                <ul className="space-y-1 text-muted-foreground">
+                  <li>1. Enter a valid amount greater than 0.</li>
+                  <li>2. Amount must be less than or equal to your available balance.</li>
+                  <li>3. Withdrawal updates your Supabase balance immediately.</li>
+                  <li>4. If you need funding, deposits are handled by agents only.</li>
+                </ul>
+              </div>
               <input
                 type="number"
                 placeholder="Amount to withdraw"
@@ -284,6 +321,12 @@ export default function WalletPage() {
                 onChange={(e) => setWithdrawAmount(e.target.value)}
                 className="w-full p-3 rounded-md bg-background border border-border mb-4 text-foreground"
               />
+              <p className="text-xs text-muted-foreground mb-2">
+                Available: {formatCurrency(user.balance)}
+              </p>
+              {exceedsBalance && (
+                <p className="text-sm text-destructive mb-3">Amount exceeds your available balance.</p>
+              )}
               {withdrawError && (
                 <p className="text-sm text-destructive mb-3">{withdrawError}</p>
               )}
@@ -296,9 +339,10 @@ export default function WalletPage() {
                 </button>
                 <button
                   onClick={handleWithdraw}
-                  className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+                  disabled={!canSubmitWithdraw}
+                  className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Confirm Withdraw
+                  {isWithdrawing ? 'Processing...' : 'Confirm Withdraw'}
                 </button>
               </div>
             </div>
