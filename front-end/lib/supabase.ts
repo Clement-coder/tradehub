@@ -1,23 +1,25 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const supabaseUrlEnv = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKeyEnv = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+function getSupabaseEnv(): { url: string; anonKey: string } {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-if (!supabaseUrlEnv || !supabaseAnonKeyEnv) {
-  throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  if (!url || !anonKey) {
+    throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  }
+
+  return { url, anonKey };
 }
-
-const supabaseUrl = supabaseUrlEnv;
-const supabaseAnonKey = supabaseAnonKeyEnv;
 
 export function getSupabaseClient(privyUserId?: string): SupabaseClient {
   const headers: Record<string, string> = {};
+  const { url, anonKey } = getSupabaseEnv();
 
   if (privyUserId) {
     headers['x-privy-user-id'] = privyUserId;
   }
 
-  return createClient(supabaseUrl, supabaseAnonKey, {
+  return createClient(url, anonKey, {
     global: {
       headers,
     },
