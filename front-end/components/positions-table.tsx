@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { X, Check } from 'lucide-react';
 import { GlassCard } from '@/components/glass-card';
 import { useTradingContext } from '@/app/context/trading-context';
+import { CurrencyDisplay } from '@/components/currency-display';
 
 // Helper functions to format currency and calculate PnL
 const formatCurrency = (value: number) =>
@@ -22,9 +23,11 @@ export default function PositionsTable() {
 
   const handleClosePosition = (id: string) => {
     setClosingId(id);
-    setTimeout(() => {
-      closePosition(id, currentPrice);
-      setClosedPositions((prev) => [...prev, id]);
+    setTimeout(async () => {
+      const success = await closePosition(id, currentPrice);
+      if (success) {
+        setClosedPositions((prev) => [...prev, id]);
+      }
       setClosingId(null);
     }, 600);
   };
@@ -71,7 +74,7 @@ export default function PositionsTable() {
                 </div>
                 <div className="text-right">
                   <p className={`text-sm font-semibold ${pnl >= 0 ? 'text-accent' : 'text-destructive'}`}>
-                    {pnl >= 0 ? '+' : ''}{formatCurrency(pnl)}
+                    {pnl >= 0 ? '+' : ''}<CurrencyDisplay amount={Math.abs(pnl)} logoSize={14} />
                   </p>
                   <p className={`text-xs ${pnl >= 0 ? 'text-accent' : 'text-destructive'}`}>
                     {pnl >= 0 ? '+' : ''}{pnlPercent.toFixed(2)}%

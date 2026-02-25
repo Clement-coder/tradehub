@@ -1,7 +1,24 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  type ReactNode,
+  useEffect,
+} from 'react';
+import { usePrivy, type User as PrivyUser } from '@privy-io/react-auth';
 import { useBTCPrice } from '@/lib/hooks/useBTCPrice';
+import {
+  getOrCreateUser,
+  getOpenPositions,
+  getTradeHistory,
+  getCurrentBalance,
+  openPositionTrade,
+  closePositionTrade,
+  adjustBalance,
+} from '@/lib/supabase-service';
 
 export interface Position {
   id: string;
@@ -25,12 +42,13 @@ export interface Trade {
 
 export interface User {
   id: string;
+  privyUserId: string;
   email: string;
   walletAddress: string;
   balance: number;
-  name?: string; // Optional name field
-  loginMethod?: string; // Optional login method
-  createdAt?: number; // Optional creation timestamp
+  name?: string;
+  loginMethod?: string;
+  createdAt?: number;
 }
 
 interface TradingContextType {
@@ -39,14 +57,33 @@ interface TradingContextType {
   currentPrice: number;
   positions: Position[];
   trades: Trade[];
-  addPosition: (position: Position) => void;
-  closePosition: (id: string, exitPrice: number) => void;
-  updateBalance: (amount: number) => void;
+  addPosition: (position: Position) => Promise<boolean>;
+  closePosition: (id: string, exitPrice: number) => Promise<boolean>;
+  updateBalance: (amount: number) => Promise<boolean>;
   updatePrice: (price: number) => void;
   logout: () => void;
+  refreshUserData: () => Promise<void>;
 }
 
 const TradingContext = createContext<TradingContextType | undefined>(undefined);
+
+function inferLoginMethod(privyUser: PrivyUser): string {
+  const linkedAccounts = privyUser.linkedAccounts ?? [];
+
+  if (linkedAccounts.some((acc) => acc.type === 'google_oauth')) {
+    return 'Google';
+  }
+
+  if (linkedAccounts.some((acc) => acc.type === 'email')) {
+    return 'Email';
+  }
+
+  if (linkedAccounts.some((acc) => acc.type === 'wallet')) {
+    return 'Wallet';
+  }
+
+  return 'Unknown';
+}
 
 export function TradingProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -54,6 +91,7 @@ export function TradingProvider({ children }: { children: ReactNode }) {
   const [positions, setPositions] = useState<Position[]>([]);
   const [trades, setTrades] = useState<Trade[]>([]);
   const { data: btcPrice } = useBTCPrice();
+  const { user: privyUser } = usePrivy();
 
   useEffect(() => {
     if (btcPrice) {
@@ -61,42 +99,161 @@ export function TradingProvider({ children }: { children: ReactNode }) {
     }
   }, [btcPrice]);
 
-  const addPosition = useCallback((position: Position) => {
-    setPositions((prev) => [...prev, position]);
-  }, []);
+  const refreshUserData = useCallback(async () => {
+    if (!user) return;
 
-  const closePosition = useCallback((id: string, exitPrice: number) => {
-    setPositions((prev) => {
-      const position = prev.find((p) => p.id === id);
-      if (!position) return prev;
+    const [dbPositions, dbTrades, dbBalance] = await Promise.all([
+      getOpenPositions(user.id, user.privyUserId),
+      getTradeHistory(user.id, user.privyUserId),
+      getCurrentBalance(user.id, user.privyUserId),
+    ]);
 
-      const pnl = (exitPrice - position.entryPrice) * position.quantity;
-      const pnlPercent = ((exitPrice - position.entryPrice) / position.entryPrice) * 100;
-
-      const trade: Trade = {
-        id: `trade-${Date.now()}`,
-        entryPrice: position.entryPrice,
-        exitPrice,
-        quantity: position.quantity,
-        pnl,
-        pnlPercent,
-        timestamp: Date.now(),
-        duration: Date.now() - position.timestamp,
+    setPositions(
+      dbPositions.map((position) => ({
+        id: position.id,
+        entryPrice: Number(position.entry_price),
+        quantity: Number(position.quantity),
+        timestamp: new Date(position.created_at).getTime(),
         type: position.type,
-      };
+      })),
+    );
 
-      setTrades((prevTrades) => [trade, ...prevTrades]);
+    setTrades(
+      dbTrades.map((trade) => ({
+        id: trade.id,
+        entryPrice: Number(trade.entry_price),
+        exitPrice: Number(trade.exit_price),
+        quantity: Number(trade.quantity),
+        pnl: Number(trade.pnl),
+        pnlPercent: Number(trade.pnl_percent),
+        timestamp: new Date(trade.closed_at).getTime(),
+        duration:
+          new Date(trade.closed_at).getTime() -
+          new Date(trade.opened_at ?? trade.created_at).getTime(),
+        type: trade.type,
+      })),
+    );
 
-      return prev.filter((p) => p.id !== id);
-    });
-  }, []);
+    if (dbBalance !== null) {
+      setUser((prevUser) => (prevUser ? { ...prevUser, balance: dbBalance } : prevUser));
+    }
+  }, [user]);
 
-  const updateBalance = useCallback((amount: number) => {
-    setUser((prev) => {
-      if (!prev) return null;
-      return { ...prev, balance: prev.balance + amount };
-    });
-  }, []);
+  useEffect(() => {
+    const loadUserFromPrivy = async (currentPrivyUser: PrivyUser) => {
+      const walletAddress = currentPrivyUser.wallet?.address ?? '';
+      const email = currentPrivyUser.email?.address ?? '';
+      const loginMethod = inferLoginMethod(currentPrivyUser);
+      const username =
+        currentPrivyUser.google?.name ??
+        (email.includes('@') ? email.split('@')[0] : 'User');
+
+      const dbUser = await getOrCreateUser({
+        privyUserId: currentPrivyUser.id,
+        walletAddress,
+        email,
+        username,
+        loginMethod,
+      });
+
+      if (!dbUser) {
+        setUser(null);
+        setPositions([]);
+        setTrades([]);
+        return;
+      }
+
+      setUser({
+        id: dbUser.id,
+        privyUserId: dbUser.privy_user_id,
+        email: dbUser.email ?? email,
+        walletAddress: dbUser.wallet_address,
+        balance: dbUser.balance,
+        name: dbUser.username ?? username,
+        loginMethod: dbUser.login_method ?? loginMethod,
+        createdAt: new Date(dbUser.created_at).getTime(),
+      });
+    };
+
+    if (privyUser?.id) {
+      void loadUserFromPrivy(privyUser);
+    } else {
+      setUser(null);
+      setPositions([]);
+      setTrades([]);
+    }
+  }, [privyUser]);
+
+  useEffect(() => {
+    if (user) {
+      void refreshUserData();
+    }
+  }, [user?.id]);
+
+  const addPosition = useCallback(
+    async (position: Position): Promise<boolean> => {
+      if (!user) return false;
+
+      const result = await openPositionTrade({
+        userId: user.id,
+        privyUserId: user.privyUserId,
+        type: position.type,
+        entryPrice: position.entryPrice,
+        quantity: position.quantity,
+      });
+
+      if (!result.ok) {
+        return false;
+      }
+
+      await refreshUserData();
+      return true;
+    },
+    [user, refreshUserData],
+  );
+
+  const closePosition = useCallback(
+    async (id: string, exitPrice: number): Promise<boolean> => {
+      if (!user) return false;
+
+      const result = await closePositionTrade({
+        userId: user.id,
+        privyUserId: user.privyUserId,
+        positionId: id,
+        exitPrice,
+      });
+
+      if (!result.ok) {
+        return false;
+      }
+
+      await refreshUserData();
+      return true;
+    },
+    [user, refreshUserData],
+  );
+
+  const updateBalance = useCallback(
+    async (amount: number): Promise<boolean> => {
+      if (!user) return false;
+
+      const type = amount >= 0 ? 'deposit' : 'withdrawal';
+      const result = await adjustBalance({
+        userId: user.id,
+        privyUserId: user.privyUserId,
+        delta: amount,
+        type,
+      });
+
+      if (!result.ok) {
+        return false;
+      }
+
+      await refreshUserData();
+      return true;
+    },
+    [user, refreshUserData],
+  );
 
   const updatePrice = useCallback((price: number) => {
     setCurrentPrice(price);
@@ -105,6 +262,7 @@ export function TradingProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(() => {
     setUser(null);
     setPositions([]);
+    setTrades([]);
   }, []);
 
   return (
@@ -120,6 +278,7 @@ export function TradingProvider({ children }: { children: ReactNode }) {
         updateBalance,
         updatePrice,
         logout,
+        refreshUserData,
       }}
     >
       {children}

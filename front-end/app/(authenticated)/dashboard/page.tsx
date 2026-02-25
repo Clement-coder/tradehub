@@ -1,6 +1,5 @@
 'use client';
 
-import { useBalance } from 'wagmi';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
@@ -8,6 +7,7 @@ import Image from 'next/image';
 import { TrendingUp, Wallet, BarChart3, DollarSign, Activity, History as HistoryIcon } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import { BtcPriceChart } from '@/components/btc-price-chart';
+import { CurrencyDisplay } from '@/components/currency-display';
 
 // Helper functions to format currency and price
 const formatCurrency = (value: number) => 
@@ -18,10 +18,9 @@ const formatPrice = (value: number) =>
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { authenticated, ready, user: privyUser } = usePrivy();
-  const { user, positions, trades, currentPrice, setUser } = useTradingContext();
+  const { authenticated, ready } = usePrivy();
+  const { user, positions, trades, currentPrice } = useTradingContext();
   const [mounted, setMounted] = useState(false);
-  const { data: balance } = useBalance({ address: privyUser?.wallet?.address as `0x${string}` });
 
   useEffect(() => {
     setMounted(true);
@@ -32,41 +31,6 @@ export default function DashboardPage() {
       router.push('/auth');
     }
   }, [mounted, ready, authenticated, router]);
-
-  useEffect(() => {
-    if (mounted && ready && authenticated && privyUser && !user && balance) {
-      // Determine login method and email
-      let loginMethod = 'Unknown';
-      let userEmail = privyUser.email?.address || '';
-      
-      if (privyUser.linkedAccounts) {
-        const emailAccount = privyUser.linkedAccounts.find(acc => acc.type === 'email');
-        const googleAccount = privyUser.linkedAccounts.find(acc => acc.type === 'google_oauth');
-        const walletAccount = privyUser.linkedAccounts.find(acc => acc.type === 'wallet');
-
-        if (googleAccount) {
-          loginMethod = 'Google';
-          userEmail = userEmail || (googleAccount as any).email || '';
-        } else if (emailAccount) {
-          loginMethod = 'Email';
-          userEmail = userEmail || (emailAccount as any).address || '';
-        } else if (walletAccount) {
-          loginMethod = 'Wallet';
-        }
-      }
-
-      // Initialize user with real wallet data
-      setUser({
-        id: privyUser.id,
-        email: userEmail,
-        walletAddress: privyUser.wallet?.address || '',
-        balance: balance ? parseFloat((Number(balance.value) / Math.pow(10, balance.decimals)).toFixed(6)) : 0,
-        name: privyUser.google?.name || userEmail?.split('@')[0] || 'User',
-        loginMethod: loginMethod,
-        createdAt: privyUser.createdAt.getTime(),
-      });
-    }
-  }, [mounted, ready, authenticated, privyUser, user, setUser, balance]);
 
   if (!mounted || !ready || !authenticated) {
     return null;
@@ -108,7 +72,7 @@ export default function DashboardPage() {
                   <Image src="/usdc-logo.svg" alt="USDC" width={24} height={24} className="w-6 h-6" />
                   <h3 className="text-xs sm:text-sm font-medium text-muted-foreground">Balance</h3>
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{formatCurrency(user?.balance || 0)}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1"><CurrencyDisplay amount={user?.balance || 0} logoSize={0} /></p>
                 <p className="text-xs text-muted-foreground">Available to trade</p>
               </div>
             </div>
@@ -131,7 +95,7 @@ export default function DashboardPage() {
                     <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-[oklch(0.65_0.12_140)]" />
                   </div>
                 </div>
-                <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1">{formatCurrency(portfolioValue)}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-foreground mb-1"><CurrencyDisplay amount={portfolioValue} logoSize={0} /></p>
                 <p className="text-xs text-muted-foreground">Total value</p>
               </div>
             </div>

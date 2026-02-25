@@ -6,12 +6,13 @@ import { ArrowUpRight, ArrowDownLeft, Check } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import { TradeModal } from '@/components/trade-modal';
 import GlassCard from '@/components/glass-card';
+import { CurrencyDisplay } from '@/components/currency-display';
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
 export default function TradingInterface() {
-  const { user, currentPrice, addPosition, updateBalance } = useTradingContext();
+  const { user, currentPrice, addPosition } = useTradingContext();
   const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +45,7 @@ export default function TradingInterface() {
   const handleTradeConfirm = () => {
     setIsLoading(true);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const position = {
         id: `pos-${Date.now()}`,
         entryPrice: currentPrice,
@@ -53,12 +54,13 @@ export default function TradingInterface() {
         type: tradeType === 'buy' ? ('long' as const) : ('short' as const),
       };
 
-      addPosition(position);
+      const success = await addPosition(position);
 
-      if (tradeType === 'buy') {
-        updateBalance(-totalCost);
-      } else {
-        updateBalance(totalCost);
+      if (!success) {
+        setErrorMessage('Unable to execute trade with your current balance.');
+        setShowModal(false);
+        setIsLoading(false);
+        return;
       }
 
       setSuccessMessage(`${tradeType === 'buy' ? 'Buy' : 'Sell'} order executed!`);
@@ -155,7 +157,7 @@ export default function TradingInterface() {
               </div>
               <div className="border-t border-white/10 pt-2 flex justify-between font-semibold">
                 <span>Total</span>
-                <span className="text-accent">{formatCurrency(totalCost)}</span>
+                <span className="text-accent"><CurrencyDisplay amount={totalCost} logoSize={16} /></span>
               </div>
             </div>
           )}
@@ -207,7 +209,7 @@ export default function TradingInterface() {
         {/* Available Balance */}
         <div className="mt-6 pt-6 border-t border-border">
           <p className="text-xs text-muted-foreground mb-1">Available Balance</p>
-          <p className="text-lg font-semibold text-foreground">{formatCurrency(user.balance)}</p>
+          <p className="text-lg font-semibold text-foreground"><CurrencyDisplay amount={user.balance} logoSize={16} /></p>
         </div>
       </div>
 
