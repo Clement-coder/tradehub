@@ -157,13 +157,6 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}
         <header className="h-16 border-b border-border bg-card flex items-center justify-between px-4 sm:px-6">
-          <button
-            className="md:hidden p-2 rounded-lg hover:bg-muted/50"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-          
           {/* Logo and Name - Visible on mobile when sidebar is closed */}
           <Link href="/" className="flex md:hidden items-center gap-2 group">
             <Image src="/tradeHub_logo.PNG" alt="TradeHub Logo" width={32} height={32} className="w-8 h-8 group-hover:scale-110 transition-transform" />
@@ -171,7 +164,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
           </Link>
           
           <div className="flex-1" />
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <button 
               onClick={() => setShowNotifications(true)}
               className="relative p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
@@ -180,6 +173,12 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
               {hasUnreadNotifications && (
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-pulse"></div>
               )}
+            </button>
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="md:hidden p-2 rounded-lg hover:bg-muted/50"
+            >
+              <Menu className="w-6 h-6" />
             </button>
           </div>
         </header>

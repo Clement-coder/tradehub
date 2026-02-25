@@ -345,9 +345,11 @@ export default function LandingPage() {
           Join thousands of traders who are mastering their skills on TradeHub
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+          <GlassCard className="group p-6 hover:scale-105 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.55_0.15_260)] to-[oklch(0.55_0.15_260)]/50 flex items-center justify-center text-white font-bold">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500/25 to-orange-500/15 flex items-center justify-center text-orange-500 font-bold">
                 JD
               </div>
               <div>
@@ -358,11 +360,14 @@ export default function LandingPage() {
             <p className="text-muted-foreground">
               "TradeHub helped me practice strategies without risking real money. The interface is incredibly smooth and the real-time data makes it feel authentic."
             </p>
+            </div>
           </GlassCard>
 
-          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+          <GlassCard className="group p-6 hover:scale-105 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.65_0.12_140)] to-[oklch(0.65_0.12_140)]/50 flex items-center justify-center text-white font-bold">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500/25 to-blue-500/15 flex items-center justify-center text-blue-500 font-bold">
                 SM
               </div>
               <div>
@@ -373,11 +378,14 @@ export default function LandingPage() {
             <p className="text-muted-foreground">
               "Best trading simulator I've used. The $10,000 starting balance gives you plenty of room to experiment with different trading strategies."
             </p>
+            </div>
           </GlassCard>
 
-          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+          <GlassCard className="group p-6 hover:scale-105 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-green-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.6_0.14_180)] to-[oklch(0.6_0.14_180)]/50 flex items-center justify-center text-white font-bold">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500/25 to-green-500/15 flex items-center justify-center text-green-500 font-bold">
                 MJ
               </div>
               <div>
@@ -388,11 +396,14 @@ export default function LandingPage() {
             <p className="text-muted-foreground">
               "As a complete beginner, this platform gave me the confidence to learn trading. The zero-risk environment is perfect for learning."
             </p>
+            </div>
           </GlassCard>
 
-          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+          <GlassCard className="group p-6 hover:scale-105 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.5_0.13_320)] to-[oklch(0.5_0.13_320)]/50 flex items-center justify-center text-white font-bold">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/25 to-purple-500/15 flex items-center justify-center text-purple-500 font-bold">
                 EW
               </div>
               <div>
@@ -403,11 +414,14 @@ export default function LandingPage() {
             <p className="text-muted-foreground">
               "The real-time charts and instant execution make this feel like a professional trading platform. Highly recommend for practice!"
             </p>
+            </div>
           </GlassCard>
 
-          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+          <GlassCard className="group p-6 hover:scale-105 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.58_0.11_40)] to-[oklch(0.58_0.11_40)]/50 flex items-center justify-center text-white font-bold">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500/25 to-orange-500/15 flex items-center justify-center text-orange-500 font-bold">
                 DB
               </div>
               <div>
@@ -418,11 +432,14 @@ export default function LandingPage() {
             <p className="text-muted-foreground">
               "Perfect for backtesting strategies. The analytics and trade history features help me understand what works and what doesn't."
             </p>
+            </div>
           </GlassCard>
 
-          <GlassCard className="p-6 hover:scale-105 transition-all duration-300">
+          <GlassCard className="group p-6 hover:scale-105 transition-all duration-300 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[oklch(0.55_0.15_260)] to-[oklch(0.55_0.15_260)]/50 flex items-center justify-center text-white font-bold">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500/25 to-blue-500/15 flex items-center justify-center text-blue-500 font-bold">
                 LG
               </div>
               <div>
@@ -433,6 +450,7 @@ export default function LandingPage() {
             <p className="text-muted-foreground">
               "Excellent platform for honing trading skills. The beautiful UI and smooth performance make trading practice enjoyable."
             </p>
+            </div>
           </GlassCard>
         </div>
       </section>
