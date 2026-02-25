@@ -174,7 +174,7 @@ export default function TradingChart() {
             {isUpTrend ? '+' : ''}{priceChange.toFixed(0)} ({percentChange.toFixed(2)}%)
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <div className="flex gap-1 bg-muted/50 rounded-lg p-1">
             <button
               onClick={() => setChartType('line')}
@@ -185,7 +185,7 @@ export default function TradingChart() {
               }`}
               title="Line Chart"
             >
-              <LineChartIcon className="w-4 h-4" />
+              <LineChartIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
             <button
               onClick={() => setChartType('candlestick')}
@@ -196,14 +196,14 @@ export default function TradingChart() {
               }`}
               title="Candlestick Chart"
             >
-              <BarChart3 className="w-4 h-4" />
+              <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
           </div>
           {(['1m', '5m', '15m', '1H', '4H', '1D', '1W'] as const).map((tf) => (
             <button
               key={tf}
               onClick={() => setTimeframe(tf)}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+              className={`px-2 py-1 sm:px-3 rounded text-xs sm:text-sm font-medium transition-colors ${
                 timeframe === tf
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted/50 text-muted-foreground hover:text-foreground'
