@@ -11,6 +11,8 @@ import { usePrivy } from '@privy-io/react-auth';
 import { getTransactionHistory, type Transaction } from '@/lib/supabase-service';
 import { toPng } from 'html-to-image';
 import { QRCodeSVG } from 'qrcode.react';
+import { FuturisticLoader } from '@/components/futuristic-loader';
+import { OfflineDetector } from '@/components/offline-detector';
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
@@ -99,7 +101,6 @@ export default function WalletPage() {
     try {
       const txs = await getTransactionHistory(user.id, user.privyUserId);
       setTransactions(txs);
-      window.location.reload();
     } catch (error) {
       console.error('Failed to refresh:', error);
     } finally {
@@ -124,7 +125,7 @@ export default function WalletPage() {
   }, [user]);
 
   if (!ready) {
-    return <div className="min-h-screen bg-background p-6">Loading...</div>;
+    return <FuturisticLoader />;
   }
 
   if (!authenticated) {
@@ -132,11 +133,7 @@ export default function WalletPage() {
   }
 
   if (!user) {
-    return <div className="min-h-screen bg-background p-6">Loading account...</div>;
-  }
-
-  if (!ready || !authenticated || !user) {
-    return null;
+    return <FuturisticLoader />;
   }
 
   const btcEquivalent = btcPrice ? (user?.balance || 0) / btcPrice : 0;
@@ -241,6 +238,7 @@ export default function WalletPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <OfflineDetector />
       {/* Page Header */}
       <div className="border-b border-border bg-gradient-to-r from-[oklch(0.65_0.15_260)]/10 to-[oklch(0.72_0.12_140)]/10">
         <div className="px-6 py-6">

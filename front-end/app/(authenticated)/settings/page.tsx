@@ -1,4 +1,6 @@
 'use client';
+import { FuturisticLoader } from '@/components/futuristic-loader';
+import { OfflineDetector } from '@/components/offline-detector';
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -25,7 +27,7 @@ export default function SettingsPage() {
   }, [ready, authenticated, router]);
 
   if (!ready) {
-    return <div className="min-h-screen bg-background p-6">Loading...</div>;
+    return <FuturisticLoader />;
   }
 
   if (!authenticated) {
@@ -33,7 +35,7 @@ export default function SettingsPage() {
   }
 
   if (!user) {
-    return <div className="min-h-screen bg-background p-6">Loading account...</div>;
+    return <FuturisticLoader />;
   }
 
   if (!ready || !authenticated || !user) {

@@ -7,6 +7,8 @@ import { History, TrendingUp, TrendingDown } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import { CurrencyDisplay } from '@/components/currency-display';
 import { usePrivy } from '@privy-io/react-auth';
+import { FuturisticLoader } from '@/components/futuristic-loader';
+import { OfflineDetector } from '@/components/offline-detector';
 
 // Helper functions to format currency and price
 const formatCurrency = (value: number) =>
@@ -28,7 +30,7 @@ export default function HistoryPage() {
   }, [ready, authenticated, router]);
 
   if (!ready) {
-    return <div className="min-h-screen bg-background p-6">Loading...</div>;
+    return <FuturisticLoader />;
   }
 
   if (!authenticated) {
@@ -36,11 +38,7 @@ export default function HistoryPage() {
   }
 
   if (!user) {
-    return <div className="min-h-screen bg-background p-6">Loading account...</div>;
-  }
-
-  if (!ready || !authenticated || !user) {
-    return null;
+    return <FuturisticLoader />;
   }
 
   const filteredTrades = trades.filter((trade) => {
@@ -58,6 +56,7 @@ export default function HistoryPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <OfflineDetector />
       {/* Page Header */}
       <div className="border-b border-border bg-gradient-to-r from-[oklch(0.68_0.14_180)]/10 to-[oklch(0.62_0.13_320)]/10">
         <div className="px-4 sm:px-6 py-4 sm:py-6">
