@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Wallet, DollarSign, UserPlus, Mail, CheckCircle, History, ArrowDownCircle, ShieldCheck, Clock3, Coins, SendHorizontal, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { Wallet, DollarSign, UserPlus, Mail, CheckCircle, History, ArrowDownCircle, ShieldCheck, Clock3, Coins, SendHorizontal, ArrowUpRight, ArrowDownLeft, Download, Share2 } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import { useBTCPrice } from '@/lib/hooks/useBTCPrice';
 import { CurrencyDisplay } from '@/components/currency-display';
 import { usePrivy } from '@privy-io/react-auth';
 import { getTransactionHistory, type Transaction } from '@/lib/supabase-service';
+import { toPng } from 'html-to-image';
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
@@ -38,6 +39,39 @@ export default function WalletPage() {
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState<any>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const receiptRef = useRef<HTMLDivElement>(null);
+  const transactionReceiptRef = useRef<HTMLDivElement>(null);
+
+  const downloadReceipt = async (ref: React.RefObject<HTMLDivElement>, filename: string) => {
+    if (!ref.current) return;
+    try {
+      const dataUrl = await toPng(ref.current, { quality: 1, pixelRatio: 2 });
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to generate image:', err);
+    }
+  };
+
+  const shareReceipt = async (ref: React.RefObject<HTMLDivElement>, title: string) => {
+    if (!ref.current) return;
+    try {
+      const dataUrl = await toPng(ref.current, { quality: 1, pixelRatio: 2 });
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], 'receipt.png', { type: 'image/png' });
+      
+      if (navigator.share && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title });
+      } else {
+        downloadReceipt(ref, 'receipt.png');
+      }
+    } catch (err) {
+      console.error('Failed to share:', err);
+    }
+  };
   const [withdrawError, setWithdrawError] = useState('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -396,7 +430,11 @@ export default function WalletPage() {
                                    tx.type === 'trade_close' ? 'Trade Close' : 'Transaction';
                     
                     return (
-                      <div key={tx.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors">
+                      <button
+                        key={tx.id}
+                        onClick={() => setSelectedTransaction(tx)}
+                        className="w-full flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
+                      >
                         <div className="flex items-center gap-3">
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                             isPositive ? 'bg-green-500/20' : 'bg-red-500/20'
@@ -422,7 +460,7 @@ export default function WalletPage() {
                             Balance: ${Number(tx.balance_after).toFixed(2)}
                           </p>
                         </div>
-                      </div>
+                      </button>
                     );
                   })
                 )}
@@ -640,96 +678,229 @@ export default function WalletPage() {
 
         {/* Receipt Modal */}
         {showReceipt && receiptData && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md my-8">
               <div className="p-6 space-y-4">
-                <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                    <CheckCircle className="w-8 h-8 text-green-500" />
+                <div ref={receiptRef} className="space-y-4 bg-white p-6 rounded-lg">
+                  <div className="text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <CheckCircle className="w-8 h-8 text-green-500" />
+                    </div>
+                    <h2 className="text-2xl font-bold mb-2 text-gray-900">Withdrawal Submitted</h2>
+                    <p className="text-sm text-gray-600">Your withdrawal request has been received</p>
                   </div>
-                  <h2 className="text-2xl font-bold mb-2">Withdrawal Submitted</h2>
-                  <p className="text-sm text-muted-foreground">Your withdrawal request has been received</p>
+
+                  <div className="border border-gray-200 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center justify-center pb-3 border-b border-gray-200">
+                      <div className="text-2xl font-bold text-[#6366f1]">TradeHub</div>
+                    </div>
+
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Transaction ID</span>
+                        <span className="font-mono font-medium text-gray-900">{receiptData.id}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Date & Time</span>
+                        <span className="font-medium text-gray-900">{new Date(receiptData.timestamp).toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Type</span>
+                        <span className="font-medium capitalize text-gray-900">{receiptData.type} Withdrawal</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Amount</span>
+                        <span className="font-bold text-lg text-gray-900">{formatCurrency(receiptData.amount)}</span>
+                      </div>
+                      
+                      <div className="pt-2 border-t border-gray-200 space-y-2">
+                        <p className="text-xs font-semibold text-gray-600">Conversions:</p>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">BTC:</span>
+                            <span className="font-medium text-gray-900">{(receiptData.amount / (btcPrice || 1)).toFixed(6)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">EUR:</span>
+                            <span className="font-medium text-gray-900">€{(receiptData.amount * 0.92).toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">GBP:</span>
+                            <span className="font-medium text-gray-900">£{(receiptData.amount * 0.79).toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">USDC:</span>
+                            <span className="font-medium text-gray-900">{receiptData.amount.toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {receiptData.type === 'wallet' && (
+                        <>
+                          <div className="flex justify-between pt-2 border-t border-gray-200">
+                            <span className="text-gray-600">Network</span>
+                            <span className="font-medium text-gray-900">{receiptData.network}</span>
+                          </div>
+                          <div className="flex justify-between items-start">
+                            <span className="text-gray-600">Address</span>
+                            <span className="font-mono text-xs text-right max-w-[200px] break-all text-gray-900">{receiptData.address}</span>
+                          </div>
+                        </>
+                      )}
+                      {receiptData.type === 'bank' && (
+                        <>
+                          <div className="flex justify-between pt-2 border-t border-gray-200">
+                            <span className="text-gray-600">Bank</span>
+                            <span className="font-medium text-gray-900">{receiptData.bankName}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Account Name</span>
+                            <span className="font-medium text-gray-900">{receiptData.accountName}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Account Number</span>
+                            <span className="font-mono text-gray-900">****{receiptData.accountNumber.slice(-4)}</span>
+                          </div>
+                        </>
+                      )}
+                      <div className="flex justify-between pt-2 border-t border-gray-200">
+                        <span className="text-gray-600">Status</span>
+                        <span className="font-semibold text-orange-600">{receiptData.status}</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-xs">
+                      <p className="text-orange-700 font-semibold mb-1">📋 Next Steps:</p>
+                      <p className="text-gray-700">
+                        Share this receipt with an agent to pay the platform fee. Your wallet will be credited after payment confirmation.
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="border border-border rounded-lg p-4 space-y-3">
-                  <div className="flex items-center justify-center pb-3 border-b border-border">
-                    <Image src="/logo.svg" alt="TradeHub" width={120} height={40} className="h-8 w-auto" />
-                  </div>
-
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Transaction ID</span>
-                      <span className="font-mono font-medium">{receiptData.id}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Date & Time</span>
-                      <span className="font-medium">{new Date(receiptData.timestamp).toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Type</span>
-                      <span className="font-medium capitalize">{receiptData.type} Withdrawal</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Amount</span>
-                      <span className="font-bold text-lg">{formatCurrency(receiptData.amount)}</span>
-                    </div>
-                    {receiptData.type === 'wallet' && (
-                      <>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Network</span>
-                          <span className="font-medium">{receiptData.network}</span>
-                        </div>
-                        <div className="flex justify-between items-start">
-                          <span className="text-muted-foreground">Address</span>
-                          <span className="font-mono text-xs text-right max-w-[200px] break-all">{receiptData.address}</span>
-                        </div>
-                      </>
-                    )}
-                    {receiptData.type === 'bank' && (
-                      <>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Bank</span>
-                          <span className="font-medium">{receiptData.bankName}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Account Name</span>
-                          <span className="font-medium">{receiptData.accountName}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground">Account Number</span>
-                          <span className="font-mono">****{receiptData.accountNumber.slice(-4)}</span>
-                        </div>
-                      </>
-                    )}
-                    <div className="flex justify-between pt-2 border-t border-border">
-                      <span className="text-muted-foreground">Status</span>
-                      <span className="font-semibold text-[oklch(0.68_0.11_40)]">{receiptData.status}</span>
-                    </div>
-                  </div>
-
-                  <div className="bg-[oklch(0.68_0.11_40)]/10 border border-[oklch(0.68_0.11_40)]/30 rounded-lg p-3 text-xs">
-                    <p className="text-[oklch(0.68_0.11_40)] font-semibold mb-1">📋 Next Steps:</p>
-                    <p className="text-muted-foreground">
-                      Share this receipt with an agent to pay the platform fee. Your wallet will be credited after payment confirmation.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <button
-                    onClick={() => {
-                      const receiptText = `TradeHub Withdrawal Receipt\n\nTransaction ID: ${receiptData.id}\nDate: ${new Date(receiptData.timestamp).toLocaleString()}\nType: ${receiptData.type} Withdrawal\nAmount: ${formatCurrency(receiptData.amount)}\n${receiptData.type === 'wallet' ? `Network: ${receiptData.network}\nAddress: ${receiptData.address}` : `Bank: ${receiptData.bankName}\nAccount: ${receiptData.accountName}`}\nStatus: ${receiptData.status}`;
-                      navigator.clipboard.writeText(receiptText);
-                    }}
-                    className="flex-1 px-4 py-2 rounded-lg border border-border hover:bg-muted"
+                    onClick={() => downloadReceipt(receiptRef, `withdrawal-${receiptData.id}.png`)}
+                    className="px-3 py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-sm"
                   >
-                    Copy Details
+                    <Download className="w-4 h-4" />
+                    Save
+                  </button>
+                  <button
+                    onClick={() => shareReceipt(receiptRef, 'Withdrawal Receipt')}
+                    className="px-3 py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-sm"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share
                   </button>
                   <button
                     onClick={() => setShowReceipt(false)}
-                    className="flex-1 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-sm"
                   >
                     Done
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Transaction Receipt Modal */}
+        {selectedTransaction && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md my-8">
+              <div className="flex items-center justify-between p-4 border-b border-border">
+                <h2 className="text-lg font-bold">Transaction Receipt</h2>
+                <button 
+                  onClick={() => setSelectedTransaction(null)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div ref={transactionReceiptRef} className="space-y-4 bg-white p-6 rounded-lg">
+                  <div className="border border-gray-200 rounded-lg p-4 space-y-3">
+                    <div className="flex items-center justify-center pb-3 border-b border-gray-200">
+                      <div className="text-2xl font-bold text-[#6366f1]">TradeHub</div>
+                    </div>
+
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Transaction ID</span>
+                        <span className="font-mono font-medium text-gray-900">{selectedTransaction.id}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Date & Time</span>
+                        <span className="font-medium text-gray-900">{new Date(selectedTransaction.created_at).toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Type</span>
+                        <span className="font-medium capitalize text-gray-900">
+                          {selectedTransaction.type === 'deposit' ? 'Deposit' : 
+                           selectedTransaction.type === 'withdrawal' ? 'Withdrawal' :
+                           selectedTransaction.type === 'trade_open' ? 'Trade Open' :
+                           selectedTransaction.type === 'trade_close' ? 'Trade Close' : 'Transaction'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Amount</span>
+                        <span className={`font-bold text-lg ${Number(selectedTransaction.amount) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {Number(selectedTransaction.amount) >= 0 ? '+' : ''}{formatCurrency(Number(selectedTransaction.amount))}
+                        </span>
+                      </div>
+                      
+                      <div className="pt-2 border-t border-gray-200 space-y-2">
+                        <p className="text-xs font-semibold text-gray-600">Conversions:</p>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">BTC:</span>
+                            <span className="font-medium text-gray-900">{(Math.abs(Number(selectedTransaction.amount)) / (btcPrice || 1)).toFixed(6)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">EUR:</span>
+                            <span className="font-medium text-gray-900">€{(Math.abs(Number(selectedTransaction.amount)) * 0.92).toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">GBP:</span>
+                            <span className="font-medium text-gray-900">£{(Math.abs(Number(selectedTransaction.amount)) * 0.79).toFixed(2)}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">USDC:</span>
+                            <span className="font-medium text-gray-900">{Math.abs(Number(selectedTransaction.amount)).toFixed(2)}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between pt-2 border-t border-gray-200">
+                        <span className="text-gray-600">Balance After</span>
+                        <span className="font-semibold text-gray-900">{formatCurrency(Number(selectedTransaction.balance_after))}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => downloadReceipt(transactionReceiptRef, `transaction-${selectedTransaction.id}.png`)}
+                    className="px-3 py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-sm"
+                  >
+                    <Download className="w-4 h-4" />
+                    Save
+                  </button>
+                  <button
+                    onClick={() => shareReceipt(transactionReceiptRef, 'Transaction Receipt')}
+                    className="px-3 py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-sm"
+                  >
+                    <Share2 className="w-4 h-4" />
+                    Share
+                  </button>
+                  <button
+                    onClick={() => setSelectedTransaction(null)}
+                    className="px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-sm"
+                  >
+                    Close
                   </button>
                 </div>
               </div>
