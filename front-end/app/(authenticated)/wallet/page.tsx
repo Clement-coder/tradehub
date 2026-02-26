@@ -471,46 +471,46 @@ export default function WalletPage() {
 
         {/* Withdraw Modal */}
         {showWithdrawModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md my-8">
-              <div className="flex items-center justify-between p-4 border-b border-border bg-card z-10">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md my-4 sm:my-8 mx-2 sm:mx-auto">
+              <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border bg-card z-10">
                 <div className="flex items-center gap-2">
-                  <ArrowDownCircle className="w-5 h-5 text-red-500" />
-                  <h2 className="text-lg font-bold">Withdraw</h2>
+                  <ArrowDownCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" />
+                  <h2 className="text-base sm:text-lg font-bold">Withdraw</h2>
                 </div>
                 <button 
                   onClick={() => setShowWithdrawModal(false)}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground text-xl"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="p-4 space-y-4">
+              <div className="p-3 sm:p-4 space-y-3 sm:space-y-4 max-h-[70vh] overflow-y-auto">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Withdrawal Method</label>
+                  <label className="text-xs sm:text-sm font-medium mb-2 block">Withdrawal Method</label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setWithdrawType('wallet')}
-                      className={`p-3 rounded-lg border text-center transition-colors ${
+                      className={`p-2 sm:p-3 rounded-lg border text-center transition-colors ${
                         withdrawType === 'wallet'
                           ? 'border-primary bg-primary/10'
                           : 'border-border hover:bg-muted/40'
                       }`}
                     >
-                      <Wallet className="w-5 h-5 mx-auto mb-1" />
-                      <span className="text-sm font-medium">Wallet</span>
+                      <Wallet className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1" />
+                      <span className="text-xs sm:text-sm font-medium">Wallet</span>
                     </button>
                     <button
                       onClick={() => setWithdrawType('bank')}
-                      className={`p-3 rounded-lg border text-center transition-colors ${
+                      className={`p-2 sm:p-3 rounded-lg border text-center transition-colors ${
                         withdrawType === 'bank'
                           ? 'border-primary bg-primary/10'
                           : 'border-border hover:bg-muted/40'
                       }`}
                     >
-                      <DollarSign className="w-5 h-5 mx-auto mb-1" />
-                      <span className="text-sm font-medium">Bank</span>
+                      <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1" />
+                      <span className="text-xs sm:text-sm font-medium">Bank</span>
                     </button>
                   </div>
                 </div>
@@ -518,13 +518,13 @@ export default function WalletPage() {
                 {withdrawType === 'wallet' ? (
                   <>
                     <div>
-                      <label className="text-sm font-medium mb-1.5 block">Network</label>
+                      <label className="text-xs sm:text-sm font-medium mb-1.5 block">Network</label>
                       <div className="grid grid-cols-1 gap-2">
                         {NETWORKS.map((network) => (
                           <button
                             key={network.id}
                             onClick={() => setWithdrawNetwork(network.id)}
-                            className={`p-2.5 rounded-lg border text-left text-sm transition-colors ${
+                            className={`p-2 sm:p-2.5 rounded-lg border text-left text-xs sm:text-sm transition-colors ${
                               withdrawNetwork === network.id
                                 ? 'border-primary bg-primary/10'
                                 : 'border-border hover:bg-muted/40'
@@ -532,10 +532,10 @@ export default function WalletPage() {
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <Image src={network.logo} alt={network.id} width={20} height={20} />
+                                <Image src={network.logo} alt={network.id} width={16} height={16} className="w-4 h-4 sm:w-5 sm:h-5" />
                                 <span className="font-medium">{network.id}</span>
                               </div>
-                              <span className="text-xs text-muted-foreground">{network.eta}</span>
+                              <span className="text-[10px] sm:text-xs text-muted-foreground">{network.eta}</span>
                             </div>
                           </button>
                         ))}
@@ -543,97 +543,97 @@ export default function WalletPage() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-1.5 block">Wallet Address</label>
+                      <label className="text-xs sm:text-sm font-medium mb-1.5 block">Wallet Address</label>
                       <input
                         type="text"
                         placeholder={withdrawNetwork === 'Bitcoin' ? '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa' : '0x...'}
                         value={withdrawAddress}
                         onChange={(e) => setWithdrawAddress(e.target.value)}
-                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                        className="w-full p-2 sm:p-2.5 rounded-lg bg-background border border-border text-xs sm:text-sm"
                       />
                     </div>
                   </>
                 ) : (
                   <>
                     <div>
-                      <label className="text-sm font-medium mb-1.5 block">Bank Name *</label>
+                      <label className="text-xs sm:text-sm font-medium mb-1.5 block">Bank Name *</label>
                       <input
                         type="text"
                         placeholder="e.g., Chase Bank"
                         value={bankName}
                         onChange={(e) => setBankName(e.target.value)}
-                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                        className="w-full p-2 sm:p-2.5 rounded-lg bg-background border border-border text-xs sm:text-sm"
                       />
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-1.5 block">Account Name *</label>
+                      <label className="text-xs sm:text-sm font-medium mb-1.5 block">Account Name *</label>
                       <input
                         type="text"
                         placeholder="Full name on account"
                         value={accountName}
                         onChange={(e) => setAccountName(e.target.value)}
-                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                        className="w-full p-2 sm:p-2.5 rounded-lg bg-background border border-border text-xs sm:text-sm"
                       />
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-1.5 block">Account Number *</label>
+                      <label className="text-xs sm:text-sm font-medium mb-1.5 block">Account Number *</label>
                       <input
                         type="text"
                         placeholder="Account number"
                         value={accountNumber}
                         onChange={(e) => setAccountNumber(e.target.value)}
-                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                        className="w-full p-2 sm:p-2.5 rounded-lg bg-background border border-border text-xs sm:text-sm"
                       />
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-1.5 block">Routing Number</label>
+                      <label className="text-xs sm:text-sm font-medium mb-1.5 block">Routing Number</label>
                       <input
                         type="text"
                         placeholder="9-digit routing number"
                         value={routingNumber}
                         onChange={(e) => setRoutingNumber(e.target.value)}
-                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                        className="w-full p-2 sm:p-2.5 rounded-lg bg-background border border-border text-xs sm:text-sm"
                       />
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-1.5 block">SWIFT/BIC Code</label>
+                      <label className="text-xs sm:text-sm font-medium mb-1.5 block">SWIFT/BIC Code</label>
                       <input
                         type="text"
                         placeholder="For international transfers"
                         value={swiftCode}
                         onChange={(e) => setSwiftCode(e.target.value)}
-                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                        className="w-full p-2 sm:p-2.5 rounded-lg bg-background border border-border text-xs sm:text-sm"
                       />
                     </div>
                   </>
                 )}
 
                 <div>
-                  <label className="text-sm font-medium mb-1.5 block">Amount</label>
+                  <label className="text-xs sm:text-sm font-medium mb-1.5 block">Amount</label>
                   <input
                     type="number"
                     placeholder="0.00"
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
-                    className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                    className="w-full p-2 sm:p-2.5 rounded-lg bg-background border border-border text-xs sm:text-sm"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                     Available: {formatCurrency(user.balance)}
                   </p>
                 </div>
 
-                <div className="bg-[oklch(0.68_0.11_40)]/10 border border-[oklch(0.68_0.11_40)]/30 rounded-lg p-3 text-sm">
+                <div className="bg-[oklch(0.68_0.11_40)]/10 border border-[oklch(0.68_0.11_40)]/30 rounded-lg p-2 sm:p-3 text-xs sm:text-sm">
                   <p className="text-[oklch(0.68_0.11_40)] font-medium">⚠️ Agent Approval Required</p>
-                  <p className="text-muted-foreground text-xs mt-1">
+                  <p className="text-muted-foreground text-[10px] sm:text-xs mt-1">
                     Your withdrawal will be reviewed by an agent. Please share the receipt to complete payment of platform fees.
                   </p>
                 </div>
 
-                <label className="flex items-start gap-2 text-sm">
+                <label className="flex items-start gap-2 text-xs sm:text-sm">
                   <input
                     type="checkbox"
                     checked={withdrawConfirmed}
@@ -644,30 +644,30 @@ export default function WalletPage() {
                 </label>
 
                 {exceedsBalance && (
-                  <p className="text-sm text-destructive">Insufficient balance</p>
+                  <p className="text-xs sm:text-sm text-destructive">Insufficient balance</p>
                 )}
                 {withdrawType === 'wallet' && !withdrawAddressIsValid && withdrawAddress.length > 0 && (
-                  <p className="text-sm text-destructive">Invalid address</p>
+                  <p className="text-xs sm:text-sm text-destructive">Invalid address</p>
                 )}
                 {withdrawError && (
-                  <p className="text-sm text-destructive">{withdrawError}</p>
+                  <p className="text-xs sm:text-sm text-destructive">{withdrawError}</p>
                 )}
               </div>
 
-              <div className="flex gap-2 p-4 border-t border-border">
+              <div className="flex gap-2 p-3 sm:p-4 border-t border-border">
                 <button
                   onClick={() => {
                     setShowWithdrawModal(false);
                     resetAmounts();
                   }}
-                  className="flex-1 px-4 py-2 rounded-lg border border-border hover:bg-muted"
+                  className="flex-1 px-3 sm:px-4 py-2 rounded-lg border border-border hover:bg-muted text-xs sm:text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleWithdraw}
                   disabled={!canSubmitWithdraw}
-                  className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+                  className="flex-1 px-3 sm:px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 text-xs sm:text-sm"
                 >
                   {isWithdrawing ? 'Processing...' : 'Submit'}
                 </button>
@@ -678,44 +678,44 @@ export default function WalletPage() {
 
         {/* Receipt Modal */}
         {showReceipt && receiptData && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md my-8">
-              <div className="p-6 space-y-4">
-                <div ref={receiptRef} className="space-y-4 bg-white p-6 rounded-lg">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md my-4 sm:my-8 mx-2 sm:mx-auto">
+              <div className="p-3 sm:p-6 space-y-3 sm:space-y-4">
+                <div ref={receiptRef} className="space-y-3 sm:space-y-4 bg-white p-4 sm:p-6 rounded-lg">
                   <div className="text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                      <CheckCircle className="w-8 h-8 text-green-500" />
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <CheckCircle className="w-6 h-6 sm:w-8 sm:h-8 text-green-500" />
                     </div>
-                    <h2 className="text-2xl font-bold mb-2 text-gray-900">Withdrawal Submitted</h2>
-                    <p className="text-sm text-gray-600">Your withdrawal request has been received</p>
+                    <h2 className="text-xl sm:text-2xl font-bold mb-1 sm:mb-2 text-gray-900">Withdrawal Submitted</h2>
+                    <p className="text-xs sm:text-sm text-gray-600">Your withdrawal request has been received</p>
                   </div>
 
-                  <div className="border border-gray-200 rounded-lg p-4 space-y-3">
-                    <div className="flex items-center justify-center pb-3 border-b border-gray-200">
-                      <div className="text-2xl font-bold text-[#6366f1]">TradeHub</div>
+                  <div className="border border-gray-200 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
+                    <div className="flex items-center justify-center pb-2 sm:pb-3 border-b border-gray-200">
+                      <div className="text-lg sm:text-2xl font-bold text-[#6366f1]">TradeHub</div>
                     </div>
 
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
+                    <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                      <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Transaction ID</span>
-                        <span className="font-mono font-medium text-gray-900">{receiptData.id}</span>
+                        <span className="font-mono font-medium text-gray-900 text-right break-all">{receiptData.id}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Date & Time</span>
-                        <span className="font-medium text-gray-900">{new Date(receiptData.timestamp).toLocaleString()}</span>
+                        <span className="font-medium text-gray-900 text-right">{new Date(receiptData.timestamp).toLocaleString()}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Type</span>
                         <span className="font-medium capitalize text-gray-900">{receiptData.type} Withdrawal</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Amount</span>
-                        <span className="font-bold text-lg text-gray-900">{formatCurrency(receiptData.amount)}</span>
+                        <span className="font-bold text-base sm:text-lg text-gray-900">{formatCurrency(receiptData.amount)}</span>
                       </div>
                       
-                      <div className="pt-2 border-t border-gray-200 space-y-2">
-                        <p className="text-xs font-semibold text-gray-600">Conversions:</p>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="pt-1.5 sm:pt-2 border-t border-gray-200 space-y-1.5 sm:space-y-2">
+                        <p className="text-[10px] sm:text-xs font-semibold text-gray-600">Conversions:</p>
+                        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-xs">
                           <div className="flex justify-between">
                             <span className="text-gray-600">BTC:</span>
                             <span className="font-medium text-gray-900">{(receiptData.amount / (btcPrice || 1)).toFixed(6)}</span>
@@ -737,39 +737,39 @@ export default function WalletPage() {
 
                       {receiptData.type === 'wallet' && (
                         <>
-                          <div className="flex justify-between pt-2 border-t border-gray-200">
+                          <div className="flex justify-between gap-2 pt-1.5 sm:pt-2 border-t border-gray-200">
                             <span className="text-gray-600">Network</span>
                             <span className="font-medium text-gray-900">{receiptData.network}</span>
                           </div>
-                          <div className="flex justify-between items-start">
+                          <div className="flex justify-between items-start gap-2">
                             <span className="text-gray-600">Address</span>
-                            <span className="font-mono text-xs text-right max-w-[200px] break-all text-gray-900">{receiptData.address}</span>
+                            <span className="font-mono text-[10px] sm:text-xs text-right max-w-[60%] break-all text-gray-900">{receiptData.address}</span>
                           </div>
                         </>
                       )}
                       {receiptData.type === 'bank' && (
                         <>
-                          <div className="flex justify-between pt-2 border-t border-gray-200">
+                          <div className="flex justify-between gap-2 pt-1.5 sm:pt-2 border-t border-gray-200">
                             <span className="text-gray-600">Bank</span>
-                            <span className="font-medium text-gray-900">{receiptData.bankName}</span>
+                            <span className="font-medium text-gray-900 text-right">{receiptData.bankName}</span>
                           </div>
-                          <div className="flex justify-between">
+                          <div className="flex justify-between gap-2">
                             <span className="text-gray-600">Account Name</span>
-                            <span className="font-medium text-gray-900">{receiptData.accountName}</span>
+                            <span className="font-medium text-gray-900 text-right">{receiptData.accountName}</span>
                           </div>
-                          <div className="flex justify-between">
+                          <div className="flex justify-between gap-2">
                             <span className="text-gray-600">Account Number</span>
                             <span className="font-mono text-gray-900">****{receiptData.accountNumber.slice(-4)}</span>
                           </div>
                         </>
                       )}
-                      <div className="flex justify-between pt-2 border-t border-gray-200">
+                      <div className="flex justify-between gap-2 pt-1.5 sm:pt-2 border-t border-gray-200">
                         <span className="text-gray-600">Status</span>
                         <span className="font-semibold text-orange-600">{receiptData.status}</span>
                       </div>
                     </div>
 
-                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 text-xs">
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 sm:p-3 text-[10px] sm:text-xs">
                       <p className="text-orange-700 font-semibold mb-1">📋 Next Steps:</p>
                       <p className="text-gray-700">
                         Share this receipt with an agent to pay the platform fee. Your wallet will be credited after payment confirmation.
@@ -778,24 +778,24 @@ export default function WalletPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                   <button
                     onClick={() => downloadReceipt(receiptRef, `withdrawal-${receiptData.id}.png`)}
-                    className="px-3 py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-sm"
+                    className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-[10px] sm:text-sm"
                   >
-                    <Download className="w-4 h-4" />
-                    Save
+                    <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Save</span>
                   </button>
                   <button
                     onClick={() => shareReceipt(receiptRef, 'Withdrawal Receipt')}
-                    className="px-3 py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-sm"
+                    className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-[10px] sm:text-sm"
                   >
-                    <Share2 className="w-4 h-4" />
-                    Share
+                    <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Share</span>
                   </button>
                   <button
                     onClick={() => setShowReceipt(false)}
-                    className="px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-sm"
+                    className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-[10px] sm:text-sm"
                   >
                     Done
                   </button>
@@ -807,35 +807,35 @@ export default function WalletPage() {
 
         {/* Transaction Receipt Modal */}
         {selectedTransaction && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
-            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md my-8">
-              <div className="flex items-center justify-between p-4 border-b border-border">
-                <h2 className="text-lg font-bold">Transaction Receipt</h2>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
+            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md my-4 sm:my-8 mx-2 sm:mx-auto">
+              <div className="flex items-center justify-between p-3 sm:p-4 border-b border-border">
+                <h2 className="text-base sm:text-lg font-bold">Transaction Receipt</h2>
                 <button 
                   onClick={() => setSelectedTransaction(null)}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground text-xl"
                 >
                   ✕
                 </button>
               </div>
 
-              <div className="p-6 space-y-4">
-                <div ref={transactionReceiptRef} className="space-y-4 bg-white p-6 rounded-lg">
-                  <div className="border border-gray-200 rounded-lg p-4 space-y-3">
-                    <div className="flex items-center justify-center pb-3 border-b border-gray-200">
-                      <div className="text-2xl font-bold text-[#6366f1]">TradeHub</div>
+              <div className="p-3 sm:p-6 space-y-3 sm:space-y-4">
+                <div ref={transactionReceiptRef} className="space-y-3 sm:space-y-4 bg-white p-4 sm:p-6 rounded-lg">
+                  <div className="border border-gray-200 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
+                    <div className="flex items-center justify-center pb-2 sm:pb-3 border-b border-gray-200">
+                      <div className="text-lg sm:text-2xl font-bold text-[#6366f1]">TradeHub</div>
                     </div>
 
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
+                    <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                      <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Transaction ID</span>
-                        <span className="font-mono font-medium text-gray-900">{selectedTransaction.id}</span>
+                        <span className="font-mono font-medium text-gray-900 text-right break-all">{selectedTransaction.id}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Date & Time</span>
-                        <span className="font-medium text-gray-900">{new Date(selectedTransaction.created_at).toLocaleString()}</span>
+                        <span className="font-medium text-gray-900 text-right">{new Date(selectedTransaction.created_at).toLocaleString()}</span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Type</span>
                         <span className="font-medium capitalize text-gray-900">
                           {selectedTransaction.type === 'deposit' ? 'Deposit' : 
@@ -844,16 +844,16 @@ export default function WalletPage() {
                            selectedTransaction.type === 'trade_close' ? 'Trade Close' : 'Transaction'}
                         </span>
                       </div>
-                      <div className="flex justify-between">
+                      <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Amount</span>
-                        <span className={`font-bold text-lg ${Number(selectedTransaction.amount) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <span className={`font-bold text-base sm:text-lg ${Number(selectedTransaction.amount) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                           {Number(selectedTransaction.amount) >= 0 ? '+' : ''}{formatCurrency(Number(selectedTransaction.amount))}
                         </span>
                       </div>
                       
-                      <div className="pt-2 border-t border-gray-200 space-y-2">
-                        <p className="text-xs font-semibold text-gray-600">Conversions:</p>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="pt-1.5 sm:pt-2 border-t border-gray-200 space-y-1.5 sm:space-y-2">
+                        <p className="text-[10px] sm:text-xs font-semibold text-gray-600">Conversions:</p>
+                        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-xs">
                           <div className="flex justify-between">
                             <span className="text-gray-600">BTC:</span>
                             <span className="font-medium text-gray-900">{(Math.abs(Number(selectedTransaction.amount)) / (btcPrice || 1)).toFixed(6)}</span>
@@ -873,7 +873,7 @@ export default function WalletPage() {
                         </div>
                       </div>
 
-                      <div className="flex justify-between pt-2 border-t border-gray-200">
+                      <div className="flex justify-between gap-2 pt-1.5 sm:pt-2 border-t border-gray-200">
                         <span className="text-gray-600">Balance After</span>
                         <span className="font-semibold text-gray-900">{formatCurrency(Number(selectedTransaction.balance_after))}</span>
                       </div>
@@ -881,24 +881,24 @@ export default function WalletPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                   <button
                     onClick={() => downloadReceipt(transactionReceiptRef, `transaction-${selectedTransaction.id}.png`)}
-                    className="px-3 py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-sm"
+                    className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-[10px] sm:text-sm"
                   >
-                    <Download className="w-4 h-4" />
-                    Save
+                    <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Save</span>
                   </button>
                   <button
                     onClick={() => shareReceipt(transactionReceiptRef, 'Transaction Receipt')}
-                    className="px-3 py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-sm"
+                    className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-border hover:bg-muted flex items-center justify-center gap-1 text-[10px] sm:text-sm"
                   >
-                    <Share2 className="w-4 h-4" />
-                    Share
+                    <Share2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Share</span>
                   </button>
                   <button
                     onClick={() => setSelectedTransaction(null)}
-                    className="px-3 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-sm"
+                    className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-[10px] sm:text-sm"
                   >
                     Close
                   </button>
