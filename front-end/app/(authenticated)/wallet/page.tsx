@@ -715,7 +715,9 @@ export default function WalletPage() {
                     {/* Header with Logo */}
                     <div className="flex items-center justify-between pb-2 sm:pb-3 border-b-2 border-gray-300 relative z-10">
                       <div className="flex items-center gap-2">
-                        <Image src="/logo.svg" alt="TradeHub" width={32} height={32} className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#6366f1] flex items-center justify-center text-white font-bold text-xs sm:text-sm">
+                          TH
+                        </div>
                         <div className="text-lg sm:text-2xl font-bold text-[#6366f1]">TradeHub</div>
                       </div>
                       <div className="text-right">
@@ -889,7 +891,9 @@ export default function WalletPage() {
                     {/* Header with Logo */}
                     <div className="flex items-center justify-between pb-2 sm:pb-3 border-b-2 border-gray-300 relative z-10">
                       <div className="flex items-center gap-2">
-                        <Image src="/logo.svg" alt="TradeHub" width={32} height={32} className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-[#6366f1] flex items-center justify-center text-white font-bold text-xs sm:text-sm">
+                          TH
+                        </div>
                         <div className="text-lg sm:text-2xl font-bold text-[#6366f1]">TradeHub</div>
                       </div>
                       <div className="text-right">
