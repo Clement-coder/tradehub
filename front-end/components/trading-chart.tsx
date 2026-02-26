@@ -49,17 +49,35 @@ export default function TradingChart() {
 
   // Handle fullscreen toggle with rotation prompt
   const handleFullscreenToggle = (open: boolean) => {
+    setIsFullscreen(open);
+    
     if (isMobileDevice) {
       if (open && !isLandscape) {
+        // Opening fullscreen in portrait - suggest landscape
         setShowRotatePrompt(true);
-        setTimeout(() => setShowRotatePrompt(false), 4000);
       } else if (!open && isLandscape) {
+        // Closing fullscreen in landscape - suggest portrait
         setShowRotatePrompt(true);
-        setTimeout(() => setShowRotatePrompt(false), 4000);
       }
     }
-    setIsFullscreen(open);
   };
+
+  // Auto-hide rotation prompt and handle orientation changes
+  useEffect(() => {
+    if (showRotatePrompt) {
+      const timer = setTimeout(() => setShowRotatePrompt(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showRotatePrompt]);
+
+  // Hide prompt when user rotates to correct orientation
+  useEffect(() => {
+    if (showRotatePrompt && isFullscreen && isLandscape) {
+      setShowRotatePrompt(false);
+    } else if (showRotatePrompt && !isFullscreen && !isLandscape) {
+      setShowRotatePrompt(false);
+    }
+  }, [isLandscape, isFullscreen, showRotatePrompt]);
 
   useEffect(() => {
     // Initialize 24 hours of historical data
