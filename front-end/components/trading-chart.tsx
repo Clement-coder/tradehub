@@ -24,6 +24,7 @@ export default function TradingChart() {
   const [historicalData, setHistoricalData] = useState<ChartDataPoint[]>([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showTradingPanel, setShowTradingPanel] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     // Initialize 24 hours of historical data
@@ -236,22 +237,49 @@ export default function TradingChart() {
             ))}
           </div>
           
-          {/* Mobile: Dropdown */}
+          {/* Mobile: Custom Dropdown */}
           <div className="sm:hidden relative">
-            <select
-              value={timeframe}
-              onChange={(e) => setTimeframe(e.target.value as typeof timeframe)}
-              className="appearance-none px-4 py-2 pr-10 rounded-xl text-sm font-medium bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all cursor-pointer shadow-lg"
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-foreground transition-all shadow-lg hover:bg-white/15 dark:hover:bg-white/10"
             >
-              {(['1m', '5m', '15m', '1H', '4H', '1D', '1W'] as const).map((tf) => (
-                <option key={tf} value={tf} className="bg-background text-foreground">
-                  {timeframeLabels[tf]}
-                </option>
-              ))}
-            </select>
-            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
+              <span>{timeframeLabels[timeframe]}</span>
+              <svg 
+                className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {isDropdownOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-10" 
+                  onClick={() => setIsDropdownOpen(false)}
+                />
+                <div className="absolute right-0 mt-2 w-48 bg-card/95 backdrop-blur-md border border-white/20 rounded-xl shadow-2xl z-20 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                  {(['1m', '5m', '15m', '1H', '4H', '1D', '1W'] as const).map((tf) => (
+                    <button
+                      key={tf}
+                      onClick={() => {
+                        setTimeframe(tf);
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 text-sm font-medium transition-colors ${
+                        timeframe === tf
+                          ? 'bg-primary/20 text-primary'
+                          : 'text-foreground hover:bg-white/10'
+                      }`}
+                    >
+                      {timeframeLabels[tf]}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -478,11 +506,24 @@ export default function TradingChart() {
             opacity: 1;
           }
         }
+        @keyframes slideInFromTop {
+          from {
+            transform: translateY(-8px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
         .animate-in {
           animation: fadeIn 0.3s ease-out;
         }
         .slide-in-from-right {
           animation: slideInFromRight 0.5s ease-out;
+        }
+        .slide-in-from-top-2 {
+          animation: slideInFromTop 0.2s ease-out;
         }
       `}</style>
     </>
