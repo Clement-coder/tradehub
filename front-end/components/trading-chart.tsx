@@ -25,6 +25,41 @@ export default function TradingChart() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showTradingPanel, setShowTradingPanel] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showRotatePrompt, setShowRotatePrompt] = useState(false);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(false);
+
+  // Detect mobile device and orientation
+  useEffect(() => {
+    const checkDevice = () => {
+      const mobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && window.innerWidth < 1024;
+      setIsMobileDevice(mobile);
+      setIsLandscape(window.innerWidth > window.innerHeight);
+    };
+
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    window.addEventListener('orientationchange', checkDevice);
+
+    return () => {
+      window.removeEventListener('resize', checkDevice);
+      window.removeEventListener('orientationchange', checkDevice);
+    };
+  }, []);
+
+  // Handle fullscreen toggle with rotation prompt
+  const handleFullscreenToggle = (open: boolean) => {
+    if (isMobileDevice) {
+      if (open && !isLandscape) {
+        setShowRotatePrompt(true);
+        setTimeout(() => setShowRotatePrompt(false), 4000);
+      } else if (!open && isLandscape) {
+        setShowRotatePrompt(true);
+        setTimeout(() => setShowRotatePrompt(false), 4000);
+      }
+    }
+    setIsFullscreen(open);
+  };
 
   useEffect(() => {
     // Initialize 24 hours of historical data
@@ -213,7 +248,7 @@ export default function TradingChart() {
           
           {/* Fullscreen Button */}
           <button
-            onClick={() => setIsFullscreen(true)}
+            onClick={() => handleFullscreenToggle(true)}
             className="p-2 rounded-lg bg-muted/50 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             title="Fullscreen"
           >
@@ -283,6 +318,37 @@ export default function TradingChart() {
           </div>
         </div>
       </div>
+
+      {/* Rotation Prompt */}
+      {showRotatePrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-card/95 backdrop-blur-md border border-white/20 rounded-2xl p-6 mx-4 max-w-sm shadow-2xl animate-in zoom-in duration-300">
+            <div className="flex flex-col items-center text-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-primary animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {isFullscreen ? 'Rotate to Landscape' : 'Rotate to Portrait'}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {isFullscreen 
+                    ? 'For the best viewing experience, please rotate your device to landscape mode.'
+                    : 'You can now rotate your device back to portrait mode for easier navigation.'}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowRotatePrompt(false)}
+                className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors text-sm font-medium"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {chartData.length > 0 && (
         <ResponsiveContainer width="100%" height={isFullscreen ? '100%' : 300}>
@@ -438,7 +504,7 @@ export default function TradingChart() {
                 <Menu className="w-5 h-5" />
               </button>
               <button
-                onClick={() => setIsFullscreen(false)}
+                onClick={() => handleFullscreenToggle(false)}
                 className="p-2 rounded-lg hover:bg-muted transition-all hover:rotate-90 duration-300"
                 title="Close Fullscreen"
               >
@@ -701,6 +767,24 @@ export default function TradingChart() {
             opacity: 1;
           }
         }
+        @keyframes zoomIn {
+          from {
+            transform: scale(0.95);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+        @keyframes spin-slow {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
         .animate-in {
           animation: fadeIn 0.3s ease-out;
         }
@@ -709,6 +793,12 @@ export default function TradingChart() {
         }
         .slide-in-from-top-2 {
           animation: slideInFromTop 0.2s ease-out;
+        }
+        .zoom-in {
+          animation: zoomIn 0.3s ease-out;
+        }
+        .animate-spin-slow {
+          animation: spin-slow 2s linear infinite;
         }
       `}</style>
     </>
