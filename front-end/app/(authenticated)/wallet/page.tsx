@@ -382,14 +382,6 @@ export default function WalletPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.55_0.15_260)]/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
               <div>
-                <h3 className="font-semibold text-foreground mb-4">Network</h3>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[oklch(0.72_0.12_140)]" />
-                  <span className="text-sm text-foreground">Base / EVM-compatible</span>
-                </div>
-              </div>
-
-              <div>
                 <h3 className="font-semibold text-foreground mb-4">How to Fund Your Wallet</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-[oklch(0.65_0.15_260)]/10 rounded-lg p-4 flex items-start gap-3 border border-[oklch(0.65_0.15_260)]/30">
