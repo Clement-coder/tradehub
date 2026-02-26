@@ -40,10 +40,10 @@ export default function WalletPage() {
   const [showReceipt, setShowReceipt] = useState(false);
   const [receiptData, setReceiptData] = useState<any>(null);
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-  const receiptRef = useRef<HTMLDivElement>(null);
-  const transactionReceiptRef = useRef<HTMLDivElement>(null);
+  const receiptRef = useRef<HTMLDivElement | null>(null);
+  const transactionReceiptRef = useRef<HTMLDivElement | null>(null);
 
-  const downloadReceipt = async (ref: React.RefObject<HTMLDivElement>, filename: string) => {
+  const downloadReceipt = async (ref: React.RefObject<HTMLDivElement | null>, filename: string) => {
     if (!ref.current) return;
     try {
       const dataUrl = await toPng(ref.current, { quality: 1, pixelRatio: 2 });
@@ -56,7 +56,7 @@ export default function WalletPage() {
     }
   };
 
-  const shareReceipt = async (ref: React.RefObject<HTMLDivElement>, title: string) => {
+  const shareReceipt = async (ref: React.RefObject<HTMLDivElement | null>, title: string) => {
     if (!ref.current) return;
     try {
       const dataUrl = await toPng(ref.current, { quality: 1, pixelRatio: 2 });
