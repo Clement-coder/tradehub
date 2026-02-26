@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Wallet, DollarSign, UserPlus, Mail, CheckCircle, History, ArrowDownCircle, ShieldCheck, Clock3, Coins, SendHorizontal, ArrowUpRight, ArrowDownLeft, Download, Share2 } from 'lucide-react';
+import { Wallet, DollarSign, UserPlus, Mail, CheckCircle, History, ArrowDownCircle, ShieldCheck, Clock3, Coins, SendHorizontal, ArrowUpRight, ArrowDownLeft, Download, Share2, RefreshCw } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import { useBTCPrice } from '@/lib/hooks/useBTCPrice';
 import { CurrencyDisplay } from '@/components/currency-display';
@@ -91,6 +91,21 @@ export default function WalletPage() {
   const [withdrawError, setWithdrawError] = useState('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const refreshWalletData = async () => {
+    if (!user) return;
+    setIsRefreshing(true);
+    try {
+      const txs = await getTransactionHistory(user.id, user.privyUserId);
+      setTransactions(txs);
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to refresh:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -229,14 +244,24 @@ export default function WalletPage() {
       {/* Page Header */}
       <div className="border-b border-border bg-gradient-to-r from-[oklch(0.65_0.15_260)]/10 to-[oklch(0.72_0.12_140)]/10">
         <div className="px-6 py-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[oklch(0.65_0.15_260)]/20 to-[oklch(0.65_0.15_260)]/10 flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-[oklch(0.65_0.15_260)]" />
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[oklch(0.65_0.15_260)]/20 to-[oklch(0.65_0.15_260)]/10 flex items-center justify-center">
+                <Wallet className="w-6 h-6 text-[oklch(0.65_0.15_260)]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold">Wallet</h1>
+                <p className="text-muted-foreground text-sm">Manage your account funds</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold">Wallet</h1>
-              <p className="text-muted-foreground text-sm">Manage your account funds</p>
-            </div>
+            <button
+              onClick={refreshWalletData}
+              disabled={isRefreshing}
+              className="p-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors disabled:opacity-50"
+              title="Refresh wallet data"
+            >
+              <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </button>
           </div>
         </div>
       </div>
