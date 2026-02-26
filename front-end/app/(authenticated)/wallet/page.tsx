@@ -13,6 +13,7 @@ import { toPng } from 'html-to-image';
 import { QRCodeSVG } from 'qrcode.react';
 import { FuturisticLoader } from '@/components/futuristic-loader';
 import { OfflineDetector } from '@/components/offline-detector';
+import { useToast } from '@/components/toast-provider';
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
@@ -22,6 +23,7 @@ export default function WalletPage() {
   const { ready, authenticated } = usePrivy();
   const { user, updateBalance } = useTradingContext();
   const { data: btcPrice, isLoading: btcPriceLoading } = useBTCPrice();
+  const toast = useToast();
 
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawAddress, setWithdrawAddress] = useState('');
@@ -101,8 +103,10 @@ export default function WalletPage() {
     try {
       const txs = await getTransactionHistory(user.id, user.privyUserId);
       setTransactions(txs);
+      toast.success('Wallet refreshed', 'Your balance and transactions have been updated');
     } catch (error) {
       console.error('Failed to refresh:', error);
+      toast.error('Refresh failed', 'Could not update wallet data');
     } finally {
       setIsRefreshing(false);
     }
@@ -208,9 +212,12 @@ export default function WalletPage() {
       });
       if (!success) {
         setWithdrawError('Withdrawal failed. Please try again.');
+        toast.error('Withdrawal failed', 'Please try again or contact support');
         setIsWithdrawing(false);
         return;
       }
+
+      toast.success('Withdrawal submitted', 'Your withdrawal request has been sent for approval');
 
       setReceiptData({
         id: `TXN${Date.now()}`,
@@ -228,6 +235,7 @@ export default function WalletPage() {
       setShowReceipt(true);
     } else {
       setWithdrawError('Insufficient balance for withdrawal.');
+      toast.error('Insufficient balance', 'You do not have enough funds for this withdrawal');
       setIsWithdrawing(false);
       return;
     }
