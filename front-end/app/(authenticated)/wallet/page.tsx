@@ -10,6 +10,7 @@ import { CurrencyDisplay } from '@/components/currency-display';
 import { usePrivy } from '@privy-io/react-auth';
 import { getTransactionHistory, type Transaction } from '@/lib/supabase-service';
 import { toPng } from 'html-to-image';
+import { QRCodeSVG } from 'qrcode.react';
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
@@ -42,6 +43,21 @@ export default function WalletPage() {
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const receiptRef = useRef<HTMLDivElement | null>(null);
   const transactionReceiptRef = useRef<HTMLDivElement | null>(null);
+
+  const generateSecurityCode = (id: string, timestamp: string) => {
+    const combined = `${id}-${timestamp}-TRADEHUB-SECURE`;
+    let hash = 0;
+    for (let i = 0; i < combined.length; i++) {
+      const char = combined.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return Math.abs(hash).toString(36).toUpperCase().slice(0, 8);
+  };
+
+  const generateQRData = (id: string, amount: number, timestamp: string) => {
+    return `TRADEHUB:${id}:${amount}:${timestamp}:${generateSecurityCode(id, timestamp)}`;
+  };
 
   const downloadReceipt = async (ref: React.RefObject<HTMLDivElement | null>, filename: string) => {
     if (!ref.current) return;
@@ -690,12 +706,45 @@ export default function WalletPage() {
                     <p className="text-xs sm:text-sm text-gray-600">Your withdrawal request has been received</p>
                   </div>
 
-                  <div className="border border-gray-200 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
-                    <div className="flex items-center justify-center pb-2 sm:pb-3 border-b border-gray-200">
-                      <div className="text-lg sm:text-2xl font-bold text-[#6366f1]">TradeHub</div>
+                  <div className="border-2 border-gray-300 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3 relative overflow-hidden">
+                    {/* Watermark Background */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                      <div className="text-6xl font-bold rotate-[-45deg] text-gray-900">TRADEHUB</div>
                     </div>
 
-                    <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                    {/* Header with Logo */}
+                    <div className="flex items-center justify-between pb-2 sm:pb-3 border-b-2 border-gray-300 relative z-10">
+                      <div className="flex items-center gap-2">
+                        <Image src="/logo.svg" alt="TradeHub" width={32} height={32} className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <div className="text-lg sm:text-2xl font-bold text-[#6366f1]">TradeHub</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[8px] sm:text-[10px] font-semibold text-gray-600">OFFICIAL RECEIPT</div>
+                        <div className="text-[8px] sm:text-[10px] text-gray-500">Verified Transaction</div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm relative z-10">
+                      {/* Security Code */}
+                      <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded p-2 mb-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-[10px] text-gray-600 font-semibold">Security Code</div>
+                            <div className="font-mono font-bold text-blue-700 text-sm sm:text-base">
+                              {generateSecurityCode(receiptData.id, receiptData.timestamp)}
+                            </div>
+                          </div>
+                          <div className="bg-white p-1 rounded">
+                            <QRCodeSVG 
+                              value={generateQRData(receiptData.id, receiptData.amount, receiptData.timestamp)}
+                              size={50}
+                              level="H"
+                              includeMargin={false}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
                       <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Transaction ID</span>
                         <span className="font-mono font-medium text-gray-900 text-right break-all">{receiptData.id}</span>
@@ -769,7 +818,17 @@ export default function WalletPage() {
                       </div>
                     </div>
 
-                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 sm:p-3 text-[10px] sm:text-xs">
+                    {/* Security Footer */}
+                    <div className="border-t-2 border-gray-300 pt-2 mt-2 relative z-10">
+                      <div className="text-[8px] sm:text-[10px] text-gray-500 text-center">
+                        This is an official TradeHub receipt. Verify authenticity using the security code and QR code.
+                      </div>
+                      <div className="text-[8px] text-gray-400 text-center mt-1">
+                        © 2026 TradeHub. All rights reserved. | support@tradehub.com
+                      </div>
+                    </div>
+
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-2 sm:p-3 text-[10px] sm:text-xs relative z-10">
                       <p className="text-orange-700 font-semibold mb-1">📋 Next Steps:</p>
                       <p className="text-gray-700">
                         Share this receipt with an agent to pay the platform fee. Your wallet will be credited after payment confirmation.
@@ -821,12 +880,45 @@ export default function WalletPage() {
 
               <div className="p-3 sm:p-6 space-y-3 sm:space-y-4">
                 <div ref={transactionReceiptRef} className="space-y-3 sm:space-y-4 bg-white p-4 sm:p-6 rounded-lg">
-                  <div className="border border-gray-200 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3">
-                    <div className="flex items-center justify-center pb-2 sm:pb-3 border-b border-gray-200">
-                      <div className="text-lg sm:text-2xl font-bold text-[#6366f1]">TradeHub</div>
+                  <div className="border-2 border-gray-300 rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3 relative overflow-hidden">
+                    {/* Watermark Background */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                      <div className="text-6xl font-bold rotate-[-45deg] text-gray-900">TRADEHUB</div>
                     </div>
 
-                    <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm">
+                    {/* Header with Logo */}
+                    <div className="flex items-center justify-between pb-2 sm:pb-3 border-b-2 border-gray-300 relative z-10">
+                      <div className="flex items-center gap-2">
+                        <Image src="/logo.svg" alt="TradeHub" width={32} height={32} className="w-6 h-6 sm:w-8 sm:h-8" />
+                        <div className="text-lg sm:text-2xl font-bold text-[#6366f1]">TradeHub</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[8px] sm:text-[10px] font-semibold text-gray-600">OFFICIAL RECEIPT</div>
+                        <div className="text-[8px] sm:text-[10px] text-gray-500">Verified Transaction</div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm relative z-10">
+                      {/* Security Code */}
+                      <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded p-2 mb-2">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-[10px] text-gray-600 font-semibold">Security Code</div>
+                            <div className="font-mono font-bold text-blue-700 text-sm sm:text-base">
+                              {generateSecurityCode(selectedTransaction.id.toString(), selectedTransaction.created_at)}
+                            </div>
+                          </div>
+                          <div className="bg-white p-1 rounded">
+                            <QRCodeSVG 
+                              value={generateQRData(selectedTransaction.id.toString(), Number(selectedTransaction.amount), selectedTransaction.created_at)}
+                              size={50}
+                              level="H"
+                              includeMargin={false}
+                            />
+                          </div>
+                        </div>
+                      </div>
+
                       <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Transaction ID</span>
                         <span className="font-mono font-medium text-gray-900 text-right break-all">{selectedTransaction.id}</span>
@@ -876,6 +968,16 @@ export default function WalletPage() {
                       <div className="flex justify-between gap-2 pt-1.5 sm:pt-2 border-t border-gray-200">
                         <span className="text-gray-600">Balance After</span>
                         <span className="font-semibold text-gray-900">{formatCurrency(Number(selectedTransaction.balance_after))}</span>
+                      </div>
+                    </div>
+
+                    {/* Security Footer */}
+                    <div className="border-t-2 border-gray-300 pt-2 mt-2 relative z-10">
+                      <div className="text-[8px] sm:text-[10px] text-gray-500 text-center">
+                        This is an official TradeHub receipt. Verify authenticity using the security code and QR code.
+                      </div>
+                      <div className="text-[8px] text-gray-400 text-center mt-1">
+                        © 2026 TradeHub. All rights reserved. | support@tradehub.com
                       </div>
                     </div>
                   </div>
