@@ -89,6 +89,7 @@ export interface Transaction {
   balance_before: Numeric;
   balance_after: Numeric;
   status: 'pending' | 'completed' | 'failed';
+  approved?: boolean;
   reference_id: string | null;
   metadata: Record<string, unknown> | null;
   created_at: string;

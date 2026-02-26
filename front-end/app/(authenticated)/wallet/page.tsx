@@ -211,6 +211,7 @@ export default function WalletPage() {
         accountName: withdrawType === 'bank' ? accountName : null,
         timestamp: new Date().toISOString(),
         status: 'Pending Agent Approval',
+        approved: false,
       });
       setShowReceipt(true);
     } else {
@@ -816,7 +817,9 @@ export default function WalletPage() {
                       )}
                       <div className="flex justify-between gap-2 pt-1.5 sm:pt-2 border-t border-gray-200">
                         <span className="text-gray-600">Status</span>
-                        <span className="font-semibold text-orange-600">{receiptData.status}</span>
+                        <span className={`font-semibold ${receiptData.approved ? 'text-green-600' : 'text-orange-600'}`}>
+                          {receiptData.approved ? 'Approved - Successful' : 'Pending Agent Approval'}
+                        </span>
                       </div>
                     </div>
 
@@ -972,6 +975,13 @@ export default function WalletPage() {
                       <div className="flex justify-between gap-2 pt-1.5 sm:pt-2 border-t border-gray-200">
                         <span className="text-gray-600">Balance After</span>
                         <span className="font-semibold text-gray-900">{formatCurrency(Number(selectedTransaction.balance_after))}</span>
+                      </div>
+
+                      <div className="flex justify-between gap-2 pt-1.5 sm:pt-2 border-t border-gray-200">
+                        <span className="text-gray-600">Status</span>
+                        <span className={`font-semibold ${selectedTransaction.approved ? 'text-green-600' : 'text-orange-600'}`}>
+                          {selectedTransaction.approved ? 'Approved - Successful' : 'Pending Approval'}
+                        </span>
                       </div>
                     </div>
 
