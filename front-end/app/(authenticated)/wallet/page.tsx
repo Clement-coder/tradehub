@@ -22,22 +22,22 @@ export default function WalletPage() {
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawAddress, setWithdrawAddress] = useState('');
   const NETWORKS = [
-    { id: 'Base', logo: '/network-base.svg', fee: 0.25, eta: '1-3 min', description: 'Low-cost Ethereum L2' },
-    { id: 'Ethereum', logo: '/network-ethereum.svg', fee: 2.5, eta: '3-10 min', description: 'Mainnet, highest liquidity' },
-    { id: 'Arbitrum', logo: '/network-arbitrum.svg', fee: 0.6, eta: '1-5 min', description: 'Fast Ethereum L2' },
-    { id: 'Optimism', logo: '/network-optimism.svg', fee: 0.55, eta: '1-5 min', description: 'OP Stack Ethereum L2' },
-    { id: 'Polygon', logo: '/network-polygon.svg', fee: 0.35, eta: '1-4 min', description: 'Low-fee sidechain' },
-    { id: 'BNB Chain', logo: '/network-bnb.svg', fee: 0.4, eta: '1-4 min', description: 'EVM network with broad support' },
-    { id: 'Avalanche', logo: '/network-avalanche.svg', fee: 0.5, eta: '1-5 min', description: 'High-throughput EVM chain' },
-    { id: 'zkSync Era', logo: '/network-zksync.svg', fee: 0.45, eta: '1-4 min', description: 'ZK-rollup on Ethereum' },
-    { id: 'Linea', logo: '/network-linea.svg', fee: 0.4, eta: '1-4 min', description: 'Consensys zkEVM rollup' },
-    { id: 'Scroll', logo: '/network-scroll.svg', fee: 0.42, eta: '1-4 min', description: 'zkEVM for Ethereum' },
+    { id: 'Ethereum', logo: '/network-ethereum.svg', eta: '3-10 min' },
+    { id: 'BNB Chain', logo: '/network-bnb.svg', eta: '1-4 min' },
+    { id: 'Bitcoin', logo: '/btc-logo.svg', eta: '10-30 min' },
   ] as const;
   type NetworkName = (typeof NETWORKS)[number]['id'];
-  const [withdrawNetwork, setWithdrawNetwork] = useState<NetworkName>('Base');
-  const [withdrawMemo, setWithdrawMemo] = useState('');
+  const [withdrawNetwork, setWithdrawNetwork] = useState<NetworkName>('Ethereum');
+  const [withdrawType, setWithdrawType] = useState<'wallet' | 'bank'>('wallet');
+  const [bankName, setBankName] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [accountName, setAccountName] = useState('');
+  const [routingNumber, setRoutingNumber] = useState('');
+  const [swiftCode, setSwiftCode] = useState('');
   const [withdrawConfirmed, setWithdrawConfirmed] = useState(false);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [receiptData, setReceiptData] = useState<any>(null);
   const [withdrawError, setWithdrawError] = useState('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -81,16 +81,15 @@ export default function WalletPage() {
   const usdcEquivalent = usdBalance;
   const usdtEquivalent = usdBalance;
   const selectedNetwork = NETWORKS.find((network) => network.id === withdrawNetwork) ?? NETWORKS[0];
-  const selectedFee = selectedNetwork.fee;
   const parsedWithdrawAmount = Number(withdrawAmount);
   const isWithdrawAmountValid = Number.isFinite(parsedWithdrawAmount) && parsedWithdrawAmount > 0;
-  const withdrawAddressIsValid = /^0x[a-fA-F0-9]{40}$/.test(withdrawAddress.trim());
-  const totalDebit = isWithdrawAmountValid ? parsedWithdrawAmount + selectedFee : 0;
-  const exceedsBalance = isWithdrawAmountValid && totalDebit > user.balance;
-  const receiveAmount = isWithdrawAmountValid ? Math.max(parsedWithdrawAmount - selectedFee, 0) : 0;
+  const withdrawAddressIsValid = withdrawType === 'bank' || /^(0x[a-fA-F0-9]{40}|[13][a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[a-z0-9]{39,59})$/.test(withdrawAddress.trim());
+  const bankDetailsValid = withdrawType === 'wallet' || (bankName && accountNumber && accountName);
+  const exceedsBalance = isWithdrawAmountValid && parsedWithdrawAmount > user.balance;
   const canSubmitWithdraw =
     isWithdrawAmountValid &&
     withdrawAddressIsValid &&
+    bankDetailsValid &&
     !exceedsBalance &&
     withdrawConfirmed &&
     !isWithdrawing;
@@ -98,8 +97,13 @@ export default function WalletPage() {
   const resetAmounts = () => {
     setWithdrawAmount('');
     setWithdrawAddress('');
-    setWithdrawMemo('');
-    setWithdrawNetwork('Base');
+    setWithdrawNetwork('Ethereum');
+    setWithdrawType('wallet');
+    setBankName('');
+    setAccountNumber('');
+    setAccountName('');
+    setRoutingNumber('');
+    setSwiftCode('');
     setWithdrawConfirmed(false);
     setWithdrawError('');
   };
@@ -112,8 +116,12 @@ export default function WalletPage() {
       setWithdrawError('Enter a valid amount.');
       return;
     }
-    if (!withdrawAddressIsValid) {
+    if (withdrawType === 'wallet' && !withdrawAddressIsValid) {
       setWithdrawError('Enter a valid destination wallet address.');
+      return;
+    }
+    if (withdrawType === 'bank' && !bankDetailsValid) {
+      setWithdrawError('Please fill in all required bank details.');
       return;
     }
     if (!withdrawConfirmed) {
@@ -123,21 +131,38 @@ export default function WalletPage() {
 
     setIsWithdrawing(true);
 
-    if (user && user.balance >= totalDebit) {
-      const success = await updateBalance(-totalDebit, {
-        destination_address: withdrawAddress.trim(),
-        network: withdrawNetwork,
-        memo_or_tag: withdrawMemo.trim() || null,
+    if (user && user.balance >= amount) {
+      const success = await updateBalance(-amount, {
+        destination_address: withdrawType === 'wallet' ? withdrawAddress.trim() : null,
+        network: withdrawType === 'wallet' ? withdrawNetwork : null,
+        bank_name: withdrawType === 'bank' ? bankName : null,
+        account_number: withdrawType === 'bank' ? accountNumber : null,
+        account_name: withdrawType === 'bank' ? accountName : null,
+        routing_number: withdrawType === 'bank' ? routingNumber : null,
+        swift_code: withdrawType === 'bank' ? swiftCode : null,
         requested_amount: amount,
-        network_fee: selectedFee,
-        net_amount: receiveAmount,
-        eta: selectedNetwork.eta,
+        withdrawal_type: withdrawType,
+        eta: withdrawType === 'wallet' ? selectedNetwork.eta : '1-3 business days',
       });
       if (!success) {
         setWithdrawError('Withdrawal failed. Please try again.');
         setIsWithdrawing(false);
         return;
       }
+
+      setReceiptData({
+        id: `TXN${Date.now()}`,
+        type: withdrawType,
+        amount,
+        network: withdrawType === 'wallet' ? withdrawNetwork : null,
+        address: withdrawType === 'wallet' ? withdrawAddress : null,
+        bankName: withdrawType === 'bank' ? bankName : null,
+        accountNumber: withdrawType === 'bank' ? accountNumber : null,
+        accountName: withdrawType === 'bank' ? accountName : null,
+        timestamp: new Date().toISOString(),
+        status: 'Pending Agent Approval',
+      });
+      setShowReceipt(true);
     } else {
       setWithdrawError('Insufficient balance for withdrawal.');
       setIsWithdrawing(false);
@@ -146,7 +171,6 @@ export default function WalletPage() {
     resetAmounts();
     setShowWithdrawModal(false);
     setIsWithdrawing(false);
-    console.log(`Withdrew: ${amount} to ${withdrawAddress} on ${withdrawNetwork}`);
   };
 
   return (
@@ -410,8 +434,8 @@ export default function WalletPage() {
         {/* Withdraw Modal */}
         {showWithdrawModal && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md">
-              <div className="flex items-center justify-between p-4 border-b border-border">
+            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-4 border-b border-border sticky top-0 bg-card z-10">
                 <div className="flex items-center gap-2">
                   <ArrowDownCircle className="w-5 h-5 text-red-500" />
                   <h2 className="text-lg font-bold">Withdraw</h2>
@@ -426,38 +450,129 @@ export default function WalletPage() {
 
               <div className="p-4 space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-1.5 block">Address</label>
-                  <input
-                    type="text"
-                    placeholder="0x..."
-                    value={withdrawAddress}
-                    onChange={(e) => setWithdrawAddress(e.target.value)}
-                    className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium mb-1.5 block">Network</label>
+                  <label className="text-sm font-medium mb-2 block">Withdrawal Method</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {NETWORKS.slice(0, 6).map((network) => (
-                      <button
-                        key={network.id}
-                        onClick={() => setWithdrawNetwork(network.id)}
-                        className={`p-2 rounded-lg border text-left text-sm transition-colors ${
-                          withdrawNetwork === network.id
-                            ? 'border-primary bg-primary/10'
-                            : 'border-border hover:bg-muted/40'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Image src={network.logo} alt={network.id} width={16} height={16} />
-                          <span className="font-medium">{network.id}</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-0.5">Fee: ${network.fee}</p>
-                      </button>
-                    ))}
+                    <button
+                      onClick={() => setWithdrawType('wallet')}
+                      className={`p-3 rounded-lg border text-center transition-colors ${
+                        withdrawType === 'wallet'
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border hover:bg-muted/40'
+                      }`}
+                    >
+                      <Wallet className="w-5 h-5 mx-auto mb-1" />
+                      <span className="text-sm font-medium">Wallet</span>
+                    </button>
+                    <button
+                      onClick={() => setWithdrawType('bank')}
+                      className={`p-3 rounded-lg border text-center transition-colors ${
+                        withdrawType === 'bank'
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border hover:bg-muted/40'
+                      }`}
+                    >
+                      <DollarSign className="w-5 h-5 mx-auto mb-1" />
+                      <span className="text-sm font-medium">Bank</span>
+                    </button>
                   </div>
                 </div>
+
+                {withdrawType === 'wallet' ? (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium mb-1.5 block">Network</label>
+                      <div className="grid grid-cols-1 gap-2">
+                        {NETWORKS.map((network) => (
+                          <button
+                            key={network.id}
+                            onClick={() => setWithdrawNetwork(network.id)}
+                            className={`p-2.5 rounded-lg border text-left text-sm transition-colors ${
+                              withdrawNetwork === network.id
+                                ? 'border-primary bg-primary/10'
+                                : 'border-border hover:bg-muted/40'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <Image src={network.logo} alt={network.id} width={20} height={20} />
+                                <span className="font-medium">{network.id}</span>
+                              </div>
+                              <span className="text-xs text-muted-foreground">{network.eta}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium mb-1.5 block">Wallet Address</label>
+                      <input
+                        type="text"
+                        placeholder={withdrawNetwork === 'Bitcoin' ? '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa' : '0x...'}
+                        value={withdrawAddress}
+                        onChange={(e) => setWithdrawAddress(e.target.value)}
+                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium mb-1.5 block">Bank Name *</label>
+                      <input
+                        type="text"
+                        placeholder="e.g., Chase Bank"
+                        value={bankName}
+                        onChange={(e) => setBankName(e.target.value)}
+                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium mb-1.5 block">Account Name *</label>
+                      <input
+                        type="text"
+                        placeholder="Full name on account"
+                        value={accountName}
+                        onChange={(e) => setAccountName(e.target.value)}
+                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium mb-1.5 block">Account Number *</label>
+                      <input
+                        type="text"
+                        placeholder="Account number"
+                        value={accountNumber}
+                        onChange={(e) => setAccountNumber(e.target.value)}
+                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium mb-1.5 block">Routing Number</label>
+                      <input
+                        type="text"
+                        placeholder="9-digit routing number"
+                        value={routingNumber}
+                        onChange={(e) => setRoutingNumber(e.target.value)}
+                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-sm font-medium mb-1.5 block">SWIFT/BIC Code</label>
+                      <input
+                        type="text"
+                        placeholder="For international transfers"
+                        value={swiftCode}
+                        onChange={(e) => setSwiftCode(e.target.value)}
+                        className="w-full p-2.5 rounded-lg bg-background border border-border text-sm"
+                      />
+                    </div>
+                  </>
+                )}
 
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">Amount</label>
@@ -473,15 +588,11 @@ export default function WalletPage() {
                   </p>
                 </div>
 
-                <div className="bg-muted/30 rounded-lg p-3 space-y-1.5 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Fee</span>
-                    <span>{formatCurrency(selectedFee)}</span>
-                  </div>
-                  <div className="flex justify-between font-medium">
-                    <span>You receive</span>
-                    <span>{formatCurrency(receiveAmount)}</span>
-                  </div>
+                <div className="bg-[oklch(0.68_0.11_40)]/10 border border-[oklch(0.68_0.11_40)]/30 rounded-lg p-3 text-sm">
+                  <p className="text-[oklch(0.68_0.11_40)] font-medium">⚠️ Agent Approval Required</p>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    Your withdrawal will be reviewed by an agent. Please share the receipt to complete payment of platform fees.
+                  </p>
                 </div>
 
                 <label className="flex items-start gap-2 text-sm">
@@ -491,13 +602,13 @@ export default function WalletPage() {
                     onChange={(e) => setWithdrawConfirmed(e.target.checked)}
                     className="mt-0.5"
                   />
-                  <span className="text-muted-foreground">I confirm the address and network</span>
+                  <span className="text-muted-foreground">I confirm all details are correct</span>
                 </label>
 
                 {exceedsBalance && (
                   <p className="text-sm text-destructive">Insufficient balance</p>
                 )}
-                {!withdrawAddressIsValid && withdrawAddress.length > 0 && (
+                {withdrawType === 'wallet' && !withdrawAddressIsValid && withdrawAddress.length > 0 && (
                   <p className="text-sm text-destructive">Invalid address</p>
                 )}
                 {withdrawError && (
@@ -520,8 +631,107 @@ export default function WalletPage() {
                   disabled={!canSubmitWithdraw}
                   className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
                 >
-                  {isWithdrawing ? 'Processing...' : 'Withdraw'}
+                  {isWithdrawing ? 'Processing...' : 'Submit'}
                 </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Receipt Modal */}
+        {showReceipt && receiptData && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-md">
+              <div className="p-6 space-y-4">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                    <CheckCircle className="w-8 h-8 text-green-500" />
+                  </div>
+                  <h2 className="text-2xl font-bold mb-2">Withdrawal Submitted</h2>
+                  <p className="text-sm text-muted-foreground">Your withdrawal request has been received</p>
+                </div>
+
+                <div className="border border-border rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-center pb-3 border-b border-border">
+                    <Image src="/logo.svg" alt="TradeHub" width={120} height={40} className="h-8 w-auto" />
+                  </div>
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Transaction ID</span>
+                      <span className="font-mono font-medium">{receiptData.id}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Date & Time</span>
+                      <span className="font-medium">{new Date(receiptData.timestamp).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Type</span>
+                      <span className="font-medium capitalize">{receiptData.type} Withdrawal</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Amount</span>
+                      <span className="font-bold text-lg">{formatCurrency(receiptData.amount)}</span>
+                    </div>
+                    {receiptData.type === 'wallet' && (
+                      <>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Network</span>
+                          <span className="font-medium">{receiptData.network}</span>
+                        </div>
+                        <div className="flex justify-between items-start">
+                          <span className="text-muted-foreground">Address</span>
+                          <span className="font-mono text-xs text-right max-w-[200px] break-all">{receiptData.address}</span>
+                        </div>
+                      </>
+                    )}
+                    {receiptData.type === 'bank' && (
+                      <>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Bank</span>
+                          <span className="font-medium">{receiptData.bankName}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Account Name</span>
+                          <span className="font-medium">{receiptData.accountName}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Account Number</span>
+                          <span className="font-mono">****{receiptData.accountNumber.slice(-4)}</span>
+                        </div>
+                      </>
+                    )}
+                    <div className="flex justify-between pt-2 border-t border-border">
+                      <span className="text-muted-foreground">Status</span>
+                      <span className="font-semibold text-[oklch(0.68_0.11_40)]">{receiptData.status}</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-[oklch(0.68_0.11_40)]/10 border border-[oklch(0.68_0.11_40)]/30 rounded-lg p-3 text-xs">
+                    <p className="text-[oklch(0.68_0.11_40)] font-semibold mb-1">📋 Next Steps:</p>
+                    <p className="text-muted-foreground">
+                      Share this receipt with an agent to pay the platform fee. Your wallet will be credited after payment confirmation.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      const receiptText = `TradeHub Withdrawal Receipt\n\nTransaction ID: ${receiptData.id}\nDate: ${new Date(receiptData.timestamp).toLocaleString()}\nType: ${receiptData.type} Withdrawal\nAmount: ${formatCurrency(receiptData.amount)}\n${receiptData.type === 'wallet' ? `Network: ${receiptData.network}\nAddress: ${receiptData.address}` : `Bank: ${receiptData.bankName}\nAccount: ${receiptData.accountName}`}\nStatus: ${receiptData.status}`;
+                      navigator.clipboard.writeText(receiptText);
+                    }}
+                    className="flex-1 px-4 py-2 rounded-lg border border-border hover:bg-muted"
+                  >
+                    Copy Details
+                  </button>
+                  <button
+                    onClick={() => setShowReceipt(false)}
+                    className="flex-1 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    Done
+                  </button>
+                </div>
               </div>
             </div>
           </div>
