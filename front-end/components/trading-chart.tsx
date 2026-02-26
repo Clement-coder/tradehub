@@ -498,9 +498,9 @@ export default function TradingChart() {
 
       {/* Fullscreen Modal */}
       {isFullscreen && (
-        <div className="fixed inset-0 z-50 bg-background">
+        <div className="fixed inset-0 z-50 bg-background overflow-y-auto">
           {/* Header */}
-          <div className="h-16 border-b border-border bg-card/95 backdrop-blur-sm flex items-center justify-between px-6">
+          <div className="sticky top-0 z-10 h-16 border-b border-border bg-card/95 backdrop-blur-sm flex items-center justify-between px-6">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-orange-500">
@@ -532,10 +532,10 @@ export default function TradingChart() {
           </div>
 
           {/* Main Content */}
-          <div className="h-[calc(100vh-4rem)] flex overflow-hidden">
+          <div className="min-h-[calc(100vh-4rem)] flex">
             {/* Chart Section */}
-            <div className="flex-1 p-4 lg:p-6 flex flex-col min-h-0">
-              <div className="flex-1 bg-card/50 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-border flex flex-col min-h-0 overflow-hidden">
+            <div className="flex-1 p-4 lg:p-6 flex flex-col">
+              <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-4 lg:p-6 border border-border flex flex-col">
                 <div className="flex-shrink-0">
                   {/* Chart header content */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4">
@@ -600,8 +600,8 @@ export default function TradingChart() {
                   </div>
                 </div>
                 
-                {/* Chart container with fixed height */}
-                <div className="flex-1 min-h-0">
+                {/* Chart container */}
+                <div className="w-full h-[500px] lg:h-[600px]">
                   {chartData.length > 0 && (
                     <ResponsiveContainer width="100%" height="100%">
                       {chartType === 'line' ? (
