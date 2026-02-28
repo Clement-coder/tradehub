@@ -47,8 +47,7 @@ CREATE POLICY "Users can read own settings"
   ON user_settings
   FOR SELECT
   USING (
-    user_id = auth.uid()
-    OR privy_user_id = current_setting('app.current_privy_user_id', true)
+    privy_user_id = current_setting('app.current_privy_user_id', true)
   );
 
 -- Users can update their own settings
@@ -56,8 +55,7 @@ CREATE POLICY "Users can update own settings"
   ON user_settings
   FOR UPDATE
   USING (
-    user_id = auth.uid()
-    OR privy_user_id = current_setting('app.current_privy_user_id', true)
+    privy_user_id = current_setting('app.current_privy_user_id', true)
   );
 
 -- Users can insert their own settings
@@ -65,6 +63,5 @@ CREATE POLICY "Users can insert own settings"
   ON user_settings
   FOR INSERT
   WITH CHECK (
-    user_id = auth.uid()
-    OR privy_user_id = current_setting('app.current_privy_user_id', true)
+    privy_user_id = current_setting('app.current_privy_user_id', true)
   );
