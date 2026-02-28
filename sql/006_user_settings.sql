@@ -34,6 +34,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trigger_update_user_settings_updated_at ON user_settings;
+
 CREATE TRIGGER trigger_update_user_settings_updated_at
   BEFORE UPDATE ON user_settings
   FOR EACH ROW
