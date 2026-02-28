@@ -96,7 +96,13 @@ export default function WalletPage() {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [balanceVisible, setBalanceVisible] = useState(true);
+  const [balanceVisible, setBalanceVisible] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('balanceVisible');
+      return saved !== null ? JSON.parse(saved) : true;
+    }
+    return true;
+  });
 
   const refreshWalletData = async () => {
     if (!user) return;
@@ -263,7 +269,11 @@ export default function WalletPage() {
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => setBalanceVisible(!balanceVisible)}
+                onClick={() => {
+                  const newValue = !balanceVisible;
+                  setBalanceVisible(newValue);
+                  localStorage.setItem('balanceVisible', JSON.stringify(newValue));
+                }}
                 className="p-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors"
                 title={balanceVisible ? 'Hide balance' : 'Show balance'}
               >
