@@ -229,7 +229,7 @@ export default function SettingsPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 bg-card/50 rounded-lg px-4">
               <div>
                 <p className="font-medium text-foreground">Connected Wallet</p>
-                <p className="text-sm text-muted-foreground font-mono">{user.wallet_address?.slice(0, 6)}...{user.wallet_address?.slice(-4)}</p>
+                <p className="text-sm text-muted-foreground font-mono">{user.walletAddress?.slice(0, 6)}...{user.walletAddress?.slice(-4)}</p>
               </div>
               <span className="text-xs px-3 py-1 rounded-full bg-blue-500/20 text-blue-600 font-medium">
                 Verified

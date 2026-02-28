@@ -42,8 +42,6 @@ function TradingViewChart({
       hide_legend: false,
       save_image: true,
       container_id: 'tradingview_chart',
-      hide_legend: false,
-      save_image: true,
       backgroundColor: 'rgba(0, 0, 0, 0)',
       gridColor: 'rgba(255, 255, 255, 0.06)',
       hide_side_toolbar: false,
@@ -51,7 +49,6 @@ function TradingViewChart({
       range: '1D',
       details: true,
       hotlist: true,
-      calendar: false,
       studies_overrides: {},
       overrides: {
         'mainSeriesProperties.candleStyle.upColor': '#22c55e',
