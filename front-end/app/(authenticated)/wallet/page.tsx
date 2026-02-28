@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Wallet, DollarSign, UserPlus, Mail, CheckCircle, History, ArrowDownCircle, ShieldCheck, Clock3, Coins, SendHorizontal, ArrowUpRight, ArrowDownLeft, Download, Share2, RefreshCw } from 'lucide-react';
+import { Wallet, DollarSign, UserPlus, Mail, CheckCircle, History, ArrowDownCircle, ShieldCheck, Clock3, Coins, SendHorizontal, ArrowUpRight, ArrowDownLeft, Download, Share2, RefreshCw, Eye, EyeOff } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import { useBTCPrice } from '@/lib/hooks/useBTCPrice';
 import { CurrencyDisplay } from '@/components/currency-display';
@@ -96,6 +96,7 @@ export default function WalletPage() {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [balanceVisible, setBalanceVisible] = useState(true);
 
   const refreshWalletData = async () => {
     if (!user) return;
@@ -260,14 +261,23 @@ export default function WalletPage() {
                 <p className="text-muted-foreground text-sm">Manage your account funds</p>
               </div>
             </div>
-            <button
-              onClick={refreshWalletData}
-              disabled={isRefreshing}
-              className="p-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors disabled:opacity-50"
-              title="Refresh wallet data"
-            >
-              <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setBalanceVisible(!balanceVisible)}
+                className="p-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors"
+                title={balanceVisible ? 'Hide balance' : 'Show balance'}
+              >
+                {balanceVisible ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+              </button>
+              <button
+                onClick={refreshWalletData}
+                disabled={isRefreshing}
+                className="p-3 rounded-xl bg-card border border-border hover:bg-muted transition-colors disabled:opacity-50"
+                title="Refresh wallet data"
+              >
+                <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -289,7 +299,9 @@ export default function WalletPage() {
                 <Image src="/usdc-logo.svg" alt="USDC" width={32} height={32} className="w-8 h-8" />
                 <p className="text-muted-foreground text-sm">Total Balance</p>
               </div>
-              <p className="text-4xl sm:text-5xl font-bold mb-4"><CurrencyDisplay amount={user?.balance || 0} logoSize={0} /></p>
+              <p className="text-4xl sm:text-5xl font-bold mb-4">
+                {balanceVisible ? <CurrencyDisplay amount={user?.balance || 0} logoSize={0} /> : '••••••'}
+              </p>
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <Image src="/usdc-logo.svg" alt="USDC" width={16} height={16} className="w-4 h-4" />
                 USDC Balance
@@ -301,7 +313,7 @@ export default function WalletPage() {
                   <p className="text-muted-foreground text-sm">BTC Equivalent</p>
                 </div>
                 <p className="text-xl sm:text-2xl font-bold text-foreground">
-                  {btcPriceLoading ? 'Loading...' : `${btcEquivalent.toFixed(6)} BTC`}
+                  {balanceVisible ? (btcPriceLoading ? 'Loading...' : `${btcEquivalent.toFixed(6)} BTC`) : '••••••'}
                 </p>
               </div>
 
@@ -310,7 +322,9 @@ export default function WalletPage() {
                   <Image src="/usdc-logo.svg" alt="USD" width={20} height={20} className="w-5 h-5" />
                   <p className="text-muted-foreground text-sm">USD Equivalent</p>
                 </div>
-                <p className="text-xl sm:text-2xl font-bold text-foreground"><CurrencyDisplay amount={user?.balance || 0} logoSize={0} /></p>
+                <p className="text-xl sm:text-2xl font-bold text-foreground">
+                  {balanceVisible ? <CurrencyDisplay amount={user?.balance || 0} logoSize={0} /> : '••••••'}
+                </p>
               </div>
 
               <div className="mt-4 pt-4 border-t border-border/50">
@@ -321,28 +335,36 @@ export default function WalletPage() {
                       <Image src="/eur-logo.svg" alt="EUR" width={20} height={20} className="w-5 h-5" />
                       <span className="font-semibold">EUR</span>
                     </div>
-                    <span className="text-base sm:text-lg font-bold text-foreground">{formatCurrency(eurEquivalent).replace('$', 'EUR ')}</span>
+                    <span className="text-base sm:text-lg font-bold text-foreground">
+                      {balanceVisible ? formatCurrency(eurEquivalent).replace('$', 'EUR ') : '••••••'}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between rounded-lg border border-border/50 bg-card/60 px-3 py-2">
                     <div className="flex items-center gap-2 text-foreground">
                       <Image src="/gbp-logo.svg" alt="GBP" width={20} height={20} className="w-5 h-5" />
                       <span className="font-semibold">GBP</span>
                     </div>
-                    <span className="text-base sm:text-lg font-bold text-foreground">{formatCurrency(gbpEquivalent).replace('$', 'GBP ')}</span>
+                    <span className="text-base sm:text-lg font-bold text-foreground">
+                      {balanceVisible ? formatCurrency(gbpEquivalent).replace('$', 'GBP ') : '••••••'}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between rounded-lg border border-border/50 bg-card/60 px-3 py-2">
                     <div className="flex items-center gap-2 text-foreground">
                       <Image src="/usdc-logo.svg" alt="USDC" width={20} height={20} className="w-5 h-5" />
                       <span className="font-semibold">USDC</span>
                     </div>
-                    <span className="text-base sm:text-lg font-bold text-foreground">{usdcEquivalent.toFixed(2)}</span>
+                    <span className="text-base sm:text-lg font-bold text-foreground">
+                      {balanceVisible ? usdcEquivalent.toFixed(2) : '••••••'}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between rounded-lg border border-border/50 bg-card/60 px-3 py-2">
                     <div className="flex items-center gap-2 text-foreground">
                       <Image src="/usdt-logo.svg" alt="USDT" width={20} height={20} className="w-5 h-5" />
                       <span className="font-semibold">USDT</span>
                     </div>
-                    <span className="text-base sm:text-lg font-bold text-foreground">{usdtEquivalent.toFixed(2)}</span>
+                    <span className="text-base sm:text-lg font-bold text-foreground">
+                      {balanceVisible ? usdtEquivalent.toFixed(2) : '••••••'}
+                    </span>
                   </div>
                 </div>
               </div>
