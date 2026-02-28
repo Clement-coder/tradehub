@@ -15,6 +15,9 @@ import {
   Menu,
   X,
   Bell,
+  DollarSign,
+  BarChart3,
+  Shield,
 } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import { useNotifications } from '@/app/context/notifications-context';
@@ -235,6 +238,16 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
                     }
                   };
 
+                  const getNotificationIcon = () => {
+                    switch (notification.type) {
+                      case 'price': return <TrendingUp className="w-4 h-4" />;
+                      case 'trade': return <BarChart3 className="w-4 h-4" />;
+                      case 'portfolio': return <DollarSign className="w-4 h-4" />;
+                      case 'security': return <Shield className="w-4 h-4" />;
+                      default: return <Bell className="w-4 h-4" />;
+                    }
+                  };
+
                   return (
                     <button
                       key={notification.id}
@@ -249,9 +262,11 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
                       }`}
                     >
                       <div className="flex items-start gap-2">
-                        <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
-                          notification.unread ? 'bg-primary animate-pulse' : 'bg-muted-foreground/30'
-                        }`}></div>
+                        <div className={`p-1.5 rounded-lg flex-shrink-0 ${
+                          notification.unread ? 'bg-primary/20' : 'bg-muted/50'
+                        }`}>
+                          {getNotificationIcon()}
+                        </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-sm text-foreground mb-0.5 truncate">{notification.title}</h3>
                           <p className="text-xs text-muted-foreground line-clamp-2">{notification.message}</p>
