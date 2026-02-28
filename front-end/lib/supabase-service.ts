@@ -629,3 +629,127 @@ export async function markAllNotificationsAsRead(userId: string, privyUserId: st
     console.error('Error marking all notifications as read:', error);
   }
 }
+
+// ============================================================================
+// User Settings
+// ============================================================================
+
+export interface UserSettings {
+  id: string;
+  user_id: string;
+  privy_user_id: string;
+  notifications_enabled: boolean;
+  price_alerts_enabled: boolean;
+  email_updates_enabled: boolean;
+  dark_mode_enabled: boolean;
+  sound_enabled: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface UserSettingsUpdate {
+  userId: string;
+  privyUserId: string;
+  notifications_enabled?: boolean;
+  price_alerts_enabled?: boolean;
+  email_updates_enabled?: boolean;
+  dark_mode_enabled?: boolean;
+  sound_enabled?: boolean;
+}
+
+async function getUserSettings(userId: string, privyUserId: string): Promise<UserSettings | null> {
+  if (!isSupabaseConfigured()) return null;
+
+  const supabase = getSupabaseClient();
+  await supabase.rpc('set_app_user', { user_id: privyUserId });
+
+  const { data, error } = await supabase
+    .from('user_settings')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('privy_user_id', privyUserId)
+    .single();
+
+  if (error && !pgrstNoRows(error)) {
+    console.error('Error fetching user settings:', error);
+    return null;
+  }
+
+  return data;
+}
+
+async function createDefaultSettings(userId: string, privyUserId: string): Promise<UserSettings | null> {
+  if (!isSupabaseConfigured()) return null;
+
+  const supabase = getSupabaseClient();
+  await supabase.rpc('set_app_user', { user_id: privyUserId });
+
+  const { data, error } = await supabase
+    .from('user_settings')
+    .insert({
+      user_id: userId,
+      privy_user_id: privyUserId,
+      notifications_enabled: true,
+      price_alerts_enabled: true,
+      email_updates_enabled: false,
+      dark_mode_enabled: true,
+      sound_enabled: true,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error creating default settings:', error);
+    return null;
+  }
+
+  return data;
+}
+
+async function updateUserSettings(input: UserSettingsUpdate): Promise<UserSettings | null> {
+  if (!isSupabaseConfigured()) return null;
+
+  const supabase = getSupabaseClient();
+  await supabase.rpc('set_app_user', { user_id: input.privyUserId });
+
+  const updateData: any = {};
+  if (input.notifications_enabled !== undefined) updateData.notifications_enabled = input.notifications_enabled;
+  if (input.price_alerts_enabled !== undefined) updateData.price_alerts_enabled = input.price_alerts_enabled;
+  if (input.email_updates_enabled !== undefined) updateData.email_updates_enabled = input.email_updates_enabled;
+  if (input.dark_mode_enabled !== undefined) updateData.dark_mode_enabled = input.dark_mode_enabled;
+  if (input.sound_enabled !== undefined) updateData.sound_enabled = input.sound_enabled;
+
+  const { data, error } = await supabase
+    .from('user_settings')
+    .update(updateData)
+    .eq('user_id', input.userId)
+    .eq('privy_user_id', input.privyUserId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error updating user settings:', error);
+    return null;
+  }
+
+  return data;
+}
+
+export {
+  getOrCreateUser,
+  getUserByPrivyId,
+  getCurrentBalance,
+  getOpenPositions,
+  getTradeHistory,
+  getTransactionHistory,
+  openPositionTrade,
+  closePositionTrade,
+  adjustBalance,
+  createNotification,
+  getNotifications,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  getUserSettings,
+  createDefaultSettings,
+  updateUserSettings,
+};
