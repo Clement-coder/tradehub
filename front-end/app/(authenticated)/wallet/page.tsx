@@ -774,24 +774,26 @@ export default function WalletPage() {
 
                     <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm relative z-10">
                       {/* Security Code */}
-                      <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded p-2 mb-2">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-[10px] text-gray-600 font-semibold">Security Code</div>
-                            <div className="font-mono font-bold text-blue-700 text-sm sm:text-base">
-                              {generateSecurityCode(receiptData.id, receiptData.timestamp)}
+                      {receiptData.id && receiptData.timestamp && (
+                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded p-2 mb-2">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="text-[10px] text-gray-600 font-semibold">Security Code</div>
+                              <div className="font-mono font-bold text-blue-700 text-sm sm:text-base">
+                                {generateSecurityCode(receiptData.id, receiptData.timestamp)}
+                              </div>
+                            </div>
+                            <div className="bg-white p-1 rounded">
+                              <QRCodeSVG 
+                                value={generateQRData(receiptData.id, receiptData.amount, receiptData.timestamp)}
+                                size={50}
+                                level="H"
+                                includeMargin={false}
+                              />
                             </div>
                           </div>
-                          <div className="bg-white p-1 rounded">
-                            <QRCodeSVG 
-                              value={generateQRData(receiptData.id, receiptData.amount, receiptData.timestamp)}
-                              size={50}
-                              level="H"
-                              includeMargin={false}
-                            />
-                          </div>
                         </div>
-                      </div>
+                      )}
 
                       <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Transaction ID</span>
@@ -952,24 +954,26 @@ export default function WalletPage() {
 
                     <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm relative z-10">
                       {/* Security Code */}
-                      <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded p-2 mb-2">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <div className="text-[10px] text-gray-600 font-semibold">Security Code</div>
-                            <div className="font-mono font-bold text-blue-700 text-sm sm:text-base">
-                              {generateSecurityCode(selectedTransaction.id.toString(), selectedTransaction.created_at)}
+                      {selectedTransaction.id && selectedTransaction.created_at && (
+                        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded p-2 mb-2">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="text-[10px] text-gray-600 font-semibold">Security Code</div>
+                              <div className="font-mono font-bold text-blue-700 text-sm sm:text-base">
+                                {generateSecurityCode(selectedTransaction.id.toString(), selectedTransaction.created_at)}
+                              </div>
+                            </div>
+                            <div className="bg-white p-1 rounded">
+                              <QRCodeSVG 
+                                value={generateQRData(selectedTransaction.id.toString(), Number(selectedTransaction.amount), selectedTransaction.created_at)}
+                                size={50}
+                                level="H"
+                                includeMargin={false}
+                              />
                             </div>
                           </div>
-                          <div className="bg-white p-1 rounded">
-                            <QRCodeSVG 
-                              value={generateQRData(selectedTransaction.id.toString(), Number(selectedTransaction.amount), selectedTransaction.created_at)}
-                              size={50}
-                              level="H"
-                              includeMargin={false}
-                            />
-                          </div>
                         </div>
-                      </div>
+                      )}
 
                       <div className="flex justify-between gap-2">
                         <span className="text-gray-600">Transaction ID</span>
