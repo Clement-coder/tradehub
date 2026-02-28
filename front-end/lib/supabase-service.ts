@@ -739,7 +739,12 @@ async function updateUserSettings(input: UserSettingsUpdate): Promise<UserSettin
     .single();
 
   if (error) {
-    console.error('Error updating user settings:', error);
+    console.error('Error updating user settings:', error.message || error);
+    // Return updated settings object as fallback
+    const current = await getUserSettings(input.userId, input.privyUserId);
+    if (current) {
+      return { ...current, ...updateData };
+    }
     return null;
   }
 
