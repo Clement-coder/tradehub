@@ -750,22 +750,3 @@ async function updateUserSettings(input: UserSettingsUpdate): Promise<UserSettin
 
   return data;
 }
-
-export {
-  getOrCreateUser,
-  getUserByPrivyId,
-  getCurrentBalance,
-  getOpenPositions,
-  getTradeHistory,
-  getTransactionHistory,
-  openPositionTrade,
-  closePositionTrade,
-  adjustBalance,
-  createNotification,
-  getNotifications,
-  markNotificationAsRead,
-  markAllNotificationsAsRead,
-  getUserSettings,
-  createDefaultSettings,
-  updateUserSettings,
-};
