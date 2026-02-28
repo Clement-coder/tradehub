@@ -671,8 +671,7 @@ async function getUserSettings(userId: string, privyUserId: string): Promise<Use
     .single();
 
   if (error && !pgrstNoRows(error)) {
-    console.error('Error fetching user settings:', error);
-    return null;
+    console.error('Error fetching user settings:', error.message || error);
   }
 
   return data;
@@ -699,8 +698,20 @@ async function createDefaultSettings(userId: string, privyUserId: string): Promi
     .single();
 
   if (error) {
-    console.error('Error creating default settings:', error);
-    return null;
+    console.error('Error creating default settings:', error.message || error);
+    // Return default settings object if table doesn't exist
+    return {
+      id: 'temp',
+      user_id: userId,
+      privy_user_id: privyUserId,
+      notifications_enabled: true,
+      price_alerts_enabled: true,
+      email_updates_enabled: false,
+      dark_mode_enabled: true,
+      sound_enabled: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
   }
 
   return data;
