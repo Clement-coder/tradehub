@@ -729,9 +729,20 @@ export default function WalletPage() {
                 <button
                   onClick={handleWithdraw}
                   disabled={!canSubmitWithdraw}
-                  className="flex-1 px-3 sm:px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 text-xs sm:text-sm"
+                  className="flex-1 px-3 sm:px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 text-xs sm:text-sm flex items-center justify-center gap-2"
                 >
-                  {isWithdrawing ? 'Processing...' : 'Submit'}
+                  {isWithdrawing ? (
+                    'Processing...'
+                  ) : (
+                    <>
+                      {withdrawType === 'wallet' ? (
+                        <Image src={selectedNetwork.logo} alt={withdrawNetwork} width={16} height={16} className="w-4 h-4" />
+                      ) : (
+                        <DollarSign className="w-4 h-4" />
+                      )}
+                      <span>Submit</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
