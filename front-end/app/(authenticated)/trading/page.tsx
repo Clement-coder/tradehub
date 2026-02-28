@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { TrendingUp, TrendingDown, Activity, DollarSign, BarChart3, Clock, Zap, Star, Bell } from 'lucide-react';
 import { useTradingContext } from '@/app/context/trading-context';
 import { usePrivy } from '@privy-io/react-auth';
-import TradingChart from '@/components/trading-chart';
+import TradingViewChart from '@/components/tradingview-chart';
 import TradingInterface from '@/components/trading-interface';
 import PositionsTable from '@/components/positions-table';
 import TradeHistory from '@/components/trade-history';
@@ -200,7 +200,9 @@ export default function TradingPage() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
           {/* Chart */}
           <div className="xl:col-span-2 order-2 xl:order-1">
-            <TradingChart />
+            <div className="bg-card border border-border rounded-xl overflow-hidden">
+              <TradingViewChart symbol="BINANCE:BTCUSDT" theme="dark" height={600} />
+            </div>
           </div>
 
           {/* Trading Panel */}
