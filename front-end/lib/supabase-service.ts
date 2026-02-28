@@ -657,7 +657,7 @@ interface UserSettingsUpdate {
   sound_enabled?: boolean;
 }
 
-async function getUserSettings(userId: string, privyUserId: string): Promise<UserSettings | null> {
+export async function getUserSettings(userId: string, privyUserId: string): Promise<UserSettings | null> {
   if (!isSupabaseConfigured()) return null;
 
   const supabase = getSupabaseClient();
@@ -677,7 +677,7 @@ async function getUserSettings(userId: string, privyUserId: string): Promise<Use
   return data;
 }
 
-async function createDefaultSettings(userId: string, privyUserId: string): Promise<UserSettings | null> {
+export async function createDefaultSettings(userId: string, privyUserId: string): Promise<UserSettings | null> {
   if (!isSupabaseConfigured()) return null;
 
   const supabase = getSupabaseClient();
@@ -717,7 +717,7 @@ async function createDefaultSettings(userId: string, privyUserId: string): Promi
   return data;
 }
 
-async function updateUserSettings(input: UserSettingsUpdate): Promise<UserSettings | null> {
+export async function updateUserSettings(input: UserSettingsUpdate): Promise<UserSettings | null> {
   if (!isSupabaseConfigured()) return null;
 
   const supabase = getSupabaseClient();
