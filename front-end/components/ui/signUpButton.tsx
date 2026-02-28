@@ -5,16 +5,19 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Wallet, ArrowRight } from "lucide-react";
+import { useToast } from "@/components/toast-provider";
 
 export default function SignupButton() {
   const { login, authenticated, ready } = usePrivy();
   const router = useRouter();
+  const toast = useToast();
 
   useEffect(() => {
     if (ready && authenticated) {
+      toast.success('Welcome to TradeHub!', 'You are now logged in');
       router.push("/dashboard");
     }
-  }, [authenticated, ready, router]);
+  }, [authenticated, ready, router, toast]);
 
   return (
     <motion.button

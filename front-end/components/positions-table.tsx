@@ -5,6 +5,7 @@ import { X, Check } from 'lucide-react';
 import { GlassCard } from '@/components/glass-card';
 import { useTradingContext } from '@/app/context/trading-context';
 import { CurrencyDisplay } from '@/components/currency-display';
+import { useToast } from '@/components/toast-provider';
 
 // Helper functions to format currency and calculate PnL
 const formatCurrency = (value: number) =>
@@ -18,6 +19,7 @@ const calculatePnL = (entryPrice: number, currentPrice: number, quantity: number
 
 export default function PositionsTable() {
   const { positions, currentPrice, closePosition } = useTradingContext();
+  const toast = useToast();
   const [closingId, setClosingId] = useState<string | null>(null);
   const [closedPositions, setClosedPositions] = useState<string[]>([]);
 
@@ -27,6 +29,9 @@ export default function PositionsTable() {
       const success = await closePosition(id, currentPrice);
       if (success) {
         setClosedPositions((prev) => [...prev, id]);
+        toast.success('Position closed', 'Your position has been closed successfully');
+      } else {
+        toast.error('Close failed', 'Unable to close position. Please try again');
       }
       setClosingId(null);
     }, 600);

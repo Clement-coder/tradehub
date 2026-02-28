@@ -7,12 +7,14 @@ import { useTradingContext } from '@/app/context/trading-context';
 import { TradeModal } from '@/components/trade-modal';
 import GlassCard from '@/components/glass-card';
 import { CurrencyDisplay } from '@/components/currency-display';
+import { useToast } from '@/components/toast-provider';
 
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value);
 
 export default function TradingInterface() {
   const { user, currentPrice, addPosition, positions } = useTradingContext();
+  const toast = useToast();
   const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
   const [amount, setAmount] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -67,12 +69,14 @@ export default function TradingInterface() {
 
       if (!success) {
         setErrorMessage('Unable to execute trade with your current balance.');
+        toast.error('Trade failed', 'Insufficient balance to execute this trade');
         setShowModal(false);
         setIsLoading(false);
         return;
       }
 
       setSuccessMessage(`${tradeType === 'buy' ? 'Buy' : 'Sell'} order executed!`);
+      toast.success('Trade executed', `${tradeType === 'buy' ? 'Long' : 'Short'} position opened successfully`);
       setAmount('');
       setShowModal(false);
       setIsLoading(false);

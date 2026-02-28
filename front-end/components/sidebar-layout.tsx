@@ -24,6 +24,7 @@ import { useNotifications } from '@/app/context/notifications-context';
 import { useState } from 'react';
 import { LogoutModal } from '@/components/logout-modal';
 import { usePrivy } from '@privy-io/react-auth';
+import { useToast } from '@/components/toast-provider';
 
 const navItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -43,6 +44,7 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useTradingContext();
   const { logout: privyLogout } = usePrivy();
   const { notifications, markAllAsRead, hasUnreadNotifications } = useNotifications();
+  const toast = useToast();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -55,8 +57,10 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
     logout();
     try {
       await privyLogout();
+      toast.success('Logged out', 'You have been signed out successfully');
     } catch (error) {
       console.error('Privy logout failed:', error);
+      toast.error('Logout error', 'There was an issue signing out');
     }
     router.push('/');
     setShowLogoutModal(false);
