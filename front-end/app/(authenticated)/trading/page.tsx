@@ -200,8 +200,8 @@ export default function TradingPage() {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
           {/* Chart */}
           <div className="xl:col-span-2 order-2 xl:order-1">
-            <div className="bg-card border border-border rounded-xl overflow-hidden">
-              <TradingViewChart symbol="BINANCE:BTCUSDT" theme="dark" height={600} />
+            <div className="bg-card border border-border rounded-xl overflow-hidden min-h-[700px]">
+              <TradingViewChart symbol="BINANCE:BTCUSDT" theme="dark" height={700} />
             </div>
           </div>
 
