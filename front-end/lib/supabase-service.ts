@@ -146,7 +146,7 @@ export async function getOrCreateUser(input: UserInput): Promise<UserWithBalance
         userId: userRow.id,
         privyUserId: input.privyUserId,
         title: 'Welcome to TradeHub',
-        message: 'Your account is ready. Contact agent to fund your wallet.',
+        message: 'Your account is ready. Credit wallet to get started.',
         type: 'portfolio',
         color: 'primary',
       });

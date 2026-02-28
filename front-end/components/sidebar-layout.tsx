@@ -204,10 +204,10 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
             className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
             onClick={() => setShowNotifications(false)}
           />
-          <div className="fixed right-0 top-0 h-full w-80 sm:w-96 bg-background/95 backdrop-blur-xl border-l border-border z-50 transform transition-transform duration-300">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-foreground">Notifications</h2>
+          <div className="fixed right-0 top-0 h-full w-80 sm:w-96 bg-background/95 backdrop-blur-xl border-l border-border z-50 transform transition-transform duration-300 flex flex-col">
+            <div className="p-4 sm:p-6 border-b border-border">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg sm:text-xl font-bold text-foreground">Notifications</h2>
                 <button
                   onClick={() => setShowNotifications(false)}
                   className="p-2 rounded-lg hover:bg-muted/80 transition-colors"
@@ -215,32 +215,63 @@ export function SidebarLayout({ children }: { children: React.ReactNode }) {
                   <X className="w-5 h-5 text-foreground" />
                 </button>
               </div>
-              
-              <div className="space-y-4">
-                {notifications.map((notification) => (
-                  <div key={notification.id} className={`p-4 rounded-xl bg-gradient-to-r from-${notification.color}/10 to-${notification.color}/5 border border-${notification.color}/20`}>
-                    <div className="flex items-start gap-3">
-                      <div className={`w-2 h-2 bg-${notification.color} rounded-full mt-2 ${notification.unread ? 'animate-pulse' : ''}`}></div>
-                      <div>
-                        <h3 className="font-semibold text-foreground mb-1">{notification.title}</h3>
-                        <p className="text-sm text-muted-foreground">{notification.message}</p>
-                        <span className="text-xs text-muted-foreground">{notification.time}</span>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
+              {notifications.length === 0 ? (
+                <div className="text-center py-8">
+                  <Bell className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
+                  <p className="text-muted-foreground">No notifications yet</p>
+                </div>
+              ) : (
+                notifications.map((notification) => {
+                  const getNotificationRoute = () => {
+                    switch (notification.type) {
+                      case 'price': return '/trading';
+                      case 'trade': return '/history';
+                      case 'portfolio': return '/wallet';
+                      case 'security': return '/settings';
+                      default: return '/dashboard';
+                    }
+                  };
+
+                  return (
+                    <button
+                      key={notification.id}
+                      onClick={() => {
+                        router.push(getNotificationRoute());
+                        setShowNotifications(false);
+                      }}
+                      className={`w-full text-left p-3 rounded-lg border transition-all hover:scale-[1.02] ${
+                        notification.unread 
+                          ? 'bg-primary/10 border-primary/30' 
+                          : 'bg-card/50 border-border/50'
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
+                          notification.unread ? 'bg-primary animate-pulse' : 'bg-muted-foreground/30'
+                        }`}></div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-sm text-foreground mb-0.5 truncate">{notification.title}</h3>
+                          <p className="text-xs text-muted-foreground line-clamp-2">{notification.message}</p>
+                          <span className="text-[10px] text-muted-foreground mt-1 inline-block">{notification.time}</span>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="mt-8">
-                <button
-                  className="group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden disabled:opacity-50 disabled:cursor-not-allowed w-full"
-                  onClick={markAllAsRead}
-                  disabled={!hasUnreadNotifications}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                  {hasUnreadNotifications ? 'Mark All as Read' : 'All Read'}
-                </button>
-              </div>
+                    </button>
+                  );
+                })
+              )}
+            </div>
+            
+            <div className="p-4 sm:p-6 border-t border-border">
+              <button
+                className="w-full px-4 py-2.5 rounded-lg font-semibold text-sm text-primary-foreground bg-primary hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={markAllAsRead}
+                disabled={!hasUnreadNotifications}
+              >
+                {hasUnreadNotifications ? 'Mark All as Read' : 'All Read'}
+              </button>
             </div>
           </div>
         </>
