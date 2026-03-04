@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import { useTradingContext } from './trading-context';
+import { useBTCPrice } from '@/lib/hooks/useBTCPrice';
 
 interface MarketSentiment {
   score: number; // -1 to 1
@@ -75,7 +76,8 @@ const AITradingContext = createContext<AITradingContextType | undefined>(undefin
 
 export function AITradingProvider({ children }: { children: React.ReactNode }) {
   const { authenticated, user: privyUser } = usePrivy();
-  const { user, btcPrice } = useTradingContext();
+  const { user } = useTradingContext();
+  const { data: btcPrice } = useBTCPrice();
   
   // State
   const [messages, setMessages] = useState<AIMessage[]>([]);
