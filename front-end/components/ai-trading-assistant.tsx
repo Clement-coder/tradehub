@@ -124,14 +124,14 @@ export function AITradingAssistant() {
             
             {/* AI Assistant Panel */}
             <motion.div
-              className="relative w-full max-w-md h-[600px] bg-card/95 backdrop-blur-sm border border-border/40 rounded-xl shadow-2xl overflow-hidden"
+              className="relative w-full max-w-md h-[600px] bg-card/95 backdrop-blur-sm border border-border/40 rounded-xl shadow-2xl flex flex-col"
               initial={{ scale: 0.8, opacity: 0, y: 100 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0, y: 100 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border/40 bg-gradient-to-r from-[oklch(0.68_0.14_180)]/10 to-[oklch(0.62_0.13_320)]/10">
+              {/* Header - Fixed */}
+              <div className="flex-shrink-0 flex items-center justify-between p-4 border-b border-border/40 bg-gradient-to-r from-[oklch(0.68_0.14_180)]/10 to-[oklch(0.62_0.13_320)]/10">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center">
                     <Bot className="w-4 h-4 text-primary-foreground" />
@@ -151,8 +151,8 @@ export function AITradingAssistant() {
                 </button>
               </div>
 
-              {/* Tabs */}
-              <div className="flex border-b border-border/40 bg-muted/20">
+              {/* Tabs - Fixed */}
+              <div className="flex-shrink-0 flex border-b border-border/40 bg-muted/20">
                 {[
                   { id: 'chat', label: 'Chat', icon: MessageCircle },
                   { id: 'sentiment', label: 'Market', icon: TrendingUp },
@@ -174,43 +174,13 @@ export function AITradingAssistant() {
                 ))}
               </div>
 
-              {/* Content */}
-              <div className="flex-1 overflow-hidden">
+              {/* Content - Scrollable */}
+              <div className="flex-1 min-h-0 overflow-hidden">
                 {/* Chat Tab */}
                 {activeTab === 'chat' && (
                   <div className="h-full flex flex-col">
-                    {/* Messages */}
+                    {/* Messages - Scrollable */}
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                      {messages.length === 0 && (
-                        <div className="text-center text-muted-foreground py-8">
-                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 flex items-center justify-center">
-                            <Bot className="w-8 h-8 text-primary opacity-60" />
-                          </div>
-                          <p className="text-sm font-medium">Hi! I'm your AI trading assistant.</p>
-                          <p className="text-xs mt-2 text-muted-foreground/80">Ask me about market trends, trading strategies, or get personalized suggestions!</p>
-                          <div className="mt-4 space-y-2">
-                            <button
-                              onClick={() => sendMessage('What\'s the current BTC price?')}
-                              className="block w-full text-xs text-primary hover:text-primary/80 transition-colors"
-                            >
-                              💰 What's the current BTC price?
-                            </button>
-                            <button
-                              onClick={() => sendMessage('How is the market sentiment?')}
-                              className="block w-full text-xs text-primary hover:text-primary/80 transition-colors"
-                            >
-                              📊 How is the market sentiment?
-                            </button>
-                            <button
-                              onClick={() => sendMessage('Should I buy or sell?')}
-                              className="block w-full text-xs text-primary hover:text-primary/80 transition-colors"
-                            >
-                              🤔 Should I buy or sell?
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                      
                       {messages.map((message) => (
                         <div
                           key={message.id}
@@ -284,7 +254,7 @@ export function AITradingAssistant() {
 
                 {/* Market Sentiment Tab */}
                 {activeTab === 'sentiment' && (
-                  <div className="p-4 space-y-4">
+                  <div className="h-full overflow-y-auto p-4 space-y-4">
                     {marketSentiment ? (
                       <>
                         <div className="text-center">
@@ -318,7 +288,7 @@ export function AITradingAssistant() {
 
                 {/* Trade Suggestions Tab */}
                 {activeTab === 'suggestions' && (
-                  <div className="p-4 space-y-4">
+                  <div className="h-full overflow-y-auto p-4 space-y-4">
                     {tradeSuggestions.length > 0 ? (
                       tradeSuggestions.map((suggestion) => (
                         <div key={suggestion.id} className="p-4 rounded-lg border border-border bg-muted/50">
@@ -351,7 +321,7 @@ export function AITradingAssistant() {
 
                 {/* Settings Tab */}
                 {activeTab === 'settings' && (
-                  <div className="p-4 space-y-4">
+                  <div className="h-full overflow-y-auto p-4 space-y-4">
                     <div>
                       <label className="text-sm font-medium">Risk Tolerance</label>
                       <select

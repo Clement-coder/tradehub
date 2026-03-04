@@ -88,10 +88,27 @@ export function AITradingProvider({ children }: { children: React.ReactNode }) {
   const [tradeSuggestions, setTradeSuggestions] = useState<TradeSuggestion[]>([]);
   const [riskTolerance, setRiskTolerance] = useState<'low' | 'medium' | 'high'>('medium');
   const [autoSuggestions, setAutoSuggestions] = useState(true);
+  const [hasGreeted, setHasGreeted] = useState(false);
   
   // Refs
   const recognitionRef = useRef<any>(null);
   const openaiApiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+
+  // Send initial greeting when user is available
+  useEffect(() => {
+    if (authenticated && user && !hasGreeted) {
+      const firstName = user.name?.split(' ')[0] || 'there';
+      const greetingMessage: AIMessage = {
+        id: 'greeting',
+        type: 'assistant',
+        content: `Hi ${firstName}! 👋 I'm your AI trading assistant. I can help you analyze the market, understand BTC trends, and provide personalized trading insights. What would you like to know?`,
+        timestamp: new Date().toISOString(),
+        messageType: 'text'
+      };
+      setMessages([greetingMessage]);
+      setHasGreeted(true);
+    }
+  }, [authenticated, user, hasGreeted]);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -121,17 +138,15 @@ export function AITradingProvider({ children }: { children: React.ReactNode }) {
   // Fetch market sentiment
   const refreshSentiment = async () => {
     try {
-      // Fear & Greed Index
       const fearGreedResponse = await fetch('https://api.alternative.me/fng/');
       const fearGreedData = await fearGreedResponse.json();
       
-      // Simple sentiment calculation (in real app, you'd use multiple sources)
       const sentiment: MarketSentiment = {
-        score: (fearGreedData.data[0].value - 50) / 50, // Convert 0-100 to -1 to 1
+        score: (fearGreedData.data[0].value - 50) / 50,
         fearGreedIndex: parseInt(fearGreedData.data[0].value),
-        socialVolume: Math.floor(Math.random() * 1000), // Mock data
-        newsSentiment: Math.random() * 2 - 1, // Mock data
-        whaleActivity: Math.random() * 2 - 1, // Mock data
+        socialVolume: Math.floor(Math.random() * 1000),
+        newsSentiment: Math.random() * 2 - 1,
+        whaleActivity: Math.random() * 2 - 1,
         lastUpdated: new Date().toISOString()
       };
       
@@ -143,12 +158,80 @@ export function AITradingProvider({ children }: { children: React.ReactNode }) {
 
   // Generate AI response
   const generateAIResponse = async (userMessage: string, messageType: 'text' | 'voice'): Promise<string> => {
-    // For now, provide intelligent responses without OpenAI API
+    // Use OpenAI API if available
+    if (openaiApiKey) {
+      try {
+        const firstName = user?.name?.split(' ')[0] || 'there';
+        const systemPrompt = `You are an expert cryptocurrency trading assistant for TradeHub, a Bitcoin trading simulator. Your name is TradeBot.
+
+CONTEXT:
+- User's name: ${firstName}
+- Current BTC Price: $${btcPrice?.toLocaleString() || 'N/A'}
+- User's Risk Tolerance: ${riskTolerance}
+- Market Sentiment: ${marketSentiment ? `${marketSentiment.score > 0.3 ? 'Bullish' : marketSentiment.score < -0.3 ? 'Bearish' : 'Neutral'} (Fear & Greed Index: ${marketSentiment.fearGreedIndex}/100)` : 'Analyzing...'}
+- User's Balance: $${user?.balance?.toLocaleString() || '0'}
+
+YOUR ROLE:
+- Provide expert cryptocurrency trading insights and education
+- Analyze market trends and explain them clearly
+- Give personalized advice based on user's risk profile
+- Be conversational, friendly, and professional like ChatGPT
+- Use emojis occasionally to be engaging (📈 📉 💰 🎯 ⚠️ 💡)
+- Always remind users this is a simulation for learning
+
+GUIDELINES:
+- Keep responses concise (2-4 sentences typically)
+- Use the user's first name naturally in conversation
+- Reference current market data when relevant
+- Explain technical concepts simply
+- Encourage responsible trading practices
+- Be encouraging and supportive
+- Provide actionable insights, not just generic advice
+
+Respond naturally as if you're a knowledgeable friend helping them learn trading.`;
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${openaiApiKey}`
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              ...messages.filter(m => m.id !== 'greeting').slice(-10).map(m => ({ 
+                role: m.type === 'user' ? 'user' : 'assistant', 
+                content: m.content 
+              })),
+              { role: 'user', content: userMessage }
+            ],
+            temperature: 0.8,
+            max_tokens: 300,
+            presence_penalty: 0.6,
+            frequency_penalty: 0.3
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          return data.choices[0].message.content;
+        } else {
+          const errorText = await response.text();
+          console.error('OpenAI API error:', errorText);
+        }
+      } catch (error) {
+        console.error('OpenAI API error:', error);
+      }
+    }
+    
+    // Fallback responses
     const message = userMessage.toLowerCase();
+    const firstName = user?.name?.split(' ')[0] || 'there';
     
     // Greeting responses
     if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
-      return `Hello! I'm your AI trading assistant. Current BTC price is $${btcPrice?.toLocaleString() || 'loading...'}. How can I help you with your trading today?`;
+      return `Hello ${firstName}! 👋 I'm your AI trading assistant. Current BTC price is $${btcPrice?.toLocaleString() || 'loading...'}. How can I help you with your trading today?`;
     }
     
     // Price queries
@@ -205,7 +288,7 @@ export function AITradingProvider({ children }: { children: React.ReactNode }) {
         content: aiResponse,
         timestamp: new Date().toISOString(),
         messageType: 'text',
-        confidence: 0.8 // Mock confidence
+        confidence: 0.8
       };
 
       setMessages(prev => [...prev, assistantMessage]);
@@ -242,7 +325,6 @@ export function AITradingProvider({ children }: { children: React.ReactNode }) {
   const refreshSuggestions = async () => {
     if (!btcPrice || !marketSentiment) return;
 
-    // Mock AI-generated suggestions (in real app, use OpenAI)
     const suggestions: TradeSuggestion[] = [
       {
         id: Date.now().toString(),
@@ -250,7 +332,7 @@ export function AITradingProvider({ children }: { children: React.ReactNode }) {
         symbol: 'BTC',
         suggestedPrice: btcPrice * (1 + (Math.random() - 0.5) * 0.02),
         currentPrice: btcPrice,
-        confidence: Math.random() * 0.4 + 0.6, // 0.6-1.0
+        confidence: Math.random() * 0.4 + 0.6,
         reasoning: marketSentiment.score > 0.3 
           ? "Strong bullish sentiment detected. Fear & Greed index shows optimism."
           : marketSentiment.score < -0.3
@@ -268,12 +350,12 @@ export function AITradingProvider({ children }: { children: React.ReactNode }) {
   };
 
   const executeSuggestion = async (suggestionId: string) => {
-    // Implementation would integrate with trading context
     console.log('Executing suggestion:', suggestionId);
   };
 
   const clearChat = () => {
     setMessages([]);
+    setHasGreeted(false);
   };
 
   const updateSettings = (settings: Partial<{
@@ -290,7 +372,7 @@ export function AITradingProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (authenticated && user) {
       refreshSentiment();
-      const interval = setInterval(refreshSentiment, 5 * 60 * 1000); // Every 5 minutes
+      const interval = setInterval(refreshSentiment, 5 * 60 * 1000);
       return () => clearInterval(interval);
     }
   }, [authenticated, user]);
