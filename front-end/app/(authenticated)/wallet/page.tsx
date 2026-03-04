@@ -1084,10 +1084,12 @@ export default function WalletPage() {
                         <div className="pt-1.5 sm:pt-2 border-t border-gray-200 space-y-1.5 sm:space-y-2">
                           <p className="text-[10px] sm:text-xs font-semibold text-gray-600">Bank Transfer Details:</p>
                           <div className="space-y-1 text-[10px] sm:text-xs">
-                            {selectedTransaction.metadata.recipient_name ? (
+                            {(selectedTransaction.metadata.recipient_name || selectedTransaction.metadata.account_name) ? (
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Recipient:</span>
-                                <span className="font-medium text-gray-900">{String(selectedTransaction.metadata.recipient_name)}</span>
+                                <span className="font-medium text-gray-900">
+                                  {String(selectedTransaction.metadata.recipient_name || selectedTransaction.metadata.account_name)}
+                                </span>
                               </div>
                             ) : null}
                             {selectedTransaction.metadata.bank_name ? (
