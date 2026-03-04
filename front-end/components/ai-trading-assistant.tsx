@@ -245,8 +245,8 @@ export function AITradingAssistant() {
                       <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Input */}
-                    <div className="p-4 border-t border-border/40 bg-muted/10">
+                    {/* Input - Fixed at bottom */}
+                    <div className="flex-shrink-0 p-4 border-t border-border/40 bg-muted/10">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={voiceEnabled ? (isListening ? stopListening : startListening) : toggleVoice}
