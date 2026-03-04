@@ -45,16 +45,7 @@ DROP POLICY IF EXISTS "allow_all_access" ON public.notifications;
 DROP POLICY IF EXISTS "public_read_access" ON public.notifications;
 DROP POLICY IF EXISTS "anonymous_access" ON public.notifications;
 
--- =====================================================
--- PERFORMANCE INDEXES
--- Create indexes for foreign keys and frequently queried columns
--- =====================================================
 
--- =====================================================
--- PERFORMANCE INDEXES
--- Create indexes for foreign keys and frequently queried columns
--- (Only create if they don't already exist)
--- =====================================================
 
 -- User ID indexes for fast user-specific queries (from 001_schema.sql, but ensuring they exist)
 CREATE INDEX IF NOT EXISTS idx_users_privy_user_id ON public.users(privy_user_id);

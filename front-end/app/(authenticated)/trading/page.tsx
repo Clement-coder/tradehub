@@ -14,6 +14,7 @@ import PositionsTable from '@/components/positions-table';
 import TradeHistory from '@/components/trade-history';
 import OrderBook from '@/components/order-book';
 import RecentTrades from '@/components/recent-trades';
+import { AITradingAssistant } from '@/components/ai-trading-assistant';
 
 export default function TradingPage() {
   const router = useRouter();
@@ -223,6 +224,9 @@ export default function TradingPage() {
           <TradeHistory limit={5} />
         </div>
       </div>
+      
+      {/* AI Trading Assistant */}
+      <AITradingAssistant />
     </div>
   );
 }

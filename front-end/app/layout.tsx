@@ -22,6 +22,7 @@ export const viewport: Viewport = {
 };
 
 import { Providers } from '@/app/providers'
+import { AITradingProvider } from '@/app/context/ai-trading-context'
 
 export default function RootLayout({
   children,
@@ -34,7 +35,9 @@ export default function RootLayout({
         <Providers>
           <ToastProvider>
             <TradingProvider>
-              {children}
+              <AITradingProvider>
+                {children}
+              </AITradingProvider>
             </TradingProvider>
           </ToastProvider>
         </Providers>

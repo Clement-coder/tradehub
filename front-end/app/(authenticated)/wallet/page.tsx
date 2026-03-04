@@ -20,7 +20,7 @@ const formatCurrency = (value: number) =>
 
 export default function WalletPage() {
   const router = useRouter();
-  const { ready, authenticated } = usePrivy();
+  const { ready, authenticated, user: privyUser } = usePrivy();
   const { user, updateBalance, trades } = useTradingContext();
   const { data: btcPrice, isLoading: btcPriceLoading } = useBTCPrice();
   const toast = useToast();
@@ -180,6 +180,19 @@ export default function WalletPage() {
     setSwiftCode('');
     setWithdrawConfirmed(false);
     setWithdrawError('');
+  };
+
+  const refreshTransactions = async () => {
+    if (!user || !privyUser) return;
+    setIsRefreshing(true);
+    try {
+      const txHistory = await getTransactionHistory(user.id, privyUser.id);
+      setTransactions(txHistory);
+    } catch (error) {
+      console.error('Error refreshing transactions:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const handleWithdraw = async () => {
