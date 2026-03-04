@@ -143,50 +143,41 @@ export function AITradingProvider({ children }: { children: React.ReactNode }) {
 
   // Generate AI response
   const generateAIResponse = async (userMessage: string, messageType: 'text' | 'voice'): Promise<string> => {
-    if (!openaiApiKey) {
-      return "I'm currently offline. Please configure the OpenAI API key to enable AI features.";
+    // For now, provide intelligent responses without OpenAI API
+    const message = userMessage.toLowerCase();
+    
+    // Greeting responses
+    if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+      return `Hello! I'm your AI trading assistant. Current BTC price is $${btcPrice?.toLocaleString() || 'loading...'}. How can I help you with your trading today?`;
     }
-
-    try {
-      const context = `
-You are an AI trading assistant for TradeHub, a Bitcoin trading platform. 
-Current BTC price: $${btcPrice || 'Loading...'}
-User's risk tolerance: ${riskTolerance}
-Market sentiment score: ${marketSentiment?.score || 'Unknown'} (-1 to 1)
-Fear & Greed Index: ${marketSentiment?.fearGreedIndex || 'Unknown'} (0-100)
-
-Provide helpful, educational trading insights. Be concise but informative.
-If asked about trades, consider the user's risk tolerance and current market conditions.
-Always remind users this is a simulation for learning purposes.
-`;
-
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${openaiApiKey}`
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [
-            { role: 'system', content: context },
-            { role: 'user', content: userMessage }
-          ],
-          max_tokens: 200,
-          temperature: 0.7
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('OpenAI API error');
-      }
-
-      const data = await response.json();
-      return data.choices[0].message.content;
-    } catch (error) {
-      console.error('Error generating AI response:', error);
-      return "I'm having trouble processing your request right now. Please try again later.";
+    
+    // Price queries
+    if (message.includes('price') || message.includes('btc') || message.includes('bitcoin')) {
+      return `Bitcoin is currently trading at $${btcPrice?.toLocaleString() || 'loading...'}. ${marketSentiment ? 
+        `Market sentiment is ${marketSentiment.score > 0.3 ? 'bullish' : marketSentiment.score < -0.3 ? 'bearish' : 'neutral'} with a Fear & Greed index of ${marketSentiment.fearGreedIndex}.` : 
+        'Analyzing market sentiment...'}`;
     }
+    
+    // Trading advice
+    if (message.includes('buy') || message.includes('sell') || message.includes('trade')) {
+      const advice = riskTolerance === 'low' ? 'conservative' : riskTolerance === 'high' ? 'aggressive' : 'balanced';
+      return `Based on your ${advice} risk profile, I'd suggest ${marketSentiment?.score > 0.2 ? 'considering a small position if you see a good entry point' : marketSentiment?.score < -0.2 ? 'waiting for better market conditions' : 'being cautious and watching for clear signals'}. Remember, this is a simulation for learning!`;
+    }
+    
+    // Market sentiment
+    if (message.includes('sentiment') || message.includes('market') || message.includes('fear') || message.includes('greed')) {
+      return marketSentiment ? 
+        `Current market sentiment shows ${marketSentiment.score > 0 ? 'optimism' : 'caution'} with a Fear & Greed index of ${marketSentiment.fearGreedIndex}/100. ${marketSentiment.fearGreedIndex > 70 ? 'Market is showing extreme greed - be careful!' : marketSentiment.fearGreedIndex < 30 ? 'Market is fearful - could be a buying opportunity.' : 'Market sentiment is balanced.'}` :
+        'I\'m analyzing current market sentiment. Give me a moment to gather the latest data.';
+    }
+    
+    // Help and general queries
+    if (message.includes('help') || message.includes('what') || message.includes('how')) {
+      return 'I can help you with:\n• Current BTC prices and market analysis\n• Trading suggestions based on your risk tolerance\n• Market sentiment and Fear & Greed index\n• Educational trading insights\n\nTry asking: "What\'s the current price?" or "Should I buy now?"';
+    }
+    
+    // Default response
+    return `I understand you're asking about "${userMessage}". As your trading assistant, I can help with market analysis, price updates, and trading education. Current BTC: $${btcPrice?.toLocaleString() || 'loading...'}. What would you like to know?`;
   };
 
   // Send message

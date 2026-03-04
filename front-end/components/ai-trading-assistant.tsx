@@ -124,17 +124,17 @@ export function AITradingAssistant() {
             
             {/* AI Assistant Panel */}
             <motion.div
-              className="relative w-full max-w-md h-[600px] bg-card border border-border rounded-xl shadow-2xl overflow-hidden"
+              className="relative w-full max-w-md h-[600px] bg-card/95 backdrop-blur-sm border border-border/40 rounded-xl shadow-2xl overflow-hidden"
               initial={{ scale: 0.8, opacity: 0, y: 100 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0, y: 100 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-blue-500/10 to-purple-600/10">
+              <div className="flex items-center justify-between p-4 border-b border-border/40 bg-gradient-to-r from-[oklch(0.68_0.14_180)]/10 to-[oklch(0.62_0.13_320)]/10">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                    <Bot className="w-4 h-4 text-white" />
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center">
+                    <Bot className="w-4 h-4 text-primary-foreground" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground">AI Trading Assistant</h3>
@@ -145,14 +145,14 @@ export function AITradingAssistant() {
                 </div>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1 rounded-lg hover:bg-muted transition-colors"
+                  className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4 text-muted-foreground hover:text-foreground" />
                 </button>
               </div>
 
               {/* Tabs */}
-              <div className="flex border-b border-border">
+              <div className="flex border-b border-border/40 bg-muted/20">
                 {[
                   { id: 'chat', label: 'Chat', icon: MessageCircle },
                   { id: 'sentiment', label: 'Market', icon: TrendingUp },
@@ -162,10 +162,10 @@ export function AITradingAssistant() {
                   <button
                     key={id}
                     onClick={() => setActiveTab(id as any)}
-                    className={`flex-1 flex items-center justify-center gap-2 p-3 text-xs font-medium transition-colors ${
+                    className={`flex-1 flex items-center justify-center gap-2 p-3 text-xs font-medium transition-all duration-200 ${
                       activeTab === id
                         ? 'text-primary border-b-2 border-primary bg-primary/5'
-                        : 'text-muted-foreground hover:text-foreground'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
                     }`}
                   >
                     <Icon className="w-3 h-3" />
@@ -183,9 +183,31 @@ export function AITradingAssistant() {
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
                       {messages.length === 0 && (
                         <div className="text-center text-muted-foreground py-8">
-                          <Bot className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                          <p className="text-sm">Hi! I'm your AI trading assistant.</p>
-                          <p className="text-xs mt-1">Ask me about market trends, trading strategies, or get personalized suggestions!</p>
+                          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-primary/20 to-primary/10 flex items-center justify-center">
+                            <Bot className="w-8 h-8 text-primary opacity-60" />
+                          </div>
+                          <p className="text-sm font-medium">Hi! I'm your AI trading assistant.</p>
+                          <p className="text-xs mt-2 text-muted-foreground/80">Ask me about market trends, trading strategies, or get personalized suggestions!</p>
+                          <div className="mt-4 space-y-2">
+                            <button
+                              onClick={() => sendMessage('What\'s the current BTC price?')}
+                              className="block w-full text-xs text-primary hover:text-primary/80 transition-colors"
+                            >
+                              💰 What's the current BTC price?
+                            </button>
+                            <button
+                              onClick={() => sendMessage('How is the market sentiment?')}
+                              className="block w-full text-xs text-primary hover:text-primary/80 transition-colors"
+                            >
+                              📊 How is the market sentiment?
+                            </button>
+                            <button
+                              onClick={() => sendMessage('Should I buy or sell?')}
+                              className="block w-full text-xs text-primary hover:text-primary/80 transition-colors"
+                            >
+                              🤔 Should I buy or sell?
+                            </button>
+                          </div>
                         </div>
                       )}
                       
@@ -224,16 +246,16 @@ export function AITradingAssistant() {
                     </div>
 
                     {/* Input */}
-                    <div className="p-4 border-t border-border">
+                    <div className="p-4 border-t border-border/40 bg-muted/10">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={voiceEnabled ? (isListening ? stopListening : startListening) : toggleVoice}
-                          className={`p-2 rounded-lg transition-colors ${
+                          className={`p-2.5 rounded-lg transition-all duration-200 ${
                             isListening
-                              ? 'bg-red-500 text-white'
+                              ? 'bg-red-500 text-white shadow-lg'
                               : voiceEnabled
-                              ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                              : 'bg-muted text-muted-foreground'
+                              ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-md'
+                              : 'bg-muted text-muted-foreground hover:bg-muted/80'
                           }`}
                         >
                           {voiceEnabled ? (isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />) : <VolumeX className="w-4 h-4" />}
@@ -245,13 +267,13 @@ export function AITradingAssistant() {
                           onChange={(e) => setInputMessage(e.target.value)}
                           onKeyPress={handleKeyPress}
                           placeholder="Ask me anything about trading..."
-                          className="flex-1 p-2 rounded-lg bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                          className="flex-1 p-2.5 rounded-lg bg-background/80 backdrop-blur-sm border border-border/60 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                           disabled={isListening}
                         />
                         <button
                           onClick={handleSendMessage}
                           disabled={!inputMessage.trim() || isTyping}
-                          className="p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          className="p-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg"
                         >
                           <Send className="w-4 h-4" />
                         </button>
