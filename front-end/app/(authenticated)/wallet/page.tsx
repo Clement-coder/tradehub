@@ -21,7 +21,7 @@ const formatCurrency = (value: number) =>
 export default function WalletPage() {
   const router = useRouter();
   const { ready, authenticated } = usePrivy();
-  const { user, updateBalance } = useTradingContext();
+  const { user, updateBalance, trades } = useTradingContext();
   const { data: btcPrice, isLoading: btcPriceLoading } = useBTCPrice();
   const toast = useToast();
 
@@ -469,7 +469,7 @@ export default function WalletPage() {
           </div>
         </div>
 
-        {/* Transaction History */}
+        {/* Transaction & Trade History */}
         <div className="group relative">
           <div className="absolute inset-0 rounded-xl overflow-hidden animate-pulse" style={{animationDuration: '3s', animationDelay: '1s'}}>
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[oklch(0.65_0.15_260)]/60 to-transparent"></div>
@@ -482,60 +482,129 @@ export default function WalletPage() {
             <div className="relative z-10">
               <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                 <History className="w-5 h-5 text-[oklch(0.65_0.15_260)]" />
-                Recent Transactions
+                Recent Activity
               </h3>
               <div className="space-y-3">
-                {transactions.length === 0 ? (
-                  <div className="text-center py-8">
-                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
-                      <History className="w-8 h-8 text-muted-foreground" />
-                    </div>
-                    <p className="text-muted-foreground font-medium">No recent transactions</p>
-                    <p className="text-sm text-muted-foreground mt-2">Your transaction history will appear here</p>
-                  </div>
-                ) : (
-                  transactions.slice(0, 10).map((tx) => {
-                    const isPositive = Number(tx.amount) >= 0;
-                    const txType = tx.type === 'deposit' ? 'Deposit' : 
-                                   tx.type === 'withdrawal' ? 'Withdrawal' :
-                                   tx.type === 'trade_open' ? 'Trade Open' :
-                                   tx.type === 'trade_close' ? 'Trade Close' : 'Transaction';
-                    
+                {(() => {
+                  // Combine transactions and trades
+                  const allActivity = [
+                    ...transactions.map(tx => ({
+                      id: tx.id,
+                      type: 'transaction' as const,
+                      data: tx,
+                      timestamp: new Date(tx.created_at).getTime()
+                    })),
+                    ...trades.map(trade => ({
+                      id: trade.id,
+                      type: 'trade' as const,
+                      data: trade,
+                      timestamp: new Date(trade.timestamp).getTime()
+                    }))
+                  ].sort((a, b) => b.timestamp - a.timestamp).slice(0, 10);
+
+                  if (allActivity.length === 0) {
                     return (
-                      <button
-                        key={tx.id}
-                        onClick={() => setSelectedTransaction(tx)}
-                        className="w-full flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            isPositive ? 'bg-green-500/20' : 'bg-red-500/20'
-                          }`}>
-                            {isPositive ? (
-                              <ArrowDownLeft className="w-5 h-5 text-green-500" />
-                            ) : (
-                              <ArrowUpRight className="w-5 h-5 text-red-500" />
-                            )}
+                      <div className="text-center py-8">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+                          <History className="w-8 h-8 text-muted-foreground" />
+                        </div>
+                        <p className="text-muted-foreground font-medium">No recent activity</p>
+                        <p className="text-sm text-muted-foreground mt-2">Your transactions and trades will appear here</p>
+                      </div>
+                    );
+                  }
+
+                  return allActivity.map((activity) => {
+                    if (activity.type === 'transaction') {
+                      const tx = activity.data as Transaction;
+                      const isPositive = Number(tx.amount) >= 0;
+                      const txType = tx.type === 'deposit' ? 'Deposit' : 
+                                     tx.type === 'withdrawal' ? 'Bank Transfer' :
+                                     tx.type === 'trade_open' ? 'Trade Open' :
+                                     tx.type === 'trade_close' ? 'Trade Close' : 'Transaction';
+                      
+                      return (
+                        <button
+                          key={`tx-${tx.id}`}
+                          onClick={() => setSelectedTransaction(tx)}
+                          className="w-full flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                              tx.type === 'deposit' ? 'bg-green-500/20' :
+                              tx.type === 'withdrawal' ? 'bg-red-500/20' :
+                              'bg-blue-500/20'
+                            }`}>
+                              {tx.type === 'deposit' ? (
+                                <ArrowDownLeft className="w-5 h-5 text-green-500" />
+                              ) : tx.type === 'withdrawal' ? (
+                                <ArrowUpRight className="w-5 h-5 text-red-500" />
+                              ) : (
+                                <Coins className="w-5 h-5 text-blue-500" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium text-foreground">{txType}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(tx.created_at).toLocaleString()}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-medium text-foreground">{txType}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(tx.created_at).toLocaleString()}
+                          <div className="text-right">
+                            <p className={`font-bold ${
+                              tx.type === 'deposit' ? 'text-green-500' :
+                              tx.type === 'withdrawal' ? 'text-red-500' :
+                              'text-blue-500'
+                            }`}>
+                              <CurrencyDisplay amount={Number(tx.amount)} logoSize={14} />
+                            </p>
+                            <p className="text-xs text-muted-foreground capitalize">
+                              {tx.status}
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    } else {
+                      const trade = activity.data as any;
+                      const isProfit = trade.pnl >= 0;
+                      
+                      return (
+                        <div
+                          key={`trade-${trade.id}`}
+                          className="w-full flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                              trade.type === 'long' ? 'bg-green-500/20' : 'bg-red-500/20'
+                            }`}>
+                              {trade.type === 'long' ? (
+                                <ArrowUpRight className="w-5 h-5 text-green-500" />
+                              ) : (
+                                <ArrowDownLeft className="w-5 h-5 text-red-500" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium text-foreground">
+                                {trade.type === 'long' ? 'Long' : 'Short'} Trade
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {new Date(trade.timestamp).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className={`font-bold ${isProfit ? 'text-green-500' : 'text-red-500'}`}>
+                              {isProfit ? '+' : ''}<CurrencyDisplay amount={trade.pnl} logoSize={14} />
+                            </p>
+                            <p className={`text-xs ${isProfit ? 'text-green-500' : 'text-red-500'}`}>
+                              {isProfit ? '+' : ''}{trade.pnlPercent.toFixed(2)}%
                             </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className={`font-bold ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-                            {isPositive ? '+' : ''}<CurrencyDisplay amount={Number(tx.amount)} logoSize={14} />
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Balance: ${Number(tx.balance_after).toFixed(2)}
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })
-                )}
+                      );
+                    }
+                  });
+                })()}
               </div>
             </div>
           </div>
