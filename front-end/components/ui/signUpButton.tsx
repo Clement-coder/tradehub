@@ -2,7 +2,7 @@
 
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Wallet, ArrowRight } from "lucide-react";
 import { useToast } from "@/components/toast-provider";
@@ -11,20 +11,38 @@ export default function SignupButton() {
   const { login, authenticated, ready } = usePrivy();
   const router = useRouter();
   const toast = useToast();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const hasShownWelcome = useRef(false);
 
   useEffect(() => {
-    if (ready && authenticated) {
-      toast.success('Welcome to TradeHub!', 'You are now logged in');
-      router.push("/dashboard");
+    if (ready && authenticated && !isRedirecting && !hasShownWelcome.current) {
+      setIsRedirecting(true);
+      hasShownWelcome.current = true;
+      
+      toast.success('Welcome to TradeHub!', 'Redirecting to your dashboard...');
+      
+      // Small delay to show the toast before redirecting
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 1500);
     }
-  }, [authenticated, ready, router, toast]);
+  }, [authenticated, ready, router, toast, isRedirecting]);
+
+  const handleLogin = () => {
+    if (!isRedirecting) {
+      login();
+    }
+  };
 
   return (
     <motion.button
-      onClick={login}
-      className="group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden w-full"
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      onClick={handleLogin}
+      disabled={isRedirecting}
+      className={`group relative inline-flex items-center justify-center gap-2 md:gap-3 px-6 sm:px-8 lg:px-10 py-3 md:py-4 rounded-xl font-semibold text-sm md:text-base text-primary-foreground bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden w-full ${
+        isRedirecting ? 'opacity-75 cursor-not-allowed' : ''
+      }`}
+      whileHover={!isRedirecting ? { scale: 1.02 } : {}}
+      whileTap={!isRedirecting ? { scale: 0.98 } : {}}
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
     >
       {/* Shimmer effect like landing page */}
@@ -32,9 +50,9 @@ export default function SignupButton() {
       
       {/* Button Content */}
       <motion.div
-        animate={{ rotate: [0, 360] }}
+        animate={{ rotate: isRedirecting ? [0, 360] : [0, 360] }}
         transition={{
-          duration: 8,
+          duration: isRedirecting ? 1 : 8,
           repeat: Infinity,
           ease: "linear"
         }}
@@ -42,10 +60,9 @@ export default function SignupButton() {
         <Wallet className="w-4 md:w-5 h-4 md:h-5" />
       </motion.div>
       
-      <span>Start Trading Now</span>
+      <span>{isRedirecting ? 'Redirecting...' : 'Start Trading Now'}</span>
       
-     
-        <ArrowRight className="w-4 md:w-5 h-4 md:h-5" />
+      <ArrowRight className={`w-4 md:w-5 h-4 md:h-5 transition-transform ${isRedirecting ? 'animate-pulse' : ''}`} />
     </motion.button>
   );
 }
