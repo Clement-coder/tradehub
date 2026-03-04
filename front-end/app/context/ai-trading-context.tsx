@@ -161,7 +161,8 @@ export function AITradingProvider({ children }: { children: React.ReactNode }) {
     // Trading advice
     if (message.includes('buy') || message.includes('sell') || message.includes('trade')) {
       const advice = riskTolerance === 'low' ? 'conservative' : riskTolerance === 'high' ? 'aggressive' : 'balanced';
-      return `Based on your ${advice} risk profile, I'd suggest ${marketSentiment?.score > 0.2 ? 'considering a small position if you see a good entry point' : marketSentiment?.score < -0.2 ? 'waiting for better market conditions' : 'being cautious and watching for clear signals'}. Remember, this is a simulation for learning!`;
+      const score = marketSentiment?.score ?? 0;
+      return `Based on your ${advice} risk profile, I'd suggest ${score > 0.2 ? 'considering a small position if you see a good entry point' : score < -0.2 ? 'waiting for better market conditions' : 'being cautious and watching for clear signals'}. Remember, this is a simulation for learning!`;
     }
     
     // Market sentiment
