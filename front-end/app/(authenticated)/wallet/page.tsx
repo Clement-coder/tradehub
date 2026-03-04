@@ -96,6 +96,7 @@ export default function WalletPage() {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [transactionFilter, setTransactionFilter] = useState<'all' | 'deposit' | 'withdrawal' | 'trade_open' | 'trade_close'>('all');
   const [balanceVisible, setBalanceVisible] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('balanceVisible');
@@ -480,20 +481,76 @@ export default function WalletPage() {
           <div className="relative bg-card/95 backdrop-blur-sm border border-[oklch(0.65_0.15_260)]/30 rounded-xl p-4 sm:p-6 m-px overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-[oklch(0.65_0.15_260)]/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
             <div className="relative z-10">
-              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-                <History className="w-5 h-5 text-[oklch(0.65_0.15_260)]" />
-                Recent Activity
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-foreground flex items-center gap-2">
+                  <History className="w-5 h-5 text-[oklch(0.65_0.15_260)]" />
+                  Recent Activity
+                </h3>
+                <button
+                  onClick={refreshTransactions}
+                  disabled={isRefreshing}
+                  className="p-1.5 rounded-lg hover:bg-muted/50 transition-colors disabled:opacity-50"
+                  title="Refresh transactions"
+                >
+                  <RefreshCw className={`w-4 h-4 text-muted-foreground ${isRefreshing ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+
+              {/* Transaction Filters */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                <button
+                  onClick={() => setTransactionFilter('all')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    transactionFilter === 'all'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                  }`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => setTransactionFilter('deposit')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    transactionFilter === 'deposit'
+                      ? 'bg-green-500 text-white'
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                  }`}
+                >
+                  Deposits
+                </button>
+                <button
+                  onClick={() => setTransactionFilter('withdrawal')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    transactionFilter === 'withdrawal'
+                      ? 'bg-red-500 text-white'
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                  }`}
+                >
+                  Withdrawals
+                </button>
+                <button
+                  onClick={() => setTransactionFilter('trade_open')}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                    transactionFilter === 'trade_open'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+                  }`}
+                >
+                  Trades
+                </button>
+              </div>
               <div className="space-y-3">
                 {(() => {
                   // Combine transactions and trades
                   const allActivity = [
-                    ...transactions.map(tx => ({
-                      id: tx.id,
-                      type: 'transaction' as const,
-                      data: tx,
-                      timestamp: new Date(tx.created_at).getTime()
-                    })),
+                    ...transactions
+                      .filter(tx => transactionFilter === 'all' || tx.type === transactionFilter)
+                      .map(tx => ({
+                        id: tx.id,
+                        type: 'transaction' as const,
+                        data: tx,
+                        timestamp: new Date(tx.created_at).getTime()
+                      })),
                     ...trades.map(trade => ({
                       id: trade.id,
                       type: 'trade' as const,
