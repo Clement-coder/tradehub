@@ -1084,36 +1084,36 @@ export default function WalletPage() {
                         <div className="pt-1.5 sm:pt-2 border-t border-gray-200 space-y-1.5 sm:space-y-2">
                           <p className="text-[10px] sm:text-xs font-semibold text-gray-600">Bank Transfer Details:</p>
                           <div className="space-y-1 text-[10px] sm:text-xs">
-                            {selectedTransaction.metadata.recipient_name && (
+                            {selectedTransaction.metadata.recipient_name ? (
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Recipient:</span>
-                                <span className="font-medium text-gray-900">{selectedTransaction.metadata.recipient_name as string}</span>
+                                <span className="font-medium text-gray-900">{String(selectedTransaction.metadata.recipient_name)}</span>
                               </div>
-                            )}
-                            {selectedTransaction.metadata.bank_name && (
+                            ) : null}
+                            {selectedTransaction.metadata.bank_name ? (
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Bank:</span>
-                                <span className="font-medium text-gray-900">{selectedTransaction.metadata.bank_name as string}</span>
+                                <span className="font-medium text-gray-900">{String(selectedTransaction.metadata.bank_name)}</span>
                               </div>
-                            )}
-                            {selectedTransaction.metadata.account_number && (
+                            ) : null}
+                            {selectedTransaction.metadata.account_number ? (
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Account:</span>
-                                <span className="font-medium text-gray-900">****{(selectedTransaction.metadata.account_number as string).slice(-4)}</span>
+                                <span className="font-medium text-gray-900">****{String(selectedTransaction.metadata.account_number).slice(-4)}</span>
                               </div>
-                            )}
-                            {selectedTransaction.metadata.routing_number && (
+                            ) : null}
+                            {selectedTransaction.metadata.routing_number ? (
                               <div className="flex justify-between">
                                 <span className="text-gray-600">Routing:</span>
-                                <span className="font-medium text-gray-900">{selectedTransaction.metadata.routing_number as string}</span>
+                                <span className="font-medium text-gray-900">{String(selectedTransaction.metadata.routing_number)}</span>
                               </div>
-                            )}
-                            {selectedTransaction.metadata.swift_code && (
+                            ) : null}
+                            {selectedTransaction.metadata.swift_code ? (
                               <div className="flex justify-between">
                                 <span className="text-gray-600">SWIFT:</span>
-                                <span className="font-medium text-gray-900">{selectedTransaction.metadata.swift_code as string}</span>
+                                <span className="font-medium text-gray-900">{String(selectedTransaction.metadata.swift_code)}</span>
                               </div>
-                            )}
+                            ) : null}
                           </div>
                         </div>
                       )}
