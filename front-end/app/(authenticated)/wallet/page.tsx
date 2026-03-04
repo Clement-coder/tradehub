@@ -1043,23 +1043,13 @@ export default function WalletPage() {
                     </div>
 
                     <div className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm relative z-10">
-                      {/* Security Code */}
+                      {/* Security Code - No QR Code */}
                       {selectedTransaction.id && selectedTransaction.created_at && (
                         <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded p-2 mb-2">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="text-[10px] text-gray-600 font-semibold">Security Code</div>
-                              <div className="font-mono font-bold text-blue-700 text-sm sm:text-base">
-                                {generateSecurityCode(selectedTransaction.id.toString(), selectedTransaction.created_at)}
-                              </div>
-                            </div>
-                            <div className="bg-white p-1 rounded">
-                              <QRCodeSVG 
-                                value={generateQRData(selectedTransaction.id.toString(), Number(selectedTransaction.amount), selectedTransaction.created_at)}
-                                size={50}
-                                level="H"
-                                includeMargin={false}
-                              />
+                          <div className="text-center">
+                            <div className="text-[10px] text-gray-600 font-semibold">Security Code</div>
+                            <div className="font-mono font-bold text-blue-700 text-sm sm:text-base">
+                              {generateSecurityCode(selectedTransaction.id.toString(), selectedTransaction.created_at)}
                             </div>
                           </div>
                         </div>
@@ -1077,7 +1067,7 @@ export default function WalletPage() {
                         <span className="text-gray-600">Type</span>
                         <span className="font-medium capitalize text-gray-900">
                           {selectedTransaction.type === 'deposit' ? 'Deposit' : 
-                           selectedTransaction.type === 'withdrawal' ? 'Withdrawal' :
+                           selectedTransaction.type === 'withdrawal' ? 'Bank Transfer' :
                            selectedTransaction.type === 'trade_open' ? 'Trade Open' :
                            selectedTransaction.type === 'trade_close' ? 'Trade Close' : 'Transaction'}
                         </span>
@@ -1088,6 +1078,45 @@ export default function WalletPage() {
                           {Number(selectedTransaction.amount) >= 0 ? '+' : ''}{formatCurrency(Number(selectedTransaction.amount))}
                         </span>
                       </div>
+
+                      {/* Bank Details for Withdrawals */}
+                      {selectedTransaction.type === 'withdrawal' && selectedTransaction.metadata && (
+                        <div className="pt-1.5 sm:pt-2 border-t border-gray-200 space-y-1.5 sm:space-y-2">
+                          <p className="text-[10px] sm:text-xs font-semibold text-gray-600">Bank Transfer Details:</p>
+                          <div className="space-y-1 text-[10px] sm:text-xs">
+                            {selectedTransaction.metadata.recipient_name && (
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Recipient:</span>
+                                <span className="font-medium text-gray-900">{selectedTransaction.metadata.recipient_name as string}</span>
+                              </div>
+                            )}
+                            {selectedTransaction.metadata.bank_name && (
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Bank:</span>
+                                <span className="font-medium text-gray-900">{selectedTransaction.metadata.bank_name as string}</span>
+                              </div>
+                            )}
+                            {selectedTransaction.metadata.account_number && (
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Account:</span>
+                                <span className="font-medium text-gray-900">****{(selectedTransaction.metadata.account_number as string).slice(-4)}</span>
+                              </div>
+                            )}
+                            {selectedTransaction.metadata.routing_number && (
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">Routing:</span>
+                                <span className="font-medium text-gray-900">{selectedTransaction.metadata.routing_number as string}</span>
+                              </div>
+                            )}
+                            {selectedTransaction.metadata.swift_code && (
+                              <div className="flex justify-between">
+                                <span className="text-gray-600">SWIFT:</span>
+                                <span className="font-medium text-gray-900">{selectedTransaction.metadata.swift_code as string}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                       
                       <div className="pt-1.5 sm:pt-2 border-t border-gray-200 space-y-1.5 sm:space-y-2">
                         <p className="text-[10px] sm:text-xs font-semibold text-gray-600">Conversions:</p>
@@ -1112,14 +1141,10 @@ export default function WalletPage() {
                       </div>
 
                       <div className="flex justify-between gap-2 pt-1.5 sm:pt-2 border-t border-gray-200">
-                        <span className="text-gray-600">Balance After</span>
-                        <span className="font-semibold text-gray-900">{formatCurrency(Number(selectedTransaction.balance_after))}</span>
-                      </div>
-
-                      <div className="flex justify-between gap-2 pt-1.5 sm:pt-2 border-t border-gray-200">
                         <span className="text-gray-600">Status</span>
-                        <span className={`font-semibold ${selectedTransaction.approved ? 'text-green-600' : 'text-orange-600'}`}>
-                          {selectedTransaction.approved ? 'Approved - Successful' : 'Pending Approval'}
+                        <span className={`font-semibold ${selectedTransaction.status === 'completed' ? 'text-green-600' : selectedTransaction.status === 'pending' ? 'text-orange-600' : 'text-red-600'}`}>
+                          {selectedTransaction.status === 'completed' ? 'Completed' : 
+                           selectedTransaction.status === 'pending' ? 'Pending' : 'Failed'}
                         </span>
                       </div>
                     </div>
@@ -1127,7 +1152,7 @@ export default function WalletPage() {
                     {/* Security Footer */}
                     <div className="border-t-2 border-gray-300 pt-2 mt-2 relative z-10">
                       <div className="text-[8px] sm:text-[10px] text-gray-500 text-center">
-                        This is an official TradeHub receipt. Verify authenticity using the security code and QR code.
+                        This is an official TradeHub receipt. Verify authenticity using the security code.
                       </div>
                       <div className="text-[8px] text-gray-400 text-center mt-1">
                         © 2026 TradeHub. All rights reserved. | support@tradehub.com
